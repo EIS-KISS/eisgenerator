@@ -1,5 +1,7 @@
 #pragma once
 #include <complex>
+#include <string>
+#include <vector>
 #include "componant.h"
 
 class Cap: public Componant
@@ -7,6 +9,9 @@ class Cap: public Componant
 private:
 	double _C;
 public:
-	Cap(double c);
+	Cap(std::string paramStr);
+	Cap(double c = 1e-6);
 	virtual std::complex<double> execute(double omega) override;
+	virtual std::vector<double> getParam() override;
+	virtual void setParam(const std::vector<double>& param) override;
 };

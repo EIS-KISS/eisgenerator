@@ -1,14 +1,6 @@
+#pragma once
 #include <string>
 #include <vector>
 #include <sstream>
 
-std::vector<std::string> tokenize(const std::string& str, const char delim = ' ')
-{
-	std::stringstream ss(str);
-	std::vector<std::string> tokens;
-
-	std::string token;
-	while(getline(ss, token, delim))
-		tokens.push_back(token);
-	return tokens;
-}
+std::vector<std::string> tokenize(const std::string& str, const char delim = ' ', const char ignBracketStart = '\0', const char ignBracketEnd = '\0');

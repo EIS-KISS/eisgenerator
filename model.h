@@ -33,16 +33,21 @@ private:
 		virtual std::complex<double> execute(double omaga) override;
 	};
 
-	size_t opposingBraket(const std::string& str, size_t index);
+	size_t opposingBraket(const std::string& str, size_t index, char bracketChar = ')');
 	size_t deepestBraket(const std::string& str);
-	Componant *processBrackets(std::string& str, size_t& bracketCounter, const std::vector<double>& param);
-	Componant *processBracket(std::string& str, const std::vector<double>& param);
+	Componant *processBrackets(std::string& str, size_t& bracketCounter);
+	Componant *processBracket(std::string& str);
+	std::string getParamStr(const std::string& str, size_t index);
 
 private:
 	Componant *_model = nullptr;
 	std::vector<Componant*> _bracketComponants;
+	std::string _modelStr;
+	std::vector<Componant*> _flatComponants;
 
 public:
-	Model(const std::string& str, const std::vector<double>& params);
+	Model(const std::string& str);
 	DataPoint execute(double omaga);
+	std::string getModelStr();
+	std::vector<Componant*> getFlatComponants();
 };

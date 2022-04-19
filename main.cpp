@@ -11,12 +11,11 @@ double omegafn(size_t i)
 
 int main(int argc, char** argv)
 {
-	std::vector<double> params = {1.0e3, 1.0e-6, 1.0e3, 1.0e-6};
-	std::string modelStr("r-(c-r)r-(cr-(rc-r))");
+	std::string modelStr("r{1e3}-(c{1e-6}r{1e3})");
 
 	std::vector<Model::DataPoint> results;
 
-	Model model(modelStr, params);
+	Model model(modelStr);
 	auto start = std::chrono::high_resolution_clock::now();
 	for(size_t i = 0; i < 50; ++i)
 		results.push_back(model.execute(omegafn(i)));

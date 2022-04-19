@@ -32,11 +32,11 @@ std::complex<double> Model::Serial::execute(double omega)
 	return accum;
 }
 
-size_t Model::opposingBraket(const std::string& str, size_t index)
+size_t Model::opposingBraket(const std::string& str, size_t index, char bracketChar)
 {
 	for(size_t i = index; i < str.size(); ++i)
 	{
-		if(str[i] == ')')
+		if(str[i] == bracketChar)
 			return i;
 	}
 	return std::string::npos;
@@ -62,19 +62,19 @@ size_t Model::deepestBraket(const std::string& str)
 	return deepestPos;
 }
 
-Componant *Model::processBrackets(std::string& str, size_t& bracketCounter, const std::vector<double>& param)
+Componant *Model::processBrackets(std::string& str, size_t& bracketCounter)
 {
 	size_t bracketStart = deepestBraket(str);
 	std::cout<<str<<" bracket start "<<(bracketStart == std::string::npos ? std::string("npos") :  std::to_string(bracketStart))<<'\n';
 
 	if(bracketStart == std::string::npos)
 	{
-		Componant* componant = processBracket(str, param);
+		Componant* componant = processBracket(str);
 		if(!componant)
 		{
-			std::cout<<"Warning: can not create componant for "<<str;
+			std::cout<<"Warning: can not create componant type B for "<<str<<'\n';
 		}
-		return processBracket(str, param);
+		return componant;
 	}
 
 	size_t bracketEnd = opposingBraket(str, bracketStart);
@@ -84,58 +84,83 @@ Componant *Model::processBrackets(std::string& str, size_t& bracketCounter, cons
 		return nullptr;
 	}
 
-	std::string bracket = str.substr(bracketStart+1, bracketEnd-1);
+	std::string bracket = str.substr(bracketStart+1, bracketEnd-1-bracketStart);
 
-	Componant* componant = processBracket(bracket, param);
-	_bracketComponants.push_back(processBracket(bracket, param));
+	Componant* componant = processBracket(bracket);
 	if(!componant)
 	{
-		std::cout<<"Warning: can not create componant for "<<bracket;
+		std::cout<<"Warning: can not create componant type A for "<<bracket<<'\n';
 	}
+	_bracketComponants.push_back(componant);
 
 	str.erase(str.begin()+bracketStart, str.begin()+bracketEnd+1);
 	str.insert(str.begin()+bracketStart, bracketCounter+48);
 	++bracketCounter;
-	return processBrackets(str, bracketCounter, param);
+	return processBrackets(str, bracketCounter);
 }
 
-Componant *Model::processBracket(std::string& str, const std::vector<double>& param)
+std::string Model::getParamStr(const std::string& str, size_t index)
 {
-	std::vector<std::string> tokens = tokenize(str, '-');
+	if(str.size()-index < 3 || str[index+1] != '{')
+	{
+		std::cout<<"Warning: missing parameter for "<<str[index]<<'\n';
+		return 0;
+	}
+
+	size_t end = opposingBraket(str, index, '}');
+	std::string parameterStr = str.substr(index+2, end-index-2);
+	std::cout<<"param for "<<str[index]<<' '<<parameterStr<<'\n';
+	return parameterStr;
+}
+
+Componant *Model::processBracket(std::string& str)
+{
+	std::cout<<__func__<<'('<<str<<")\n";
+	std::vector<std::string> tokens = tokenize(str, '-', '{', '}');
 
 	std::vector<Componant*> nodes;
 
-	size_t paramCounter = 0;
-
 	for(const std::string& nodeStr : tokens)
 	{
+		std::cout<<__func__<<" full node str: "<<nodeStr<<'\n';
 		std::vector<Componant*> componants;
-		for(char c : nodeStr)
+		for(size_t i = 0; i < nodeStr.size(); ++i)
 		{
-			if(paramCounter >= param.size())
-				break;
-			switch(c)
+			std::cout<<__func__<<" arg: "<<nodeStr[i]<<'\n';
+			switch(nodeStr[i])
 			{
 				case 'c':
 				case 'C':
-					componants.push_back(new Cap(1e-6));
+					componants.push_back(new Cap(getParamStr(nodeStr, i)));
+					i = opposingBraket(nodeStr, i, '}');
 					break;
 				case 'r':
 				case 'R':
-					componants.push_back(new Resistor(1e3));
+					componants.push_back(new Resistor(getParamStr(nodeStr, i)));
+					i = opposingBraket(nodeStr, i, '}');
+					break;
+				case '{':
+					i = opposingBraket(nodeStr, i, '}');
+				case '}':
+					std::cout<<"Warning: stray "<<nodeStr[i]<<" in model string\n";
 					break;
 				case '0' ... '9':
 				{
-					size_t i = c-48;
-					if(_bracketComponants.size() > i)
-						componants.push_back(_bracketComponants[i]);
+					size_t j = nodeStr[i]-48;
+					if(_bracketComponants.size() > j)
+						componants.push_back(_bracketComponants[j]);
 					break;
 				}
 				default:
 					break;
 			}
 		}
-		nodes.push_back(new Paralell(componants));
+		if(componants.size() > 1)
+			nodes.push_back(new Paralell(componants));
+		else if(componants.size() == 1)
+			nodes.push_back(componants[0]);
+		else
+			std::cout<<"Warning: empty node for "<<nodeStr<<'\n';
 	}
 
 	if(nodes.size() > 1)
@@ -146,11 +171,11 @@ Componant *Model::processBracket(std::string& str, const std::vector<double>& pa
 		return nullptr;
 }
 
-Model::Model(const std::string& str, const std::vector<double>& param)
+Model::Model(const std::string& str): _modelStr(str)
 {
 	size_t bracketCounter = 0;
 	std::string strCpy(str);
-	_model = processBrackets(strCpy, bracketCounter, param);
+	_model = processBrackets(strCpy, bracketCounter);
 }
 
 Model::DataPoint Model::execute(double omega)
@@ -163,6 +188,8 @@ Model::DataPoint Model::execute(double omega)
 		return dataPoint;
 	}
 	else
+	{
 		std::cout<<"Warning: model not ready\n";
+	}
 	return DataPoint({std::complex<double>(0,0), 0});
 }
