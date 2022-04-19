@@ -230,6 +230,101 @@ std::vector<Componant*> Model::getFlatComponants()
 	return getFlatComponants();
 }
 
+std::vector<Model::DataPoint> Model::sweep(const Range& omega)
+{
+	double step = (omega.end - omega.start)/omega.count;
+	double currOmega = omega.start;
+
+	std::vector<DataPoint> results;
+	results.reserve(omega.count);
+	for(size_t i = 0; i < omega.count; ++i)
+	{
+		results.push_back(execute(currOmega));
+		currOmega+=step;
+	}
+	return results;
+}
+
+bool Model::sweepParams(const std::vector<Range>& componantRanges, const Range& omega, std::function<void(std::vector<DataPoint>&)> dataCb)
+{
+	size_t parametersCount = getFlatParametersCount();
+	if(componantRanges.size() != parametersCount)
+	{
+		std::cout<<"Error: a parameter range must be provided for eatch componant parameter\n";
+		return false;
+	}
+
+	for(size_t i = 0; i < parametersCount; ++i)
+	{
+		if(componantRanges[i].count == 0 || (componantRanges[i].count < 2 && componantRanges[i].start != componantRanges[i].end))
+		{
+			std::cout<<"Error: paramter range must specify at least one paramter point if only one paramer point is specified star and end must be the same\n";
+			return false;
+		}
+		else if(componantRanges[i].start > componantRanges[i].end)
+		{
+			std::cout<<"Error: paramter range end-start must be positive\n";
+			return false;
+		}
+	}
+
+	size_t stepsRequired = 1;
+	for(size_t i = 0; i < parametersCount; ++i)
+		stepsRequired*=componantRanges[i].count;
+
+	std::vector<double> currentParam(parametersCount, 0);
+	std::vector<double> stepSize(parametersCount, 0);
+	for(size_t i = 0; i < parametersCount; ++i)
+	{
+		currentParam[i] = componantRanges[i].start;
+		stepSize[i] = (componantRanges[i].end - componantRanges[i].start)/componantRanges[i].count;
+	}
+
+
+	std::cout<<"Executing sweep. Steps requried: "<<stepsRequired<<std::endl;
+
+	for(size_t i = 0; i < stepsRequired; ++i)
+	{
+		for(size_t i = 0; i < parametersCount; ++i)
+		{
+			currentParam[i] += stepSize[i];
+			if(currentParam[i] > componantRanges[i].end)
+				currentParam[i] = componantRanges[i].start;
+			else
+				break;
+		}
+		std::vector<DataPoint> result = sweep(omega);
+		dataCb(result);
+	}
+
+	return true;
+}
+
+bool Model::setFlatParameters(const std::vector<double>& parameters)
+{
+	if(parameters.size() != getFlatParametersCount())
+		return false;
+
+	size_t i = 0;
+	for(Componant* componant : getFlatComponants())
+	{
+		std::vector<double> params;
+		for(size_t j = 0; j < componant->paramCount(); ++j)
+			params.push_back(parameters[i++]);
+		componant->setParam(params);
+	}
+
+	return true;
+}
+
+size_t Model::getFlatParametersCount()
+{
+	size_t count = 0;
+	for(Componant* componant : getFlatComponants())
+		count += componant->paramCount();
+	return count;
+}
+
 char Model::getComponantChar(Componant* componant)
 {
 	if(dynamic_cast<Resistor*>(componant))
@@ -237,9 +332,10 @@ char Model::getComponantChar(Componant* componant)
 
 	if(dynamic_cast<Cap*>(componant))
 		return 'c';
-
 	if(dynamic_cast<Cpe*>(componant))
 		return 'p';
 
 	return 'x';
 }
+
+

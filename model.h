@@ -3,6 +3,7 @@
 #include <complex>
 #include <string>
 #include <vector>
+#include <functional>
 
 #include "componant.h"
 
@@ -13,6 +14,15 @@ public:
 	{
 		std::complex<double> im;
 		double omega;
+	};
+	struct Range
+	{
+		double start;
+		double end;
+		size_t count;
+
+		Range(double startI, double endI, size_t countI): start(startI), end(endI), count(countI){}
+		Range() = default;
 	};
 private:
 	class Paralell: public Componant
@@ -49,7 +59,11 @@ private:
 public:
 	Model(const std::string& str);
 	DataPoint execute(double omaga);
+	std::vector<DataPoint> sweep(const Range& omega);
+	bool sweepParams(const std::vector<Range>& componantRanges, const Range& omega, std::function<void(std::vector<DataPoint>&)> dataCb);
 	std::string getModelStr();
 	std::vector<Componant*> getFlatComponants();
+	size_t getFlatParametersCount();
+	bool setFlatParameters(const std::vector<double>& parameters);
 	static char getComponantChar(Componant* componant);
 };
