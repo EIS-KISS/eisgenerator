@@ -3,6 +3,7 @@
 #include "tokenize.h"
 #include "cap.h"
 #include "resistor.h"
+#include "constantphase.h"
 
 Model::Paralell::Paralell(std::vector<Componant*> componantsIn): componants(componantsIn)
 {
@@ -139,6 +140,11 @@ Componant *Model::processBracket(std::string& str)
 					componants.push_back(new Resistor(getParamStr(nodeStr, i)));
 					i = opposingBraket(nodeStr, i, '}');
 					break;
+				case 'p':
+				case 'P':
+					componants.push_back(new Cpe(getParamStr(nodeStr, i)));
+					i = opposingBraket(nodeStr, i, '}');
+					break;
 				case '{':
 					i = opposingBraket(nodeStr, i, '}');
 				case '}':
@@ -192,4 +198,48 @@ Model::DataPoint Model::execute(double omega)
 		std::cout<<"Warning: model not ready\n";
 	}
 	return DataPoint({std::complex<double>(0,0), 0});
+}
+
+void Model::addComponantToFlat(Componant* componant)
+{
+	Paralell* paralell = dynamic_cast<Paralell*>(componant);
+	if(paralell)
+	{
+		for(Componant* element : paralell->componants)
+			addComponantToFlat(element);
+		return;
+	}
+
+	Serial* serial = dynamic_cast<Serial*>(componant);
+	if(serial)
+	{
+		for(Componant* element : serial->componants)
+			addComponantToFlat(element);
+		return;
+	}
+
+	_flatComponants.push_back(componant);
+}
+
+std::vector<Componant*> Model::getFlatComponants()
+{
+	if(!_flatComponants.empty())
+		return _flatComponants;
+
+	addComponantToFlat(_model);
+	return getFlatComponants();
+}
+
+char Model::getComponantChar(Componant* componant)
+{
+	if(dynamic_cast<Resistor*>(componant))
+		return 'r';
+
+	if(dynamic_cast<Cap*>(componant))
+		return 'c';
+
+	if(dynamic_cast<Cpe*>(componant))
+		return 'p';
+
+	return 'x';
 }

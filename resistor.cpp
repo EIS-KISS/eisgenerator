@@ -50,3 +50,8 @@ void Resistor::setParam(const std::vector<double>& param)
 
 	_R = param[0];
 }
+
+size_t Resistor::paramCount()
+{
+	return 1;
+}

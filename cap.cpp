@@ -51,3 +51,8 @@ void Cap::setParam(const std::vector<double>& param)
 
 	_C = param[0];
 }
+
+size_t Cap::paramCount()
+{
+	return 1;
+}

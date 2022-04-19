@@ -4,13 +4,14 @@
 #include <vector>
 #include "componant.h"
 
-class Cap: public Componant
+class Cpe: public Componant
 {
 private:
-	double _C;
+	double _Q;
+	double _alpha;
 public:
-	Cap(std::string paramStr);
-	Cap(double c = 1e-6);
+	Cpe(std::string paramStr);
+	Cpe(double q = 1e-7, double alpha = 0.9);
 	virtual std::complex<double> execute(double omega) override;
 	virtual std::vector<double> getParam() override;
 	virtual void setParam(const std::vector<double>& param) override;

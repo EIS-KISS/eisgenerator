@@ -17,4 +17,5 @@ class Componant
 			return std::vector<double>();
 		};
 		virtual void setParam(const std::vector<double>& param){};
+		virtual size_t paramCount(){return 0;}
 };

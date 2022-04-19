@@ -38,6 +38,7 @@ private:
 	Componant *processBrackets(std::string& str, size_t& bracketCounter);
 	Componant *processBracket(std::string& str);
 	std::string getParamStr(const std::string& str, size_t index);
+	void addComponantToFlat(Componant* componant);
 
 private:
 	Componant *_model = nullptr;
@@ -50,4 +51,5 @@ public:
 	DataPoint execute(double omaga);
 	std::string getModelStr();
 	std::vector<Componant*> getFlatComponants();
+	static char getComponantChar(Componant* componant);
 };
