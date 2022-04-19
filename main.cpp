@@ -37,7 +37,7 @@ void runSingle()
 	std::cout<<"time taken: "<<duration.count()<<" us"<<'\n';
 }
 
-void sweepCb(std::vector<Model::DataPoint>& data)
+void sweepCb(std::vector<Model::DataPoint>& data, const std::vector<double>& parameters)
 {
 	static size_t i = 0;
 	++i;

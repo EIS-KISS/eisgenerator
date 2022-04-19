@@ -245,7 +245,7 @@ std::vector<Model::DataPoint> Model::sweep(const Range& omega)
 	return results;
 }
 
-bool Model::sweepParams(const std::vector<Range>& componantRanges, const Range& omega, std::function<void(std::vector<DataPoint>&)> dataCb)
+bool Model::sweepParams(const std::vector<Range>& componantRanges, const Range& omega, std::function<void(std::vector<DataPoint>&, const std::vector<double>&)> dataCb)
 {
 	size_t parametersCount = getFlatParametersCount();
 	if(componantRanges.size() != parametersCount)
@@ -294,7 +294,7 @@ bool Model::sweepParams(const std::vector<Range>& componantRanges, const Range& 
 				break;
 		}
 		std::vector<DataPoint> result = sweep(omega);
-		dataCb(result);
+		dataCb(result, currentParam);
 	}
 
 	return true;

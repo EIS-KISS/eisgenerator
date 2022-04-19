@@ -60,7 +60,7 @@ public:
 	Model(const std::string& str);
 	DataPoint execute(double omaga);
 	std::vector<DataPoint> sweep(const Range& omega);
-	bool sweepParams(const std::vector<Range>& componantRanges, const Range& omega, std::function<void(std::vector<DataPoint>&)> dataCb);
+	bool sweepParams(const std::vector<Range>& componantRanges, const Range& omega, std::function<void(std::vector<DataPoint>&, const std::vector<double>&)> dataCb);
 	std::string getModelStr();
 	std::vector<Componant*> getFlatComponants();
 	size_t getFlatParametersCount();
