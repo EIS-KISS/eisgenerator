@@ -31,6 +31,7 @@ private:
 		std::vector<Componant*> componants;
 
 		Paralell(std::vector<Componant*> componantsIn = std::vector<Componant*>());
+		~Paralell();
 		virtual std::complex<double> execute(double omaga) override;
 	};
 
@@ -40,6 +41,7 @@ private:
 		std::vector<Componant*> componants;
 
 		Serial(std::vector<Componant*> componantsIn = std::vector<Componant*>());
+		~Serial();
 		virtual std::complex<double> execute(double omaga) override;
 	};
 
@@ -58,6 +60,7 @@ private:
 
 public:
 	Model(const std::string& str);
+	~Model();
 	DataPoint execute(double omaga);
 	std::vector<DataPoint> sweep(const Range& omega);
 	bool sweepParams(const std::vector<Range>& componantRanges, const Range& omega, std::function<void(std::vector<DataPoint>&, const std::vector<double>&)> dataCb);

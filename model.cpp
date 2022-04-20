@@ -4,9 +4,16 @@
 #include "cap.h"
 #include "resistor.h"
 #include "constantphase.h"
+#include "warburg.h"
 
 Model::Paralell::Paralell(std::vector<Componant*> componantsIn): componants(componantsIn)
 {
+}
+
+Model::Paralell::~Paralell()
+{
+	for(Componant* componant : componants)
+		delete componant;
 }
 
 std::complex<double> Model::Paralell::execute(double omega)
@@ -21,6 +28,12 @@ std::complex<double> Model::Paralell::execute(double omega)
 
 Model::Serial::Serial(std::vector<Componant*> componantsIn): componants(componantsIn)
 {
+}
+
+Model::Serial::~Serial()
+{
+	for(Componant* componant : componants)
+		delete componant;
 }
 
 std::complex<double> Model::Serial::execute(double omega)
@@ -145,6 +158,11 @@ Componant *Model::processBracket(std::string& str)
 					componants.push_back(new Cpe(getParamStr(nodeStr, i)));
 					i = opposingBraket(nodeStr, i, '}');
 					break;
+				case 'w':
+				case 'W':
+					componants.push_back(new Warburg(getParamStr(nodeStr, i)));
+					i = opposingBraket(nodeStr, i, '}');
+					break;
 				case '{':
 					i = opposingBraket(nodeStr, i, '}');
 				case '}':
@@ -182,6 +200,11 @@ Model::Model(const std::string& str): _modelStr(str)
 	size_t bracketCounter = 0;
 	std::string strCpy(str);
 	_model = processBrackets(strCpy, bracketCounter);
+}
+
+Model::~Model()
+{
+	delete _model;
 }
 
 Model::DataPoint Model::execute(double omega)
@@ -280,7 +303,6 @@ bool Model::sweepParams(const std::vector<Range>& componantRanges, const Range& 
 		stepSize[i] = (componantRanges[i].end - componantRanges[i].start)/componantRanges[i].count;
 	}
 
-
 	std::cout<<"Executing sweep. Steps requried: "<<stepsRequired<<std::endl;
 
 	for(size_t i = 0; i < stepsRequired; ++i)
@@ -329,11 +351,12 @@ char Model::getComponantChar(Componant* componant)
 {
 	if(dynamic_cast<Resistor*>(componant))
 		return 'r';
-
 	if(dynamic_cast<Cap*>(componant))
 		return 'c';
 	if(dynamic_cast<Cpe*>(componant))
 		return 'p';
+	if(dynamic_cast<Warburg*>(componant))
+		return 'w';
 
 	return 'x';
 }

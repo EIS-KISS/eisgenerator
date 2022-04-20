@@ -7,6 +7,7 @@ set(SRC_FILES
 	cap.cpp
 	resistor.cpp
 	constantphase.cpp
+	warburg.cpp
 	model.cpp
 	tokenize.cpp
 )

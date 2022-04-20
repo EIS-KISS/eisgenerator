@@ -14,4 +14,5 @@ public:
 	virtual std::vector<double> getParam() override;
 	virtual void setParam(const std::vector<double>& param) override;
 	virtual size_t paramCount() override;
+	virtual ~Resistor() = default;
 };

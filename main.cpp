@@ -6,7 +6,7 @@
 
 void runSingle()
 {
-	std::string modelStr("r{20e3}p{1e-7, 0.9}");
+	std::string modelStr("w{20e3}p{1e-7, 0.9}");
 
 	std::vector<Model::DataPoint> results;
 
@@ -47,7 +47,7 @@ void sweepCb(std::vector<Model::DataPoint>& data, const std::vector<double>& par
 
 void runSweep()
 {
-	std::string modelStr("r{20e3}p{1e-7, 0.9}");
+	std::string modelStr("w{20e3}p{1e-7, 0.9}");
 	std::vector<Model::DataPoint> results;
 
 	Model model(modelStr);
@@ -70,6 +70,6 @@ void runSweep()
 int main(int argc, char** argv)
 {
 	runSingle();
-	runSweep();
+	//runSweep();
 	return 0;
 }
