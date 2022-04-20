@@ -1,50 +1,12 @@
 #include <model.h>
 #include <iostream>
+#include <assert.h>
 #include "tokenize.h"
 #include "cap.h"
 #include "resistor.h"
 #include "constantphase.h"
 #include "warburg.h"
-
-Model::Paralell::Paralell(std::vector<Componant*> componantsIn): componants(componantsIn)
-{
-}
-
-Model::Paralell::~Paralell()
-{
-	for(Componant* componant : componants)
-		delete componant;
-}
-
-std::complex<double> Model::Paralell::execute(double omega)
-{
-	std::complex<double> accum(0,0);
-	for(Componant* componant : componants)
-	{
-		accum += std::complex<double>(1,0)/componant->execute(omega);
-	}
-	return std::complex<double>(1,0)/accum;
-}
-
-Model::Serial::Serial(std::vector<Componant*> componantsIn): componants(componantsIn)
-{
-}
-
-Model::Serial::~Serial()
-{
-	for(Componant* componant : componants)
-		delete componant;
-}
-
-std::complex<double> Model::Serial::execute(double omega)
-{
-	std::complex<double> accum(0,0);
-	for(Componant* componant : componants)
-	{
-		accum += componant->execute(omega);
-	}
-	return accum;
-}
+#include "paralellseriel.h"
 
 size_t Model::opposingBraket(const std::string& str, size_t index, char bracketChar)
 {
@@ -180,7 +142,7 @@ Componant *Model::processBracket(std::string& str)
 			}
 		}
 		if(componants.size() > 1)
-			nodes.push_back(new Paralell(componants));
+			nodes.push_back(new Parallel(componants));
 		else if(componants.size() == 1)
 			nodes.push_back(componants[0]);
 		else
@@ -200,6 +162,21 @@ Model::Model(const std::string& str): _modelStr(str)
 	size_t bracketCounter = 0;
 	std::string strCpy(str);
 	_model = processBrackets(strCpy, bracketCounter);
+}
+
+Model::Model(const Model& in)
+{
+	operator=(in);
+}
+
+Model& Model::operator=(const Model& in)
+{
+	delete _model;
+	_modelStr = in._modelStr;
+	_bracketComponants.clear();
+	_flatComponants.clear();
+	_model = Componant::copy(in._model);
+	return *this;
 }
 
 Model::~Model()
@@ -225,7 +202,7 @@ Model::DataPoint Model::execute(double omega)
 
 void Model::addComponantToFlat(Componant* componant)
 {
-	Paralell* paralell = dynamic_cast<Paralell*>(componant);
+	Parallel* paralell = dynamic_cast<Parallel*>(componant);
 	if(paralell)
 	{
 		for(Componant* element : paralell->componants)
@@ -346,19 +323,4 @@ size_t Model::getFlatParametersCount()
 		count += componant->paramCount();
 	return count;
 }
-
-char Model::getComponantChar(Componant* componant)
-{
-	if(dynamic_cast<Resistor*>(componant))
-		return 'r';
-	if(dynamic_cast<Cap*>(componant))
-		return 'c';
-	if(dynamic_cast<Cpe*>(componant))
-		return 'p';
-	if(dynamic_cast<Warburg*>(componant))
-		return 'w';
-
-	return 'x';
-}
-
 

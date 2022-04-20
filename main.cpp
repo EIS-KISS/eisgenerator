@@ -14,7 +14,7 @@ void runSingle()
 	std::cout<<"Compnants: \n";
 	for(Componant* componant : model.getFlatComponants())
 	{
-		std::cout<<Model::getComponantChar(componant)<<"{";
+		std::cout<<Componant::getComponantChar(componant)<<"{";
 		for(size_t i = 0; i < componant->paramCount(); ++i)
 		{
 			std::cout<<componant->getParam()[i];
@@ -33,6 +33,13 @@ void runSingle()
 
 	for(const Model::DataPoint& res : results)
 		std::cout<<"omega: "<<res.omega<<" real = "<<res.im.real()<<" im = "<<res.im.imag()<<'\n';
+
+	Model modelCopy(model);
+	results = modelCopy.sweep(omega);
+
+	for(const Model::DataPoint& res : results)
+		std::cout<<"omega: "<<res.omega<<" real = "<<res.im.real()<<" im = "<<res.im.imag()<<'\n';
+
 
 	std::cout<<"time taken: "<<duration.count()<<" us"<<'\n';
 }

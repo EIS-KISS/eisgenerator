@@ -19,4 +19,7 @@ class Componant
 		virtual void setParam(const std::vector<double>& param){};
 		virtual size_t paramCount(){return 0;}
 		virtual ~Componant() = default;
+
+		static Componant* copy(Componant* componant);
+		static char getComponantChar(Componant* componant);
 };

@@ -24,27 +24,8 @@ public:
 		Range(double startI, double endI, size_t countI): start(startI), end(endI), count(countI){}
 		Range() = default;
 	};
+
 private:
-	class Paralell: public Componant
-	{
-	public:
-		std::vector<Componant*> componants;
-
-		Paralell(std::vector<Componant*> componantsIn = std::vector<Componant*>());
-		~Paralell();
-		virtual std::complex<double> execute(double omaga) override;
-	};
-
-	class Serial: public Componant
-	{
-	public:
-		std::vector<Componant*> componants;
-
-		Serial(std::vector<Componant*> componantsIn = std::vector<Componant*>());
-		~Serial();
-		virtual std::complex<double> execute(double omaga) override;
-	};
-
 	size_t opposingBraket(const std::string& str, size_t index, char bracketChar = ')');
 	size_t deepestBraket(const std::string& str);
 	Componant *processBrackets(std::string& str, size_t& bracketCounter);
@@ -60,6 +41,8 @@ private:
 
 public:
 	Model(const std::string& str);
+	Model(const Model& in);
+	Model& operator=(const Model& in);
 	~Model();
 	DataPoint execute(double omaga);
 	std::vector<DataPoint> sweep(const Range& omega);
@@ -68,5 +51,4 @@ public:
 	std::vector<Componant*> getFlatComponants();
 	size_t getFlatParametersCount();
 	bool setFlatParameters(const std::vector<double>& parameters);
-	static char getComponantChar(Componant* componant);
 };

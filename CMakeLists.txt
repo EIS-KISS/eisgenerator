@@ -4,12 +4,14 @@ project(ehigeneratorsa)
 
 set(SRC_FILES
 	main.cpp
+	componant.cpp
 	cap.cpp
 	resistor.cpp
 	constantphase.cpp
 	warburg.cpp
 	model.cpp
 	tokenize.cpp
+	paralellseriel.cpp
 )
 
 find_package(PkgConfig REQUIRED)
