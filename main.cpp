@@ -77,6 +77,6 @@ void runSweep()
 int main(int argc, char** argv)
 {
 	runSingle();
-	//runSweep();
+	runSweep();
 	return 0;
 }

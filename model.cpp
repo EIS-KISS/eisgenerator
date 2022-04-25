@@ -258,7 +258,7 @@ bool Model::sweepParams(const std::vector<Range>& componantRanges, const Range& 
 	{
 		if(componantRanges[i].count == 0 || (componantRanges[i].count < 2 && componantRanges[i].start != componantRanges[i].end))
 		{
-			std::cout<<"Error: paramter range must specify at least one paramter point if only one paramer point is specified star and end must be the same\n";
+			std::cout<<"Error: paramter range must specify at least one paramter point if only one paramer point is specified start and end must be the same\n";
 			return false;
 		}
 		else if(componantRanges[i].start > componantRanges[i].end)
