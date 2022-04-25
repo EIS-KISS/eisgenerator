@@ -27,7 +27,7 @@ void runSingle()
 	Model::Range omega(0, 1e6, 50);
 
 	auto start = std::chrono::high_resolution_clock::now();
-	results = model.sweep(omega);
+	results = model.executeSweep(omega);
 	auto end = std::chrono::high_resolution_clock::now();
 	auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
 
@@ -35,7 +35,7 @@ void runSingle()
 		std::cout<<"omega: "<<res.omega<<" real = "<<res.im.real()<<" im = "<<res.im.imag()<<'\n';
 
 	Model modelCopy(model);
-	results = modelCopy.sweep(omega);
+	results = modelCopy.executeSweep(omega);
 
 	for(const Model::DataPoint& res : results)
 		std::cout<<"omega: "<<res.omega<<" real = "<<res.im.real()<<" im = "<<res.im.imag()<<'\n';
@@ -67,7 +67,7 @@ void runSweep()
 	Model::Range omega(0, 1e6, 25);
 
 	auto start = std::chrono::high_resolution_clock::now();
-	model.sweepParams(parameters, omega, &sweepCb);
+	model.executeParamSweep(parameters, omega, &sweepCb);
 	auto end = std::chrono::high_resolution_clock::now();
 	auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
 

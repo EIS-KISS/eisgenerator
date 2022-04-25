@@ -230,7 +230,7 @@ std::vector<Componant*> Model::getFlatComponants()
 	return getFlatComponants();
 }
 
-std::vector<Model::DataPoint> Model::sweep(const Range& omega)
+std::vector<Model::DataPoint> Model::executeSweep(const Range& omega)
 {
 	double step = (omega.end - omega.start)/omega.count;
 	double currOmega = omega.start;
@@ -245,7 +245,40 @@ std::vector<Model::DataPoint> Model::sweep(const Range& omega)
 	return results;
 }
 
-bool Model::sweepParams(const std::vector<Range>& componantRanges, const Range& omega, std::function<void(std::vector<DataPoint>&, const std::vector<double>&)> dataCb)
+std::vector<Model::DataPoint> Model::executeParamByIndex(const std::vector<Range>& componantRanges, const Range& omega, size_t index)
+{
+	assert(setFlatParameters(getSweepParamByIndex(componantRanges, index)));
+
+	return executeSweep(omega);
+}
+
+size_t Model::getRequiredStepsForSweeps(const std::vector<Range>& componantRanges)
+{
+	size_t stepsRequired = 1;
+	for(size_t i = 0; i < componantRanges.size(); ++i)
+		stepsRequired *= componantRanges[i].count;
+	return stepsRequired;
+}
+
+std::vector<double> Model::getSweepParamByIndex(const std::vector<Range>& componantRanges, size_t index)
+{
+	size_t parametersCount = componantRanges.size();
+	std::vector<size_t> parameterIndexies(parametersCount, 0);
+	for(size_t i = 0; i < parametersCount && index > 0; ++i)
+	{
+		index = i > 0 ? index/componantRanges[i-1].count : index;
+		parameterIndexies[i] = index % componantRanges[i].count;
+		index -= parameterIndexies[i];
+	}
+
+	std::vector<double> parameters(parametersCount, 0);
+	for(size_t i = 0; i < parametersCount; ++i)
+		parameters[i] = parameterIndexies[i]*componantRanges[i].stepSize();
+	return parameters;
+}
+
+bool Model::executeParamSweep(const std::vector<Range>& componantRanges, const Range& omega,
+                              std::function<void(std::vector<DataPoint>&, const std::vector<double>&)> dataCb)
 {
 	size_t parametersCount = getFlatParametersCount();
 	if(componantRanges.size() != parametersCount)
@@ -268,31 +301,18 @@ bool Model::sweepParams(const std::vector<Range>& componantRanges, const Range& 
 		}
 	}
 
-	size_t stepsRequired = 1;
-	for(size_t i = 0; i < parametersCount; ++i)
-		stepsRequired*=componantRanges[i].count;
+	size_t stepsRequired = getRequiredStepsForSweeps(componantRanges);
 
 	std::vector<double> currentParam(parametersCount, 0);
-	std::vector<double> stepSize(parametersCount, 0);
 	for(size_t i = 0; i < parametersCount; ++i)
-	{
 		currentParam[i] = componantRanges[i].start;
-		stepSize[i] = (componantRanges[i].end - componantRanges[i].start)/componantRanges[i].count;
-	}
 
 	std::cout<<"Executing sweep. Steps requried: "<<stepsRequired<<std::endl;
 
 	for(size_t i = 0; i < stepsRequired; ++i)
 	{
-		for(size_t i = 0; i < parametersCount; ++i)
-		{
-			currentParam[i] += stepSize[i];
-			if(currentParam[i] > componantRanges[i].end)
-				currentParam[i] = componantRanges[i].start;
-			else
-				break;
-		}
-		std::vector<DataPoint> result = sweep(omega);
+		setFlatParameters(getSweepParamByIndex(componantRanges, i));
+		std::vector<DataPoint> result = executeSweep(omega);
 		dataCb(result, currentParam);
 	}
 
