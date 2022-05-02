@@ -52,17 +52,14 @@ std::vector<eis::DataPoint> eis::reduceRegion(const std::vector<eis::DataPoint>&
 
 	std::vector<fvalue> grads;
 	grads.reserve(data.size());
-	fvalue meanGrad = 0;
 	eis::Log(eis::Log::DEBUG)<<"Grads:";
 	for(size_t i = 0; i < data.size(); ++i)
 	{
 		grads.push_back(std::abs(eis::absGrad(data, i)));
-		meanGrad += grads.back();
 		eis::Log(eis::Log::DEBUG)<<i<<": "<<inData[i].omega<<','<<grads.back();
 	}
 
-	meanGrad = meanGrad / grads.size();
-	fvalue gradThresh = meanGrad*gradThreshFactor;
+	fvalue gradThresh = eis::median(grads)*gradThreshFactor;
 
 	eis::Log(eis::Log::DEBUG)<<"Grad thresh is:"<<','<<gradThresh;
 
