@@ -4,22 +4,7 @@
 #include <limits>
 #include "eistype.h"
 #include "log.h"
-
-std::complex<fvalue> eis::absGrad(const std::vector<eis::DataPoint>& data, size_t index)
-{
-	if(data.size() < 3)
-		return std::complex<fvalue>(1,1);
-
-	if(index == 0)
-		index = 1;
-	else if(index > data.size()-2)
-		index = data.size()-2;
-
-	return std::complex<fvalue>(std::abs((data[index+1].im.real()-data[index-1].im.real())/(data[index+1].omega-data[index-1].omega)),
-								std::abs((data[index+1].im.imag()-data[index-1].im.imag())/(data[index+1].omega-data[index-1].omega)));
-}
-
-
+#include "basicmath.h"
 
 void eis::eraseSingularites(std::vector<eis::DataPoint>& data)
 {

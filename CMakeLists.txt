@@ -13,6 +13,7 @@ set(SRC_FILES
 	paralellseriel.cpp
 	log.cpp
 	normalize.cpp
+	basicmath.cpp
 )
 
 set(API_HEADERS
@@ -24,6 +25,7 @@ set(API_HEADERS
 	eisgenerator/model.h
 	eisgenerator/log.h
 	eisgenerator/paralellseriel.h
+	eisgenerator/basichmath.h
 )
 
 add_library(${PROJECT_NAME} SHARED ${SRC_FILES})
