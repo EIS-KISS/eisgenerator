@@ -31,7 +31,7 @@ std::complex<fvalue> eis::grad(const std::vector<eis::DataPoint>& data, size_t i
 								(data[index+1].im.imag()-data[index-1].im.imag())/(data[index+1].omega-data[index-1].omega));
 }
 
-std::complex<fvalue> mean(const std::vector<eis::DataPoint>& data)
+std::complex<fvalue> eis::mean(const std::vector<eis::DataPoint>& data)
 {
 	fvalue accumRe = 0;
 	fvalue accumIm = 0;
@@ -47,7 +47,12 @@ std::complex<fvalue> mean(const std::vector<eis::DataPoint>& data)
 	return std::complex<fvalue>(accumRe, accumIm);
 }
 
-std::complex<fvalue> median(const std::vector<eis::DataPoint>& data)
+static inline fvalue medianTrampoline(const std::vector<fvalue> data)
+{
+	return eis::median(data);
+}
+
+std::complex<fvalue> eis::median(const std::vector<eis::DataPoint>& data)
 {
 	if(data.empty())
 		return std::complex<fvalue>(0,0);
@@ -65,20 +70,33 @@ std::complex<fvalue> median(const std::vector<eis::DataPoint>& data)
 		realParts.push_back(point.im.real());
 	}
 
-	std::sort(imagParts.begin(), imagParts.end());
-	std::sort(realParts.begin(), realParts.end());
+	fvalue realMean = medianTrampoline(realParts);
+	fvalue imagMean = medianTrampoline(imagParts);
 
+	return std::complex<fvalue>(realMean, imagMean);
+}
+
+fvalue eis::mean(const std::vector<fvalue>& data)
+{
+	fvalue accum = 0;
+
+	for(fvalue point : data)
+		accum += point;
+
+	return accum/data.size();
+}
+
+fvalue eis::median(std::vector<fvalue> data)
+{
+	if(data.empty())
+		return 0;
+	else if(data.size() == 1)
+		return data[0];
+
+	std::sort(data.begin(), data.end());
 
 	if(data.size() % 2 == 0)
-	{
-		fvalue real = (realParts[data.size()/2] + realParts[data.size()/2-1])/2;
-		fvalue imag = (imagParts[data.size()/2] + imagParts[data.size()/2-1])/2;
-		return std::complex<fvalue>(real, imag);
-	}
+		return (data[data.size()/2] + data[data.size()/2-1])/2;
 	else
-	{
-		size_t index = data.size()/2;
-		return std::complex<fvalue>(realParts[index], imagParts[index]);
-	}
-
+		return data[data.size()/2];
 }
