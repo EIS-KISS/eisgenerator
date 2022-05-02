@@ -3,6 +3,9 @@
 #include <iostream>
 #include <vector>
 
+namespace eis
+{
+
 class Componant
 {
 	public:
@@ -23,3 +26,5 @@ class Componant
 		static Componant* copy(Componant* componant);
 		static char getComponantChar(Componant* componant);
 };
+
+}

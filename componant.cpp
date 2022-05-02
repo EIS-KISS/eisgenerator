@@ -5,6 +5,9 @@
 #include "cap.h"
 #include "constantphase.h"
 #include "warburg.h"
+#include "log.h"
+
+using namespace eis;
 
 Componant* Componant::copy(Componant* componant)
 {
@@ -23,7 +26,7 @@ Componant* Componant::copy(Componant* componant)
 		case 's':
 			return new Serial(*dynamic_cast<Serial*>(componant));
 		default:
-			std::cout<<"Error: unimplmented type copy for "<<getComponantChar(componant)<<'\n';
+			Log(Log::ERROR)<<"unimplmented type copy for "<<getComponantChar(componant)<<'\n';
 			assert(0);
 			break;
 	}

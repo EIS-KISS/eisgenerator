@@ -3,6 +3,10 @@
 #include <cstdlib>
 #include <math.h>
 
+#include "log.h"
+
+using namespace eis;
+
 Cap::Cap(double c): _C(c)
 {
 
@@ -13,7 +17,7 @@ Cap::Cap(std::string paramStr)
 	std::vector<std::string> tokens = tokenize(paramStr, ',');
 	if(tokens.empty())
 	{
-		std::cout<<"Warning: to few parameters in "<<__func__<<" parameter string: "<<paramStr<<'\n';
+		Log(Log::WARN)<<"to few parameters in "<<__func__<<" parameter string: "<<paramStr<<'\n';
 		_C = 1e-6;
 		return;
 	}
@@ -25,7 +29,7 @@ Cap::Cap(std::string paramStr)
 		}
 		catch(const std::invalid_argument& ia)
 		{
-			std::cout<<"Warning: cant parse parameter in "<<__func__<<" parameter: "<<tokens[0]<<'\n';
+			Log(Log::WARN)<<"Warning: cant parse parameter in "<<__func__<<" parameter: "<<tokens[0]<<'\n';
 			_C = 1e3;
 		}
 	}
@@ -45,7 +49,7 @@ void Cap::setParam(const std::vector<double>& param)
 {
 	if(param.empty())
 	{
-		std::cout<<"Warning: invalid parameter list sent to "<<__func__<<'\n';
+		Log(Log::WARN)<<"invalid parameter list sent to "<<__func__<<'\n';
 		return;
 	}
 

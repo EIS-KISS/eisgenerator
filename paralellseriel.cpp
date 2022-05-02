@@ -1,5 +1,7 @@
 #include "paralellseriel.h"
 
+using namespace eis;
+
 Parallel::Parallel(std::vector<Componant*> componantsIn): componants(componantsIn)
 {
 }

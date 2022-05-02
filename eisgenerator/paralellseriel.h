@@ -3,6 +3,9 @@
 #include <complex>
 #include "componant.h"
 
+namespace eis
+{
+
 class Parallel: public Componant
 {
 public:
@@ -26,3 +29,5 @@ public:
 	~Serial();
 	virtual std::complex<double> execute(double omaga) override;
 };
+
+}

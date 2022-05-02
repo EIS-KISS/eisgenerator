@@ -7,6 +7,9 @@
 #include "constantphase.h"
 #include "warburg.h"
 #include "paralellseriel.h"
+#include "log.h"
+
+using namespace eis;
 
 size_t Model::opposingBraket(const std::string& str, size_t index, char bracketChar)
 {
@@ -41,15 +44,13 @@ size_t Model::deepestBraket(const std::string& str)
 Componant *Model::processBrackets(std::string& str, size_t& bracketCounter)
 {
 	size_t bracketStart = deepestBraket(str);
-	std::cout<<str<<" bracket start "<<(bracketStart == std::string::npos ? std::string("npos") :  std::to_string(bracketStart))<<'\n';
+	Log(Log::DEBUG)<<str<<" bracket start "<<(bracketStart == std::string::npos ? std::string("npos") :  std::to_string(bracketStart));
 
 	if(bracketStart == std::string::npos)
 	{
 		Componant* componant = processBracket(str);
 		if(!componant)
-		{
-			std::cout<<"Warning: can not create componant type B for "<<str<<'\n';
-		}
+			Log(Log::DEBUG)<<"Warning: can not create componant type B for "<<str;
 		return componant;
 	}
 
@@ -65,7 +66,7 @@ Componant *Model::processBrackets(std::string& str, size_t& bracketCounter)
 	Componant* componant = processBracket(bracket);
 	if(!componant)
 	{
-		std::cout<<"Warning: can not create componant type A for "<<bracket<<'\n';
+		Log(Log::DEBUG)<<"can not create componant type A for "<<bracket;
 	}
 	_bracketComponants.push_back(componant);
 
@@ -79,30 +80,30 @@ std::string Model::getParamStr(const std::string& str, size_t index)
 {
 	if(str.size()-index < 3 || str[index+1] != '{')
 	{
-		std::cout<<"Warning: missing parameter for "<<str[index]<<'\n';
+		Log(Log::DEBUG)<<"missing parameter for "<<str[index];
 		return 0;
 	}
 
 	size_t end = opposingBraket(str, index, '}');
 	std::string parameterStr = str.substr(index+2, end-index-2);
-	std::cout<<"param for "<<str[index]<<' '<<parameterStr<<'\n';
+	Log(Log::DEBUG)<<"param for "<<str[index]<<' '<<parameterStr;
 	return parameterStr;
 }
 
 Componant *Model::processBracket(std::string& str)
 {
-	std::cout<<__func__<<'('<<str<<")\n";
+	Log(Log::DEBUG)<<__func__<<'('<<str<<')';
 	std::vector<std::string> tokens = tokenize(str, '-', '{', '}');
 
 	std::vector<Componant*> nodes;
 
 	for(const std::string& nodeStr : tokens)
 	{
-		std::cout<<__func__<<" full node str: "<<nodeStr<<'\n';
+		Log(Log::DEBUG)<<__func__<<" full node str: "<<nodeStr;
 		std::vector<Componant*> componants;
 		for(size_t i = 0; i < nodeStr.size(); ++i)
 		{
-			std::cout<<__func__<<" arg: "<<nodeStr[i]<<'\n';
+			Log(Log::DEBUG)<<__func__<<" arg: "<<nodeStr[i];
 			switch(nodeStr[i])
 			{
 				case 'c':
@@ -128,7 +129,7 @@ Componant *Model::processBracket(std::string& str)
 				case '{':
 					i = opposingBraket(nodeStr, i, '}');
 				case '}':
-					std::cout<<"Warning: stray "<<nodeStr[i]<<" in model string\n";
+					Log(Log::WARN)<<"stray "<<nodeStr[i]<<" in model string";
 					break;
 				case '0' ... '9':
 				{
@@ -146,7 +147,7 @@ Componant *Model::processBracket(std::string& str)
 		else if(componants.size() == 1)
 			nodes.push_back(componants[0]);
 		else
-			std::cout<<"Warning: empty node for "<<nodeStr<<'\n';
+			Log(Log::WARN)<<"empty node for "<<nodeStr;
 	}
 
 	if(nodes.size() > 1)
@@ -184,7 +185,7 @@ Model::~Model()
 	delete _model;
 }
 
-Model::DataPoint Model::execute(double omega)
+DataPoint Model::execute(double omega)
 {
 	if(_model)
 	{
@@ -195,7 +196,7 @@ Model::DataPoint Model::execute(double omega)
 	}
 	else
 	{
-		std::cout<<"Warning: model not ready\n";
+		Log(Log::WARN)<<"model not ready";
 	}
 	return DataPoint({std::complex<double>(0,0), 0});
 }
@@ -230,24 +231,42 @@ std::vector<Componant*> Model::getFlatComponants()
 	return getFlatComponants();
 }
 
-std::vector<Model::DataPoint> Model::executeSweep(const Range& omega)
+std::vector<DataPoint> Model::executeSweep(const Range& omega)
 {
-	double step = (omega.end - omega.start)/omega.count;
-	double currOmega = omega.start;
-
 	std::vector<DataPoint> results;
 	results.reserve(omega.count);
-	for(size_t i = 0; i < omega.count; ++i)
+
+	if(!omega.log)
 	{
-		results.push_back(execute(currOmega));
-		currOmega+=step;
+		double currOmega = omega.start;
+		double step = (omega.end - omega.start)/(omega.count-1);
+
+		for(size_t i = 0; i < omega.count; ++i)
+		{
+			results.push_back(execute(currOmega));
+			currOmega+=step;
+		}
+	}
+	else
+	{
+		double start = log10(omega.start);
+		double end = log10(omega.end);
+		double step = (end-start)/(omega.count-1);
+		double currOmegaL = start;
+
+		for(size_t i = 0; i < omega.count; ++i)
+		{
+			results.push_back(execute(pow(10, currOmegaL)));
+			currOmegaL+=step;
+		}
 	}
 	return results;
 }
 
-std::vector<Model::DataPoint> Model::executeParamByIndex(const std::vector<Range>& componantRanges, const Range& omega, size_t index)
+std::vector<DataPoint> Model::executeParamByIndex(const std::vector<Range>& componantRanges, const Range& omega, size_t index)
 {
-	assert(setFlatParameters(getSweepParamByIndex(componantRanges, index)));
+	std::vector<double> parameters = getSweepParamByIndex(componantRanges, index);
+	assert(setFlatParameters(parameters));
 
 	return executeSweep(omega);
 }
@@ -273,7 +292,7 @@ std::vector<double> Model::getSweepParamByIndex(const std::vector<Range>& compon
 
 	std::vector<double> parameters(parametersCount, 0);
 	for(size_t i = 0; i < parametersCount; ++i)
-		parameters[i] = parameterIndexies[i]*componantRanges[i].stepSize();
+		parameters[i] = parameterIndexies[i]*componantRanges[i].stepSize()+componantRanges[i].start;
 	return parameters;
 }
 
@@ -283,7 +302,7 @@ bool Model::executeParamSweep(const std::vector<Range>& componantRanges, const R
 	size_t parametersCount = getFlatParametersCount();
 	if(componantRanges.size() != parametersCount)
 	{
-		std::cout<<"Error: a parameter range must be provided for eatch componant parameter\n";
+		Log(Log::ERROR)<<"a parameter range must be provided for eatch componant parameter";
 		return false;
 	}
 
@@ -291,12 +310,12 @@ bool Model::executeParamSweep(const std::vector<Range>& componantRanges, const R
 	{
 		if(componantRanges[i].count == 0 || (componantRanges[i].count < 2 && componantRanges[i].start != componantRanges[i].end))
 		{
-			std::cout<<"Error: paramter range must specify at least one paramter point if only one paramer point is specified start and end must be the same\n";
+			Log(Log::ERROR)<<"paramter range must specify at least one paramter point if only one paramer point is specified start and end must be the same";
 			return false;
 		}
 		else if(componantRanges[i].start > componantRanges[i].end)
 		{
-			std::cout<<"Error: paramter range end-start must be positive\n";
+			Log(Log::ERROR)<<"paramter range end-start must be positive";
 			return false;
 		}
 	}
@@ -307,7 +326,7 @@ bool Model::executeParamSweep(const std::vector<Range>& componantRanges, const R
 	for(size_t i = 0; i < parametersCount; ++i)
 		currentParam[i] = componantRanges[i].start;
 
-	std::cout<<"Executing sweep. Steps requried: "<<stepsRequired<<std::endl;
+	Log(Log::INFO)<<"Executing sweep. Steps requried: "<<stepsRequired;
 
 	for(size_t i = 0; i < stepsRequired; ++i)
 	{
@@ -336,6 +355,18 @@ bool Model::setFlatParameters(const std::vector<double>& parameters)
 	return true;
 }
 
+std::vector<double> Model::getFlatParameters()
+{
+	std::vector<double> params;
+	std::vector<Componant*> componants = getFlatComponants();
+	for(Componant* componant : componants)
+	{
+		for(double param : componant->getParam())
+			params.push_back(param);
+	}
+	return params;
+}
+
 size_t Model::getFlatParametersCount()
 {
 	size_t count = 0;
@@ -343,4 +374,3 @@ size_t Model::getFlatParametersCount()
 		count += componant->paramCount();
 	return count;
 }
-

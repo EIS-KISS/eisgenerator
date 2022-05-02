@@ -7,28 +7,32 @@
 
 #include "componant.h"
 
+namespace eis
+{
+
+struct DataPoint
+{
+	std::complex<double> im;
+	double omega;
+};
+
+struct Range
+{
+	double start;
+	double end;
+	size_t count;
+	bool log = false;
+
+	double stepSize() const
+	{
+		return (end-start)/count;
+	}
+	Range(double startI, double endI, size_t countI, bool logI = false): start(startI), end(endI), count(countI), log(logI){}
+	Range() = default;
+};
+
 class Model
 {
-public:
-	struct DataPoint
-	{
-		std::complex<double> im;
-		double omega;
-	};
-	struct Range
-	{
-		double start;
-		double end;
-		size_t count;
-
-		double stepSize() const
-		{
-			return (end-start)/count;
-		}
-		Range(double startI, double endI, size_t countI): start(startI), end(endI), count(countI){}
-		Range() = default;
-	};
-
 private:
 	size_t opposingBraket(const std::string& str, size_t index, char bracketChar = ')');
 	size_t deepestBraket(const std::string& str);
@@ -55,9 +59,12 @@ public:
 
 	std::string getModelStr();
 	std::vector<Componant*> getFlatComponants();
+	std::vector<double> getFlatParameters();
 	size_t getFlatParametersCount();
 	bool setFlatParameters(const std::vector<double>& parameters);
 
 	static std::vector<double> getSweepParamByIndex(const std::vector<Range>& componantRanges, size_t index);
 	static size_t getRequiredStepsForSweeps(const std::vector<Range>& componantRanges);
 };
+
+}

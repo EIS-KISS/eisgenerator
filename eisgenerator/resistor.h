@@ -2,6 +2,9 @@
 #include "componant.h"
 #include <string>
 
+namespace eis
+{
+
 class Resistor: public Componant
 {
 private:
@@ -16,3 +19,5 @@ public:
 	virtual size_t paramCount() override;
 	virtual ~Resistor() = default;
 };
+
+}

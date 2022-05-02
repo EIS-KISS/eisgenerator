@@ -11,6 +11,8 @@ set(SRC_FILES
 	model.cpp
 	tokenize.cpp
 	paralellseriel.cpp
+	log.cpp
+	normalize.cpp
 )
 
 set(API_HEADERS
@@ -20,7 +22,7 @@ set(API_HEADERS
 	eisgenerator/constantphase.h
 	eisgenerator/warburg.h
 	eisgenerator/model.h
-	eisgenerator/tokenize.h
+	eisgenerator/log.h
 	eisgenerator/paralellseriel.h
 )
 
@@ -32,14 +34,28 @@ set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "-std=c++20 -Wall
 set(CMAKE_INSTALL_PREFIX "/usr")
 install(TARGETS ${PROJECT_NAME} DESTINATION lib)
 install(FILES ${API_HEADERS} DESTINATION include/${PROJECT_NAME})
+install(FILES eisgenerator_plot DESTINATION bin PERMISSIONS WORLD_EXECUTE WORLD_READ
+OWNER_READ OWNER_WRITE OWNER_EXECUTE
+GROUP_READ GROUP_EXECUTE )
 
 link_directories(${CMAKE_CURRENT_BINARY_DIR})
-set(SRC_FILES_TEST_APP main.cpp)
-set(LIBS_TEST -l${PROJECT_NAME})
+set(SRC_FILES_TEST_APP test.cpp)
+set(LIBS_TEST -L. -l${PROJECT_NAME})
 add_executable(${PROJECT_NAME}_test ${SRC_FILES_TEST_APP})
 add_dependencies(${PROJECT_NAME}_test ${PROJECT_NAME})
 target_link_libraries(${PROJECT_NAME}_test ${LIBS_TEST})
 target_include_directories(${PROJECT_NAME}_test PUBLIC eisgenerator)
 set_target_properties(${PROJECT_NAME}_test PROPERTIES COMPILE_FLAGS "-std=c++20 -Wall -O3 -march=native -g" LINK_FLAGS "-flto")
-
 install(TARGETS ${PROJECT_NAME}_test DESTINATION bin)
+
+link_directories(${CMAKE_CURRENT_BINARY_DIR})
+set(SRC_FILES_TEST_APP main.cpp)
+set(LIBS_TEST -L. -l${PROJECT_NAME})
+add_executable(${PROJECT_NAME}_export ${SRC_FILES_TEST_APP})
+add_dependencies(${PROJECT_NAME}_export ${PROJECT_NAME})
+target_link_libraries(${PROJECT_NAME}_export ${LIBS_TEST})
+target_include_directories(${PROJECT_NAME}_export PUBLIC eisgenerator)
+set_target_properties(${PROJECT_NAME}_export PROPERTIES COMPILE_FLAGS "-std=c++20 -Wall -O3 -march=native -g" LINK_FLAGS "-flto")
+install(TARGETS ${PROJECT_NAME}_export DESTINATION bin)
+
+

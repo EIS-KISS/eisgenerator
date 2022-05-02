@@ -3,6 +3,10 @@
 #include <vector>
 #include <math.h>
 
+#include "log.h"
+
+using namespace eis;
+
 Resistor::Resistor(double r): _R(r)
 {}
 
@@ -11,7 +15,7 @@ Resistor::Resistor(std::string paramStr)
 	std::vector<std::string> tokens = tokenize(paramStr, ',');
 	if(tokens.empty())
 	{
-		std::cout<<"Warning: to few parameters in "<<__func__<<" parameter string: "<<paramStr<<'\n';
+		Log(Log::WARN)<<"to few parameters in "<<__func__<<" parameter string: "<<paramStr;
 		_R = 1e3;
 		return;
 	}
@@ -23,7 +27,7 @@ Resistor::Resistor(std::string paramStr)
 		}
 		catch(const std::invalid_argument& ia)
 		{
-			std::cout<<"Warning: cant parse parameter in "<<__func__<<" parameter: "<<tokens[0]<<'\n';
+			Log(Log::WARN)<<"can't parse parameter in "<<__func__<<" parameter: "<<tokens[0];
 			_R = 1e3;
 		}
 	}
@@ -44,7 +48,7 @@ void Resistor::setParam(const std::vector<double>& param)
 {
 	if(param.empty())
 	{
-		std::cout<<"Warning: invalid parameter list sent to "<<__func__<<'\n';
+		Log(Log::WARN)<<"invalid parameter list sent to "<<__func__;
 		return;
 	}
 

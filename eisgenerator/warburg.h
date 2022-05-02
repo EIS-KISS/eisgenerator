@@ -4,6 +4,9 @@
 #include <vector>
 #include "componant.h"
 
+namespace eis
+{
+
 class Warburg: public Componant
 {
 private:
@@ -17,3 +20,5 @@ public:
 	virtual size_t paramCount() override;
 	virtual ~Warburg() = default;
 };
+
+}

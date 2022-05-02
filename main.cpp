@@ -3,48 +3,27 @@
 #include <chrono>
 
 #include "model.h"
+#include "log.h"
+#include "options.h"
+#include "normalize.h"
 
-void runSingle()
+static void printComponants(eis::Model& model)
 {
-	std::string modelStr("w{20e3}p{1e-7, 0.9}");
-
-	std::vector<Model::DataPoint> results;
-
-	Model model(modelStr);
-	std::cout<<"Compnants: \n";
-	for(Componant* componant : model.getFlatComponants())
+	eis::Log(eis::Log::DEBUG)<<"Compnants:";
+	for(eis::Componant* componant : model.getFlatComponants())
 	{
-		std::cout<<Componant::getComponantChar(componant)<<"{";
+		eis::Log(eis::Log::DEBUG)<<eis::Componant::getComponantChar(componant)<<"{";
 		for(size_t i = 0; i < componant->paramCount(); ++i)
 		{
-			std::cout<<componant->getParam()[i];
+			eis::Log(eis::Log::DEBUG)<<componant->getParam()[i];
 			if(i != componant->paramCount()-1)
-				std::cout<<", ";
+				eis::Log(eis::Log::DEBUG)<<", ";
 		}
-		std::cout<<"}\n";
+		eis::Log(eis::Log::DEBUG)<<"}";
 	}
-
-	Model::Range omega(0, 1e6, 50);
-
-	auto start = std::chrono::high_resolution_clock::now();
-	results = model.executeSweep(omega);
-	auto end = std::chrono::high_resolution_clock::now();
-	auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
-
-	for(const Model::DataPoint& res : results)
-		std::cout<<"omega: "<<res.omega<<" real = "<<res.im.real()<<" im = "<<res.im.imag()<<'\n';
-
-	Model modelCopy(model);
-	results = modelCopy.executeSweep(omega);
-
-	for(const Model::DataPoint& res : results)
-		std::cout<<"omega: "<<res.omega<<" real = "<<res.im.real()<<" im = "<<res.im.imag()<<'\n';
-
-
-	std::cout<<"time taken: "<<duration.count()<<" us"<<'\n';
 }
 
-void sweepCb(std::vector<Model::DataPoint>& data, const std::vector<double>& parameters)
+static void paramSweepCb(std::vector<eis::DataPoint>& data, const std::vector<double>& parameters)
 {
 	static size_t i = 0;
 	++i;
@@ -52,31 +31,79 @@ void sweepCb(std::vector<Model::DataPoint>& data, const std::vector<double>& par
 		std::cout<<'.'<<std::flush;
 }
 
-void runSweep()
+static void runSweep(const std::string& modelString, eis::Range omega, bool normalize = false, bool reduce = false)
 {
-	std::string modelStr("w{20e3}p{1e-7, 0.9}");
-	std::vector<Model::DataPoint> results;
+	std::vector<eis::DataPoint> results;
 
-	Model model(modelStr);
+	eis::Model model(modelString);
 
-	std::vector<Model::Range> parameters;
-	parameters.push_back(Model::Range(1e3, 50e3, 100));
-	parameters.push_back(Model::Range(1e-7, 20e-7, 100));
-	parameters.push_back(Model::Range(0.7, 1.2, 100));
-
-	Model::Range omega(0, 1e6, 25);
+	printComponants(model);
 
 	auto start = std::chrono::high_resolution_clock::now();
-	model.executeParamSweep(parameters, omega, &sweepCb);
+	results = model.executeSweep(omega);
+	auto end = std::chrono::high_resolution_clock::now();
+	auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+
+	if(reduce)
+	{
+		eis::Log(eis::Log::INFO)<<"reduced normalized results:";
+		results = eis::reduceRegion(results);
+	}
+	else if(normalize)
+	{
+		eis::Log(eis::Log::INFO)<<"normalized results:";
+		eis::normalize(results);
+	}
+	else
+	{
+		eis::Log(eis::Log::INFO)<<"results:";
+	}
+
+	eis::Log(eis::Log::INFO)<<"omega,real,im";
+
+	for(const eis::DataPoint& res : results)
+		std::cout<<res.omega<<','<<res.im.real()<<','<<res.im.imag()<<'\n';
+
+	eis::Log(eis::Log::INFO)<<"time taken: "<<duration.count()<<" us";
+}
+
+static void runParamSweep()
+{
+	eis::Log(eis::Log::INFO)<<__func__;
+	std::string modelStr("w{20e3}p{1e-7, 0.9}");
+
+	eis::Model model(modelStr);
+
+	std::vector<eis::Range> parameters;
+	parameters.push_back(eis::Range(1e3, 50e3, 100));
+	parameters.push_back(eis::Range(1e-7, 20e-7, 100));
+	parameters.push_back(eis::Range(0.7, 1.2, 100));
+
+	eis::Range omega(0, 1e6, 25);
+
+	auto start = std::chrono::high_resolution_clock::now();
+	model.executeParamSweep(parameters, omega, &paramSweepCb);
 	auto end = std::chrono::high_resolution_clock::now();
 	auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+	std::cout<<std::endl;
 
-	std::cout<<"\ntime taken: "<<duration.count()<<" ms"<<'\n';
+	eis::Log(eis::Log::INFO)<<"time taken: "<<duration.count()<<" ms";
 }
 
 int main(int argc, char** argv)
 {
-	runSingle();
-	runSweep();
+	eis::Log::level = eis::Log::INFO;
+	Config config;
+	argp_parse(&argp, argc, argv, 0, 0, &config);
+
+	switch(config.mode)
+	{
+		case MODE_SWEEP:
+			runSweep(config.modelStr, config.omegaRange, config.normalize, config.reduce);
+			break;
+		case MODE_PARAM_SWEEP:
+			runParamSweep();
+			break;
+	}
 	return 0;
 }

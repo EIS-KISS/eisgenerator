@@ -3,6 +3,10 @@
 #include <cstdlib>
 #include <math.h>
 
+#include "log.h"
+
+using namespace eis;
+
 Warburg::Warburg(double a): _A(a)
 {
 
@@ -13,7 +17,7 @@ Warburg::Warburg(std::string paramStr)
 	std::vector<std::string> tokens = tokenize(paramStr, ',');
 	if(tokens.size() < 1)
 	{
-		std::cout<<"Warning: to few parameters in "<<__func__<<" parameter string: "<<paramStr<<'\n';
+		Log(Log::WARN)<<"to few parameters in "<<__func__<<" parameter string: "<<paramStr<<'\n';
 		return;
 	}
 	else
@@ -24,7 +28,7 @@ Warburg::Warburg(std::string paramStr)
 		}
 		catch(const std::invalid_argument& ia)
 		{
-			std::cout<<"Warning: cant parse parameter in "<<__func__<<" parameter: "<<tokens[0]<<'\n';
+			Log(Log::WARN)<<"can't parse parameter in "<<__func__<<" parameter: "<<tokens[0]<<'\n';
 		}
 	}
 }
@@ -44,7 +48,7 @@ void Warburg::setParam(const std::vector<double>& param)
 {
 	if(param.size() != paramCount())
 	{
-		std::cout<<"Warning: invalid parameter list sent to "<<__func__<<'\n';
+		Log(Log::WARN)<<"Warning: invalid parameter list sent to "<<__func__<<'\n';
 		return;
 	}
 

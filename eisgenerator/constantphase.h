@@ -4,6 +4,9 @@
 #include <vector>
 #include "componant.h"
 
+namespace eis
+{
+
 class Cpe: public Componant
 {
 private:
@@ -18,3 +21,5 @@ public:
 	virtual size_t paramCount() override;
 	virtual ~Cpe() = default;
 };
+
+}

@@ -3,6 +3,10 @@
 #include <cstdlib>
 #include <math.h>
 
+#include "log.h"
+
+using namespace eis;
+
 Cpe::Cpe(double q, double alpha): _Q(q), _alpha(alpha)
 {
 
