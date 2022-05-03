@@ -10,43 +10,6 @@
 namespace eis
 {
 
-struct DataPoint
-{
-	std::complex<double> im;
-	double omega;
-};
-
-struct Range
-{
-	double start;
-	double end;
-	size_t count;
-	bool log = false;
-
-	double stepSize() const
-	{
-		return (end-start)/count;
-	}
-	Range operator*(fvalue in) const
-	{
-		return Range(start*in, end*in, count, log);
-	}
-	Range operator/(fvalue in) const
-	{
-		return operator*(static_cast<fvalue>(1.0)/in);
-	}
-	Range operator*(int in) const
-	{
-		return operator*(static_cast<fvalue>(in));
-	}
-	Range operator/(int in) const
-	{
-		return operator*(static_cast<fvalue>(1.0)/in);
-	}
-	Range(double startI, double endI, size_t countI, bool logI = false): start(startI), end(endI), count(countI), log(logI){}
-	Range() = default;
-};
-
 class Model
 {
 private:
