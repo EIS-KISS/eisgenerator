@@ -31,18 +31,18 @@ public:
 	Model(const Model& in);
 	Model& operator=(const Model& in);
 	~Model();
-	DataPoint execute(double omaga);
+	DataPoint execute(fvalue omaga);
 	std::vector<DataPoint> executeSweep(const Range& omega);
-	bool executeParamSweep(const std::vector<Range>& componantRanges, const Range& omega, std::function<void(std::vector<DataPoint>&, const std::vector<double>&)> dataCb);
+	bool executeParamSweep(const std::vector<Range>& componantRanges, const Range& omega, std::function<void(std::vector<DataPoint>&, const std::vector<fvalue>&)> dataCb);
 	std::vector<DataPoint> executeParamByIndex(const std::vector<Range>& componantRanges, const Range& omega, size_t index);
 
 	std::string getModelStr();
 	std::vector<Componant*> getFlatComponants();
-	std::vector<double> getFlatParameters();
+	std::vector<fvalue> getFlatParameters();
 	size_t getFlatParametersCount();
-	bool setFlatParameters(const std::vector<double>& parameters);
+	bool setFlatParameters(const std::vector<fvalue>& parameters);
 
-	static std::vector<double> getSweepParamByIndex(const std::vector<Range>& componantRanges, size_t index);
+	static std::vector<fvalue> getSweepParamByIndex(const std::vector<Range>& componantRanges, size_t index);
 	static size_t getRequiredStepsForSweeps(const std::vector<Range>& componantRanges);
 };
 

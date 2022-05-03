@@ -185,7 +185,7 @@ Model::~Model()
 	delete _model;
 }
 
-DataPoint Model::execute(double omega)
+DataPoint Model::execute(fvalue omega)
 {
 	if(_model)
 	{
@@ -198,7 +198,7 @@ DataPoint Model::execute(double omega)
 	{
 		Log(Log::WARN)<<"model not ready";
 	}
-	return DataPoint({std::complex<double>(0,0), 0});
+	return DataPoint({std::complex<fvalue>(0,0), 0});
 }
 
 void Model::addComponantToFlat(Componant* componant)
@@ -238,8 +238,8 @@ std::vector<DataPoint> Model::executeSweep(const Range& omega)
 
 	if(!omega.log)
 	{
-		double currOmega = omega.start;
-		double step = (omega.end - omega.start)/(omega.count-1);
+		fvalue currOmega = omega.start;
+		fvalue step = (omega.end - omega.start)/(omega.count-1);
 
 		for(size_t i = 0; i < omega.count; ++i)
 		{
@@ -249,10 +249,10 @@ std::vector<DataPoint> Model::executeSweep(const Range& omega)
 	}
 	else
 	{
-		double start = log10(omega.start);
-		double end = log10(omega.end);
-		double step = (end-start)/(omega.count-1);
-		double currOmegaL = start;
+		fvalue start = log10(omega.start);
+		fvalue end = log10(omega.end);
+		fvalue step = (end-start)/(omega.count-1);
+		fvalue currOmegaL = start;
 
 		for(size_t i = 0; i < omega.count; ++i)
 		{
@@ -265,7 +265,7 @@ std::vector<DataPoint> Model::executeSweep(const Range& omega)
 
 std::vector<DataPoint> Model::executeParamByIndex(const std::vector<Range>& componantRanges, const Range& omega, size_t index)
 {
-	std::vector<double> parameters = getSweepParamByIndex(componantRanges, index);
+	std::vector<fvalue> parameters = getSweepParamByIndex(componantRanges, index);
 	assert(setFlatParameters(parameters));
 
 	return executeSweep(omega);
@@ -279,7 +279,7 @@ size_t Model::getRequiredStepsForSweeps(const std::vector<Range>& componantRange
 	return stepsRequired;
 }
 
-std::vector<double> Model::getSweepParamByIndex(const std::vector<Range>& componantRanges, size_t index)
+std::vector<fvalue> Model::getSweepParamByIndex(const std::vector<Range>& componantRanges, size_t index)
 {
 	size_t parametersCount = componantRanges.size();
 	std::vector<size_t> parameterIndexies(parametersCount, 0);
@@ -290,14 +290,14 @@ std::vector<double> Model::getSweepParamByIndex(const std::vector<Range>& compon
 		index -= parameterIndexies[i];
 	}
 
-	std::vector<double> parameters(parametersCount, 0);
+	std::vector<fvalue> parameters(parametersCount, 0);
 	for(size_t i = 0; i < parametersCount; ++i)
 		parameters[i] = parameterIndexies[i]*componantRanges[i].stepSize()+componantRanges[i].start;
 	return parameters;
 }
 
 bool Model::executeParamSweep(const std::vector<Range>& componantRanges, const Range& omega,
-                              std::function<void(std::vector<DataPoint>&, const std::vector<double>&)> dataCb)
+                              std::function<void(std::vector<DataPoint>&, const std::vector<fvalue>&)> dataCb)
 {
 	size_t parametersCount = getFlatParametersCount();
 	if(componantRanges.size() != parametersCount)
@@ -322,7 +322,7 @@ bool Model::executeParamSweep(const std::vector<Range>& componantRanges, const R
 
 	size_t stepsRequired = getRequiredStepsForSweeps(componantRanges);
 
-	std::vector<double> currentParam(parametersCount, 0);
+	std::vector<fvalue> currentParam(parametersCount, 0);
 	for(size_t i = 0; i < parametersCount; ++i)
 		currentParam[i] = componantRanges[i].start;
 
@@ -338,7 +338,7 @@ bool Model::executeParamSweep(const std::vector<Range>& componantRanges, const R
 	return true;
 }
 
-bool Model::setFlatParameters(const std::vector<double>& parameters)
+bool Model::setFlatParameters(const std::vector<fvalue>& parameters)
 {
 	if(parameters.size() != getFlatParametersCount())
 		return false;
@@ -346,7 +346,7 @@ bool Model::setFlatParameters(const std::vector<double>& parameters)
 	size_t i = 0;
 	for(Componant* componant : getFlatComponants())
 	{
-		std::vector<double> params;
+		std::vector<fvalue> params;
 		for(size_t j = 0; j < componant->paramCount(); ++j)
 			params.push_back(parameters[i++]);
 		componant->setParam(params);
@@ -355,13 +355,13 @@ bool Model::setFlatParameters(const std::vector<double>& parameters)
 	return true;
 }
 
-std::vector<double> Model::getFlatParameters()
+std::vector<fvalue> Model::getFlatParameters()
 {
-	std::vector<double> params;
+	std::vector<fvalue> params;
 	std::vector<Componant*> componants = getFlatComponants();
 	for(Componant* componant : componants)
 	{
-		for(double param : componant->getParam())
+		for(fvalue param : componant->getParam())
 			params.push_back(param);
 	}
 	return params;

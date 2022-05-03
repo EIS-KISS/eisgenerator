@@ -10,14 +10,14 @@ namespace eis
 class Cpe: public Componant
 {
 private:
-	double _Q;
-	double _alpha;
+	fvalue _Q;
+	fvalue _alpha;
 public:
 	Cpe(std::string paramStr);
-	Cpe(double q = 1e-7, double alpha = 0.9);
-	virtual std::complex<double> execute(double omega) override;
-	virtual std::vector<double> getParam() override;
-	virtual void setParam(const std::vector<double>& param) override;
+	Cpe(fvalue q = 1e-7, fvalue alpha = 0.9);
+	virtual std::complex<fvalue> execute(fvalue omega) override;
+	virtual std::vector<fvalue> getParam() override;
+	virtual void setParam(const std::vector<fvalue>& param) override;
 	virtual size_t paramCount() override;
 	virtual ~Cpe() = default;
 };

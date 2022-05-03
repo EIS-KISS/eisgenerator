@@ -8,7 +8,6 @@
 #include "options.h"
 #include "normalize.h"
 
-
 static void printComponants(eis::Model& model)
 {
 	eis::Log(eis::Log::DEBUG)<<"Compnants:";
@@ -25,7 +24,7 @@ static void printComponants(eis::Model& model)
 	}
 }
 
-static void paramSweepCb(std::vector<eis::DataPoint>& data, const std::vector<double>& parameters)
+static void paramSweepCb(std::vector<eis::DataPoint>& data, const std::vector<fvalue>& parameters)
 {
 	static size_t i = 0;
 	++i;
@@ -99,7 +98,7 @@ int main(int argc, char** argv)
 	argp_parse(&argp, argc, argv, 0, 0, &config);
 
 	if(config.hertz)
-		config.omegaRange = config.omegaRange*2*M_PI;
+		config.omegaRange = config.omegaRange*static_cast<fvalue>(2*M_PI);
 
 	switch(config.mode)
 	{

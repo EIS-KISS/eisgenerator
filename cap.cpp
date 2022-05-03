@@ -7,7 +7,7 @@
 
 using namespace eis;
 
-Cap::Cap(double c): _C(c)
+Cap::Cap(fvalue c): _C(c)
 {
 
 }
@@ -35,17 +35,17 @@ Cap::Cap(std::string paramStr)
 	}
 }
 
-std::complex<double> Cap::execute(double omega)
+std::complex<fvalue> Cap::execute(fvalue omega)
 {
-	return std::complex<double>(0, 0.0-(1.0/(_C*omega)));
+	return std::complex<fvalue>(0, 0.0-(1.0/(_C*omega)));
 }
 
-std::vector<double> Cap::getParam()
+std::vector<fvalue> Cap::getParam()
 {
-	return std::vector<double>({_C});
+	return std::vector<fvalue>({_C});
 }
 
-void Cap::setParam(const std::vector<double>& param)
+void Cap::setParam(const std::vector<fvalue>& param)
 {
 	if(param.empty())
 	{

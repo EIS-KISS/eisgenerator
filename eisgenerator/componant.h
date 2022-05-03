@@ -3,23 +3,25 @@
 #include <iostream>
 #include <vector>
 
+#include "eistype.h"
+
 namespace eis
 {
 
 class Componant
 {
 	public:
-		virtual std::complex<double> execute(double omega)
+		virtual std::complex<fvalue> execute(fvalue omega)
 		{
 			std::cout<<"warning incompleat model\n";
-			return std::complex<double> (1,0);
+			return std::complex<fvalue> (1,0);
 		}
 
-		virtual std::vector<double> getParam()
+		virtual std::vector<fvalue> getParam()
 		{
-			return std::vector<double>();
+			return std::vector<fvalue>();
 		};
-		virtual void setParam(const std::vector<double>& param){};
+		virtual void setParam(const std::vector<fvalue>& param){};
 		virtual size_t paramCount(){return 0;}
 		virtual ~Componant() = default;
 

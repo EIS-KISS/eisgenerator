@@ -20,7 +20,7 @@ void eis::eraseSingularites(std::vector<eis::DataPoint>& data)
 			while(right < data.size()-2 && std::abs(eis::absGrad(data, right)) > 10)
 				++right;
 
-			std::complex<fvalue> mean = (data[left].im + data[right].im)/2.0;
+			std::complex<fvalue> mean = (data[left].im + data[right].im)/static_cast<fvalue>(2.0);
 			for(size_t j = left; j < right; ++j)
 				data[j].im = mean;
 		}

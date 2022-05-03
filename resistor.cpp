@@ -7,7 +7,7 @@
 
 using namespace eis;
 
-Resistor::Resistor(double r): _R(r)
+Resistor::Resistor(fvalue r): _R(r)
 {}
 
 Resistor::Resistor(std::string paramStr)
@@ -33,18 +33,18 @@ Resistor::Resistor(std::string paramStr)
 	}
 }
 
-std::complex<double> Resistor::execute(double omega)
+std::complex<fvalue> Resistor::execute(fvalue omega)
 {
 	(void)omega;
-	return std::complex<double>(_R, 0);
+	return std::complex<fvalue>(_R, 0);
 }
 
-std::vector<double> Resistor::getParam()
+std::vector<fvalue> Resistor::getParam()
 {
-	return std::vector<double>({_R});
+	return std::vector<fvalue>({_R});
 }
 
-void Resistor::setParam(const std::vector<double>& param)
+void Resistor::setParam(const std::vector<fvalue>& param)
 {
 	if(param.empty())
 	{

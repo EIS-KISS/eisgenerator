@@ -10,13 +10,13 @@ namespace eis
 class Warburg: public Componant
 {
 private:
-	double _A = 2e4;
+	fvalue _A = 2e4;
 public:
 	Warburg(std::string paramStr);
-	Warburg(double a = 2e4);
-	virtual std::complex<double> execute(double omega) override;
-	virtual std::vector<double> getParam() override;
-	virtual void setParam(const std::vector<double>& param) override;
+	Warburg(fvalue a = 2e4);
+	virtual std::complex<fvalue> execute(fvalue omega) override;
+	virtual std::vector<fvalue> getParam() override;
+	virtual void setParam(const std::vector<fvalue>& param) override;
 	virtual size_t paramCount() override;
 	virtual ~Warburg() = default;
 };

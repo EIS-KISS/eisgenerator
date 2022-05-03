@@ -10,13 +10,13 @@ namespace eis
 class Cap: public Componant
 {
 private:
-	double _C;
+	fvalue _C;
 public:
 	Cap(std::string paramStr);
-	Cap(double c = 1e-6);
-	virtual std::complex<double> execute(double omega) override;
-	virtual std::vector<double> getParam() override;
-	virtual void setParam(const std::vector<double>& param) override;
+	Cap(fvalue c = 1e-6);
+	virtual std::complex<fvalue> execute(fvalue omega) override;
+	virtual std::vector<fvalue> getParam() override;
+	virtual void setParam(const std::vector<fvalue>& param) override;
 	virtual size_t paramCount() override;
 	virtual ~Cap() = default;
 };

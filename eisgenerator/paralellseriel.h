@@ -15,7 +15,7 @@ public:
 	Parallel(const Parallel& in);
 	void operator=(const Parallel& in);
 	~Parallel();
-	virtual std::complex<double> execute(double omaga) override;
+	virtual std::complex<fvalue> execute(fvalue omaga) override;
 };
 
 class Serial: public Componant
@@ -27,7 +27,7 @@ public:
 	Serial(const Serial& in);
 	void operator=(const Serial& in);
 	~Serial();
-	virtual std::complex<double> execute(double omaga) override;
+	virtual std::complex<fvalue> execute(fvalue omaga) override;
 };
 
 }

@@ -7,7 +7,7 @@
 
 using namespace eis;
 
-Warburg::Warburg(double a): _A(a)
+Warburg::Warburg(fvalue a): _A(a)
 {
 
 }
@@ -33,18 +33,18 @@ Warburg::Warburg(std::string paramStr)
 	}
 }
 
-std::complex<double> Warburg::execute(double omega)
+std::complex<fvalue> Warburg::execute(fvalue omega)
 {
-	double N = _A/(sqrt(omega));
-	return std::complex<double>(N, 0-N);
+	fvalue N = _A/(sqrt(omega));
+	return std::complex<fvalue>(N, 0-N);
 }
 
-std::vector<double> Warburg::getParam()
+std::vector<fvalue> Warburg::getParam()
 {
-	return std::vector<double>({_A});
+	return std::vector<fvalue>({_A});
 }
 
-void Warburg::setParam(const std::vector<double>& param)
+void Warburg::setParam(const std::vector<fvalue>& param)
 {
 	if(param.size() != paramCount())
 	{

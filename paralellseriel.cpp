@@ -25,14 +25,14 @@ Parallel::~Parallel()
 		delete componant;
 }
 
-std::complex<double> Parallel::execute(double omega)
+std::complex<fvalue> Parallel::execute(fvalue omega)
 {
-	std::complex<double> accum(0,0);
+	std::complex<fvalue> accum(0,0);
 	for(Componant* componant : componants)
 	{
-		accum += std::complex<double>(1,0)/componant->execute(omega);
+		accum += std::complex<fvalue>(1,0)/componant->execute(omega);
 	}
-	return std::complex<double>(1,0)/accum;
+	return std::complex<fvalue>(1,0)/accum;
 }
 
 Serial::Serial(std::vector<Componant*> componantsIn): componants(componantsIn)
@@ -58,9 +58,9 @@ Serial::~Serial()
 		delete componant;
 }
 
-std::complex<double> Serial::execute(double omega)
+std::complex<fvalue> Serial::execute(fvalue omega)
 {
-	std::complex<double> accum(0,0);
+	std::complex<fvalue> accum(0,0);
 	for(Componant* componant : componants)
 	{
 		accum += componant->execute(omega);

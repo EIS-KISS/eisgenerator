@@ -8,14 +8,14 @@ namespace eis
 class Resistor: public Componant
 {
 private:
-	double _R;
+	fvalue _R;
 
 public:
-	Resistor(double r);
+	Resistor(fvalue r);
 	Resistor(std::string paramStr);
-	virtual std::complex<double> execute(double omega)  override;
-	virtual std::vector<double> getParam() override;
-	virtual void setParam(const std::vector<double>& param) override;
+	virtual std::complex<fvalue> execute(fvalue omega)  override;
+	virtual std::vector<fvalue> getParam() override;
+	virtual void setParam(const std::vector<fvalue>& param) override;
 	virtual size_t paramCount() override;
 	virtual ~Resistor() = default;
 };

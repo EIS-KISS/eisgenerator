@@ -7,7 +7,7 @@
 
 using namespace eis;
 
-Cpe::Cpe(double q, double alpha): _Q(q), _alpha(alpha)
+Cpe::Cpe(fvalue q, fvalue alpha): _Q(q), _alpha(alpha)
 {
 
 }
@@ -38,18 +38,18 @@ Cpe::Cpe(std::string paramStr)
 	}
 }
 
-std::complex<double> Cpe::execute(double omega)
+std::complex<fvalue> Cpe::execute(fvalue omega)
 {
-	return std::complex<double>((1.0/(_Q*pow(omega, _alpha)))*cos((M_PI/2)*_alpha),
+	return std::complex<fvalue>((1.0/(_Q*pow(omega, _alpha)))*cos((M_PI/2)*_alpha),
 	                           0-(1.0/(_Q*pow(omega, _alpha)))*sin((M_PI/2)*_alpha));
 }
 
-std::vector<double> Cpe::getParam()
+std::vector<fvalue> Cpe::getParam()
 {
-	return std::vector<double>({_Q, _alpha});
+	return std::vector<fvalue>({_Q, _alpha});
 }
 
-void Cpe::setParam(const std::vector<double>& param)
+void Cpe::setParam(const std::vector<fvalue>& param)
 {
 	if(param.size() < 2)
 	{
