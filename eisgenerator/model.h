@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 #include <functional>
-
+#include "eistype.h"
 #include "componant.h"
 
 namespace eis
@@ -26,6 +26,22 @@ struct Range
 	double stepSize() const
 	{
 		return (end-start)/count;
+	}
+	Range operator*(fvalue in) const
+	{
+		return Range(start*in, end*in, count, log);
+	}
+	Range operator/(fvalue in) const
+	{
+		return operator*(static_cast<fvalue>(1.0)/in);
+	}
+	Range operator*(int in) const
+	{
+		return operator*(static_cast<fvalue>(in));
+	}
+	Range operator/(int in) const
+	{
+		return operator*(static_cast<fvalue>(1.0)/in);
 	}
 	Range(double startI, double endI, size_t countI, bool logI = false): start(startI), end(endI), count(countI), log(logI){}
 	Range() = default;

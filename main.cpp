@@ -1,11 +1,13 @@
 #include <iostream>
 #include <complex>
 #include <chrono>
+#include <cmath>
 
 #include "model.h"
 #include "log.h"
 #include "options.h"
 #include "normalize.h"
+
 
 static void printComponants(eis::Model& model)
 {
@@ -31,7 +33,7 @@ static void paramSweepCb(std::vector<eis::DataPoint>& data, const std::vector<do
 		std::cout<<'.'<<std::flush;
 }
 
-static void runSweep(const std::string& modelString, eis::Range omega, bool normalize = false, bool reduce = false)
+static void runSweep(const std::string& modelString, eis::Range omega, bool normalize = false, bool reduce = false, bool hertz = false, bool invert = false)
 {
 	std::vector<eis::DataPoint> results;
 
@@ -59,10 +61,10 @@ static void runSweep(const std::string& modelString, eis::Range omega, bool norm
 		eis::Log(eis::Log::INFO)<<"results:";
 	}
 
-	eis::Log(eis::Log::INFO)<<"omega,real,im";
+	eis::Log(eis::Log::INFO)<<(hertz ? "freqency" : "omega")<<",real,im";
 
 	for(const eis::DataPoint& res : results)
-		std::cout<<res.omega<<','<<res.im.real()<<','<<res.im.imag()<<'\n';
+		std::cout<<res.omega/(2*M_PI)<<','<<res.im.real()<<','<<(invert ? 0-res.im.imag() : res.im.imag())<<'\n';
 
 	eis::Log(eis::Log::INFO)<<"time taken: "<<duration.count()<<" us";
 }
@@ -96,10 +98,13 @@ int main(int argc, char** argv)
 	Config config;
 	argp_parse(&argp, argc, argv, 0, 0, &config);
 
+	if(config.hertz)
+		config.omegaRange = config.omegaRange*2*M_PI;
+
 	switch(config.mode)
 	{
 		case MODE_SWEEP:
-			runSweep(config.modelStr, config.omegaRange, config.normalize, config.reduce);
+			runSweep(config.modelStr, config.omegaRange, config.normalize, config.reduce, config.hertz, config.invert);
 			break;
 		case MODE_PARAM_SWEEP:
 			runParamSweep();
