@@ -374,3 +374,8 @@ size_t Model::getFlatParametersCount()
 		count += componant->paramCount();
 	return count;
 }
+
+std::string Model::getModelStr()
+{
+	return _modelStr;
+}
