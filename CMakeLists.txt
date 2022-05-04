@@ -16,17 +16,24 @@ set(SRC_FILES
 	basicmath.cpp
 )
 
-set(API_HEADERS
-	eisgenerator/componant.h
-	eisgenerator/cap.h
-	eisgenerator/resistor.h
-	eisgenerator/constantphase.h
-	eisgenerator/warburg.h
-	eisgenerator/model.h
-	eisgenerator/log.h
-	eisgenerator/paralellseriel.h
-	eisgenerator/basicmath.h
+set(API_HEADERS_CPP_DIR eisgenerator/)
+
+set(API_HEADERS_CPP
+	${API_HEADERS_CPP_DIR}/componant.h
+	${API_HEADERS_CPP_DIR}/cap.h
+	${API_HEADERS_CPP_DIR}/resistor.h
+	${API_HEADERS_CPP_DIR}/constantphase.h
+	${API_HEADERS_CPP_DIR}/warburg.h
+	${API_HEADERS_CPP_DIR}/model.h
+	${API_HEADERS_CPP_DIR}/log.h
+	${API_HEADERS_CPP_DIR}/paralellseriel.h
+	${API_HEADERS_CPP_DIR}/basicmath.h
+	${API_HEADERS_CPP_DIR}/eistype.h
 )
+
+set(API_HEADERS_C_DIR eisgenerator/c/)
+
+set(API_HEADERS_C ${API_HEADERS_CPP_DIR}/model.h)
 
 add_library(${PROJECT_NAME} SHARED ${SRC_FILES})
 target_link_libraries(${PROJECT_NAME} ${LIBS})
@@ -35,7 +42,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "-std=c++20 -Wall
 
 set(CMAKE_INSTALL_PREFIX "/usr")
 install(TARGETS ${PROJECT_NAME} DESTINATION lib)
-install(FILES ${API_HEADERS} DESTINATION include/${PROJECT_NAME})
+install(FILES ${API_HEADERS_CPP} DESTINATION include/${PROJECT_NAME})
 install(FILES eisgenerator_plot DESTINATION bin PERMISSIONS WORLD_EXECUTE WORLD_READ
 OWNER_READ OWNER_WRITE OWNER_EXECUTE
 GROUP_READ GROUP_EXECUTE )
