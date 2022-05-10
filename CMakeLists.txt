@@ -29,6 +29,7 @@ set(API_HEADERS_CPP
 	${API_HEADERS_CPP_DIR}/paralellseriel.h
 	${API_HEADERS_CPP_DIR}/basicmath.h
 	${API_HEADERS_CPP_DIR}/eistype.h
+	${API_HEADERS_CPP_DIR}/normalize.h
 )
 
 set(API_HEADERS_C_DIR eisgenerator/c/)
