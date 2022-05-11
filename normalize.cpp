@@ -11,7 +11,7 @@ void eis::eraseSingularites(std::vector<eis::DataPoint>& data)
 {
 	for(size_t i = 0; i < data.size(); ++i)
 	{
-		if(std::isnan(data[i].im.real()) || std::isnan(data[i].im.imag()))
+		if(std::isnan(data[i].im.real()) || std::isnan(data[i].im.imag()) || std::isinf(data[i].im.real()) || std::isinf(data[i].im.imag()) )
 		{
 			size_t left = i-1;
 			size_t right = i+1;
@@ -30,16 +30,22 @@ void eis::eraseSingularites(std::vector<eis::DataPoint>& data)
 
 void eis::normalize(std::vector<eis::DataPoint>& data)
 {
-	fvalue max = std::numeric_limits<fvalue>::min();
+	fvalue maxRe = 0;
+	fvalue maxIm = 0;
 	for(const DataPoint& dataPoint : data)
 	{
-		fvalue norm = std::abs(dataPoint.im);
-		if(norm > max)
-			max = norm;
+		maxRe = fabs(dataPoint.im.real()) > maxRe ? fabs(dataPoint.im.real()) :  maxRe;
+		maxIm = fabs(dataPoint.im.imag()) > maxIm ? fabs(dataPoint.im.imag()) : maxIm;
 	}
 
+	maxRe = maxRe == 0 ? 1 : maxRe;
+	maxIm = maxIm == 0 ? 1 : maxIm;
+
 	for(DataPoint& dataPoint : data)
-		dataPoint.im = dataPoint.im / max;
+	{
+		dataPoint.im.real(dataPoint.im.real() / maxRe);
+		dataPoint.im.imag(dataPoint.im.imag() / maxIm);
+	}
 }
 
 std::vector<eis::DataPoint> eis::reduceRegion(const std::vector<eis::DataPoint>& inData, fvalue gradThreshFactor)
@@ -48,7 +54,7 @@ std::vector<eis::DataPoint> eis::reduceRegion(const std::vector<eis::DataPoint>&
 		return inData;
 
 	std::vector<eis::DataPoint> data = inData;
-	eis::eraseSingularites(data);
+	//eis::eraseSingularites(data);
 	eis::normalize(data);
 
 	std::vector<fvalue> grads;
