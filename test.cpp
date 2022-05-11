@@ -163,11 +163,11 @@ void runSweepByIndex()
 	eis::Log(eis::Log::INFO)<<"time taken: "<<duration.count()<<" ms";
 }
 
-void runRescale()
+bool runRescale()
 {
 	std::cout<<__func__<<'\n';
 	std::vector<eis::DataPoint> data;
-	for(size_t i = 0; i < 10; ++i)
+	for(size_t i = 0; i < 22; ++i)
 	{
 		eis::DataPoint point;
 		point.im = std::complex<fvalue>(i,i);
@@ -178,10 +178,11 @@ void runRescale()
 	std::cout<<"original:\n";
 	printDataVect(data);
 
-	data = eis::rescale(data, 5);
+	data = eis::rescale(data, 50);
 
-	std::cout<<"rescaled:\n";
+	std::cout<<"rescaled size: "<<data.size()<<" rescale data: \n";
 	printDataVect(data);
+	return data.size() == 50;
 }
 
 void runReduce()
@@ -238,7 +239,7 @@ int main(int argc, char** argv)
 	//runSingle();
 	//runSweepByIndex();
 	//runSweep();
-	//runRescale();
+	runRescale();
 	runNormalize();
 	//runEraseSingularities();
 	runReduce();
