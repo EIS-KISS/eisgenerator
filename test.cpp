@@ -6,6 +6,67 @@
 #include "log.h"
 #include "normalize.h"
 
+void printDataVect(const std::vector<eis::DataPoint> in)
+{
+	for(const eis::DataPoint& res : in)
+			std::cout<<res.omega<<','<<res.im.real()<<','<<res.im.imag()<<'\n';
+}
+
+std::vector<eis::DataPoint> getSine()
+{
+	std::vector<eis::DataPoint> data;
+	for(size_t i = 0; i < 20; ++i)
+	{
+		eis::DataPoint point;
+		point.im = std::complex<fvalue>((sin(i/10.0)/static_cast<double>((i+16)/16))*10, (sin(i/10.0)/static_cast<double>((i+16)/16))*10);
+		point.omega = i;
+		data.push_back(point);
+	}
+	return data;
+}
+
+static const fvalue mocdata[25][3] = {
+	0.000000,17200.000000,0.000000,
+	41666.700000,2900.000000,-2.926830,
+	83333.300000,2900.000000,-1.463410,
+	125000.000000,2900.000000,-0.975610,
+	166667.000000,2900.000000,-0.731707,
+	208333.000000,2900.000000,-0.585366,
+	250000.000000,2900.000000,-0.487805,
+	291667.000000,2900.000000,-0.418118,
+	333333.000000,2900.000000,-0.365854,
+	375000.000000,2900.000000,-0.325203,
+	416667.000000,2900.000000,-0.292683,
+	458333.000000,2900.000000,-0.266075,
+	500000.000000,2900.000000,-0.243902,
+	541667.000000,2900.000000,-0.225141,
+	583333.000000,2900.000000,-0.209059,
+	625000.000000,2900.000000,-0.195122,
+	666667.000000,2900.000000,-0.182927,
+	708333.000000,2900.000000,-0.172166,
+	750000.000000,2900.000000,-0.162602,
+	791667.000000,2900.000000,-0.154044,
+	833333.000000,2900.000000,-0.146341,
+	875000.000000,2900.000000,-0.139373,
+	916667.000000,2900.000000,-0.133038,
+	958333.000000,2900.000000,-0.127253,
+	1000000.000000,2900.000000,-0.121951,
+};
+
+std::vector<eis::DataPoint> getMockData()
+{
+	std::vector<eis::DataPoint> data;
+
+	for(size_t i = 0; i < sizeof(mocdata)/sizeof(*mocdata); ++i)
+	{
+		eis::DataPoint point;
+		point.im = std::complex<fvalue>(mocdata[i][1], mocdata[i][2]);
+		point.omega = mocdata[i][0];
+		data.push_back(point);
+	}
+	return data;
+}
+
 void printComponants(eis::Model& model)
 {
 	eis::Log(eis::Log::DEBUG)<<"Compnants:";
@@ -104,6 +165,7 @@ void runSweepByIndex()
 
 void runRescale()
 {
+	std::cout<<__func__<<'\n';
 	std::vector<eis::DataPoint> data;
 	for(size_t i = 0; i < 10; ++i)
 	{
@@ -113,24 +175,72 @@ void runRescale()
 		data.push_back(point);
 	}
 
-	std::cout<<"original: ";
-	for(const eis::DataPoint& res : data)
-		std::cout<<res.omega<<','<<res.im.real()<<','<<res.im.imag()<<'\n';
+	std::cout<<"original:\n";
+	printDataVect(data);
 
 	data = eis::rescale(data, 5);
 
-	std::cout<<"rescaled: ";
-	for(const eis::DataPoint& res : data)
-		std::cout<<res.omega<<','<<res.im.real()<<','<<res.im.imag()<<'\n';
+	std::cout<<"rescaled:\n";
+	printDataVect(data);
+}
+
+void runReduce()
+{
+	std::cout<<__func__<<'\n';
+	std::vector<eis::DataPoint> data = getMockData();
+
+	std::cout<<"original: \n";
+	printDataVect(data);
+
+	data = reduceRegion(data);;
+
+	std::cout<<"reduced: \n";
+	printDataVect(data);
+}
+
+void runNormalize()
+{
+	std::cout<<__func__<<'\n';
+	std::vector<eis::DataPoint> data =getMockData();
+	std::cout<<"original"<<'\n';
+	printDataVect(data);
+	eis::normalize(data);
+	std::cout<<"normalized"<<'\n';
+	printDataVect(data);
+
+}
+
+void runEraseSingularities()
+{
+	std::cout<<__func__<<'\n';
+	std::vector<eis::DataPoint> data;
+	for(size_t i = 0; i < 1000; ++i)
+	{
+		 eis::DataPoint point;
+		 point.im = std::complex<fvalue>(1.0/(i/100.0), 1.0/((i-2)/100.0));
+		 point.omega = i;
+		 data.push_back(point);
+	}
+
+	std::cout<<"original"<<'\n';
+	printDataVect(data);
+
+	eraseSingularites(data);
+
+	std::cout<<"erased"<<'\n';
+	printDataVect(data);
 }
 
 int main(int argc, char** argv)
 {
 	eis::Log::headers = true;
 	eis::Log::level = eis::Log::INFO;
-	runSingle();
-	runSweepByIndex();
-	runSweep();
-	runRescale();
+	//runSingle();
+	//runSweepByIndex();
+	//runSweep();
+	//runRescale();
+	runNormalize();
+	//runEraseSingularities();
+	runReduce();
 	return 0;
 }
