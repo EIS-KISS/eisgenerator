@@ -40,6 +40,7 @@ flags:
 * Supported Elements
 	* c: cap
 	* r: resistor
+	* l: inductor
 	* w: warburg element
 	* p: constant phase element
 
