@@ -6,6 +6,7 @@
 #include "constantphase.h"
 #include "warburg.h"
 #include "log.h"
+#include "inductor.h"
 
 using namespace eis;
 
@@ -17,6 +18,8 @@ Componant* Componant::copy(Componant* componant)
 			return new Resistor(*dynamic_cast<Resistor*>(componant));
 		case 'c':
 			return new Cap(*dynamic_cast<Cap*>(componant));
+		case 'i':
+			return new Inductor(*dynamic_cast<Inductor*>(componant));
 		case 'p':
 			return new Cpe(*dynamic_cast<Cpe*>(componant));
 		case 'w':
@@ -39,6 +42,8 @@ char Componant::getComponantChar(Componant* componant)
 		return 'r';
 	if(dynamic_cast<Cap*>(componant))
 		return 'c';
+	if(dynamic_cast<Inductor*>(componant))
+		return 'i';
 	if(dynamic_cast<Cpe*>(componant))
 		return 'p';
 	if(dynamic_cast<Warburg*>(componant))
