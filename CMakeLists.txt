@@ -5,12 +5,16 @@ project(eisgenerator)
 set(SRC_FILES
 	componant.cpp
 	cap.cpp
+	inductor.cpp
 	resistor.cpp
 	constantphase.cpp
 	warburg.cpp
 	model.cpp
 	tokenize.cpp
 	paralellseriel.cpp
+	log.cpp
+	normalize.cpp
+	basicmath.cpp
 	log.cpp
 	normalize.cpp
 	basicmath.cpp
@@ -30,6 +34,7 @@ set(API_HEADERS_CPP
 	${API_HEADERS_CPP_DIR}/basicmath.h
 	${API_HEADERS_CPP_DIR}/eistype.h
 	${API_HEADERS_CPP_DIR}/normalize.h
+	${API_HEADERS_CPP_DIR}/inductor.h
 )
 
 set(API_HEADERS_C_DIR eisgenerator/c/)

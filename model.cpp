@@ -4,6 +4,7 @@
 #include "tokenize.h"
 #include "cap.h"
 #include "resistor.h"
+#include "inductor.h"
 #include "constantphase.h"
 #include "warburg.h"
 #include "paralellseriel.h"
@@ -114,6 +115,11 @@ Componant *Model::processBracket(std::string& str)
 				case 'r':
 				case 'R':
 					componants.push_back(new Resistor(getParamStr(nodeStr, i)));
+					i = opposingBraket(nodeStr, i, '}');
+					break;
+				case 'l':
+				case 'L':
+					componants.push_back(new Inductor(getParamStr(nodeStr, i)));
 					i = opposingBraket(nodeStr, i, '}');
 					break;
 				case 'p':
