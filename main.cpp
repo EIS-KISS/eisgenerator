@@ -63,7 +63,7 @@ static void runSweep(const std::string& modelString, eis::Range omega, bool norm
 	std::cout<<(hertz ? "freqency" : "omega")<<",real,im\n";
 
 	for(const eis::DataPoint& res : results)
-		std::cout<<res.omega/(2*M_PI)<<','<<res.im.real()<<','<<(invert ? 0-res.im.imag() : res.im.imag())<<'\n';
+		std::cout<<(hertz ? res.omega/(2*M_PI) : res.omega)<<','<<res.im.real()<<','<<(invert ? 0-res.im.imag() : res.im.imag())<<'\n';
 
 	eis::Log(eis::Log::INFO)<<"time taken: "<<duration.count()<<" us";
 }
