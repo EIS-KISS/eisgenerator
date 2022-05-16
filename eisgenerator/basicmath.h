@@ -11,4 +11,5 @@ namespace eis
 	std::complex<fvalue> mean(const std::vector<eis::DataPoint>& data);
 	fvalue median(std::vector<fvalue> data);
 	std::complex<fvalue> median(const std::vector<eis::DataPoint>& data);
+	std::vector<eis::DataPoint> rescale(const std::vector<eis::DataPoint>& data, size_t outputSize);
 }

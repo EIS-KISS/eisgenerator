@@ -5,6 +5,7 @@
 #include "model.h"
 #include "log.h"
 #include "normalize.h"
+#include "basicmath.h"
 
 void printDataVect(const std::vector<eis::DataPoint> in)
 {

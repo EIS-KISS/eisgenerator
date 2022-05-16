@@ -100,3 +100,18 @@ fvalue eis::median(std::vector<fvalue> data)
 	else
 		return data[data.size()/2];
 }
+
+std::vector<eis::DataPoint> eis::rescale(const std::vector<eis::DataPoint>& data, size_t outputSize)
+{
+	std::vector<eis::DataPoint> output(outputSize);
+	for(size_t i = 0; i < output.size(); ++i)
+	{
+		double position = static_cast<double>(i) / (output.size()-1);
+		double sourcePosF = (data.size()-1)*position;
+		size_t sourcePos = (data.size()-1)*position;
+		double frac = sourcePosF - sourcePos;
+		output[i].im = data[sourcePos].im*(1-frac) + data[sourcePos+1].im*frac;
+		output[i].omega = data[sourcePos].omega*(1-frac) + data[sourcePos+1].omega*frac;
+	}
+	return output;
+}
