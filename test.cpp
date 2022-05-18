@@ -237,12 +237,12 @@ int main(int argc, char** argv)
 {
 	eis::Log::headers = true;
 	eis::Log::level = eis::Log::INFO;
-	//runSingle();
-	//runSweepByIndex();
-	//runSweep();
+	runSingle();
+	runSweepByIndex();
+	runSweep();
 	runRescale();
 	runNormalize();
-	//runEraseSingularities();
+	runEraseSingularities();
 	runReduce();
 	return 0;
 }
