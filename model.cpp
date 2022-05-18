@@ -383,5 +383,22 @@ size_t Model::getFlatParametersCount()
 
 std::string Model::getModelStr()
 {
-	return _modelStr;
+	std::string output;
+	output.reserve(_modelStr.size());
+	int bracket = 0;
+	for(const char c : _modelStr)
+	{
+		if(c == '{')
+			++bracket;
+		else  if(bracket == 0)
+			output.push_back(c);
+
+		if(c == '}')
+		{
+			--bracket;
+			if(bracket < 0)
+				return _modelStr;
+		}
+	}
+	return output;
 }
