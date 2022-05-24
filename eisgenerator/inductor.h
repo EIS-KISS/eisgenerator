@@ -18,6 +18,8 @@ public:
 	virtual std::vector<fvalue> getParam() override;
 	virtual void setParam(const std::vector<fvalue>& param) override;
 	virtual size_t paramCount() override;
+	virtual char getComponantChar() const override;
+	static constexpr char staticGetComponantChar(){return 'l';}
 	virtual ~Inductor() = default;
 };
 

@@ -60,3 +60,8 @@ size_t Inductor::paramCount()
 {
 	return 1;
 }
+
+char Inductor::getComponantChar() const
+{
+	return staticGetComponantChar();
+}

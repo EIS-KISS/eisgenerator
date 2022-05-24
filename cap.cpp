@@ -56,6 +56,11 @@ void Cap::setParam(const std::vector<fvalue>& param)
 	_C = param[0];
 }
 
+char Cap::getComponantChar() const
+{
+	return Cap::staticGetComponantChar();
+}
+
 size_t Cap::paramCount()
 {
 	return 1;

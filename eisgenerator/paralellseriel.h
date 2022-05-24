@@ -16,6 +16,8 @@ public:
 	void operator=(const Parallel& in);
 	~Parallel();
 	virtual std::complex<fvalue> execute(fvalue omaga) override;
+	virtual char getComponantChar() const override;
+	static constexpr char staticGetComponantChar(){return '|';}
 };
 
 class Serial: public Componant
@@ -28,6 +30,8 @@ public:
 	void operator=(const Serial& in);
 	~Serial();
 	virtual std::complex<fvalue> execute(fvalue omaga) override;
+	virtual char getComponantChar() const override;
+	static constexpr char staticGetComponantChar(){return 's';}
 };
 
 }

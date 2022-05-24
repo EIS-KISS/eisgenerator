@@ -35,6 +35,11 @@ std::complex<fvalue> Parallel::execute(fvalue omega)
 	return std::complex<fvalue>(1,0)/accum;
 }
 
+char Parallel::getComponantChar() const
+{
+	return staticGetComponantChar();
+}
+
 Serial::Serial(std::vector<Componant*> componantsIn): componants(componantsIn)
 {
 }
@@ -66,4 +71,9 @@ std::complex<fvalue> Serial::execute(fvalue omega)
 		accum += componant->execute(omega);
 	}
 	return accum;
+}
+
+char Serial::getComponantChar() const
+{
+	return staticGetComponantChar();
 }

@@ -59,3 +59,8 @@ size_t Resistor::paramCount()
 {
 	return 1;
 }
+
+char Resistor::getComponantChar() const
+{
+	return staticGetComponantChar();
+}

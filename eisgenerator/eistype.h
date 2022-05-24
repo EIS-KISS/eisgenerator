@@ -17,6 +17,7 @@ struct Range
 	fvalue end;
 	size_t count;
 	bool log = false;
+	char type = 'x';
 
 	fvalue stepSize() const
 	{
@@ -38,7 +39,7 @@ struct Range
 	{
 		return operator*(static_cast<fvalue>(1.0)/in);
 	}
-	Range(fvalue startI, fvalue endI, size_t countI, bool logI = false): start(startI), end(endI), count(countI), log(logI){}
+	Range(fvalue startI, fvalue endI, size_t countI, bool logI = false, char typeI = 'x'): start(startI), end(endI), count(countI), log(logI), type(typeI){}
 	Range() = default;
 };
 

@@ -24,9 +24,9 @@ class Componant
 		virtual void setParam(const std::vector<fvalue>& param){};
 		virtual size_t paramCount(){return 0;}
 		virtual ~Componant() = default;
+		virtual char getComponantChar() const = 0;
 
 		static Componant* copy(Componant* componant);
-		static char getComponantChar(Componant* componant);
 };
 
 }

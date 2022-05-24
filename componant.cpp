@@ -7,51 +7,34 @@
 #include "warburg.h"
 #include "log.h"
 #include "inductor.h"
+#include "finitetr.h"
 
 using namespace eis;
 
 Componant* Componant::copy(Componant* componant)
 {
-	switch(getComponantChar(componant))
+	switch(componant->getComponantChar())
 	{
-		case 'r':
+		case Resistor::staticGetComponantChar():
 			return new Resistor(*dynamic_cast<Resistor*>(componant));
-		case 'c':
+		case Cap::staticGetComponantChar():
 			return new Cap(*dynamic_cast<Cap*>(componant));
-		case 'i':
+		case Inductor::staticGetComponantChar():
 			return new Inductor(*dynamic_cast<Inductor*>(componant));
-		case 'p':
+		case Cpe::staticGetComponantChar():
 			return new Cpe(*dynamic_cast<Cpe*>(componant));
-		case 'w':
+		case Warburg::staticGetComponantChar():
 			return new Warburg(*dynamic_cast<Warburg*>(componant));
-		case 'l':
+		case FiniteTransmitionline::staticGetComponantChar():
+			return new FiniteTransmitionline(*dynamic_cast<FiniteTransmitionline*>(componant));
+		case Parallel::staticGetComponantChar():
 			return new Parallel(*dynamic_cast<Parallel*>(componant));
-		case 's':
+		case Serial::staticGetComponantChar():
 			return new Serial(*dynamic_cast<Serial*>(componant));
 		default:
-			Log(Log::ERROR)<<"unimplmented type copy for "<<getComponantChar(componant)<<'\n';
+			Log(Log::ERROR)<<"unimplmented type copy for "<<componant->getComponantChar();
 			assert(0);
 			break;
 	}
 	return nullptr;
-}
-
-char Componant::getComponantChar(Componant* componant)
-{
-	if(dynamic_cast<Resistor*>(componant))
-		return 'r';
-	if(dynamic_cast<Cap*>(componant))
-		return 'c';
-	if(dynamic_cast<Inductor*>(componant))
-		return 'i';
-	if(dynamic_cast<Cpe*>(componant))
-		return 'p';
-	if(dynamic_cast<Warburg*>(componant))
-		return 'w';
-	if(dynamic_cast<Parallel*>(componant))
-		return 'l';
-	if(dynamic_cast<Serial*>(componant))
-		return 's';
-
-	return 'x';
 }

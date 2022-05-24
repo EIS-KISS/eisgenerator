@@ -21,7 +21,7 @@
 
 using namespace eis;
 
-Log::Log(Level type)
+Log::Log(Level type, bool endlineI): endline(endlineI)
 {
 	msglevel = type;
 	if(headers) 
@@ -32,7 +32,7 @@ Log::Log(Level type)
 
 Log::~Log() 
 {
-	if(opened && endline) 
+	if(opened && endline)
 	{
 		std::cout<<'\n';
 	}
@@ -63,4 +63,3 @@ std::string Log::getLabel(Level level)
 	
 bool Log::headers = false;
 Log::Level Log::level = WARN;
-bool Log::endline = true;

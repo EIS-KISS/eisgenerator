@@ -19,7 +19,7 @@ static struct argp_option options[] =
   {"model",      'm', "[STRING]",    0,  "set model string" },
   {"omega",      'o', "[START-END]", 0,  "set omega range" },
   {"omegasteps", 'c', "[COUNT]",     0,  "set omega range steps" },
-  {"log",       'l', 0,      0,  "use logarithmic steps" },
+  {"linear",       'l', 0,      0,  "use linear instead of logarithmic steps" },
   {"normalize", 'n', 0,      0,  "normalize values" },
   {"reduce",    'r', 0,      0,  "reduce values to \"interesting\" range" },
   {"hz",        'h', 0,      0,  "freqency values as temporal frequency instead of angular frequency"},
@@ -43,7 +43,7 @@ struct Config
 	bool hertz = false;
 	bool invert = false;
 
-	Config(): omegaRange(1, 1001, 1)
+	Config(): omegaRange(1, 1001, 1, true)
 	{}
 };
 
@@ -70,7 +70,7 @@ parse_opt (int key, char *arg, struct argp_state *state)
 		config->modelStr.assign(arg);
 		break;
 	case 'l':
-		config->omegaRange.log = true;
+		config->omegaRange.log = false;
 		break;
 	case 'n':
 		config->normalize = true;

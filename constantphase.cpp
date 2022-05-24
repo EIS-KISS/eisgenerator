@@ -65,3 +65,8 @@ size_t Cpe::paramCount()
 {
 	return 2;
 }
+
+char Cpe::getComponantChar() const
+{
+	return Cpe::staticGetComponantChar();
+}

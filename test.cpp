@@ -73,7 +73,7 @@ void printComponants(eis::Model& model)
 	eis::Log(eis::Log::DEBUG)<<"Compnants:";
 	for(eis::Componant* componant : model.getFlatComponants())
 	{
-		eis::Log(eis::Log::DEBUG)<<eis::Componant::getComponantChar(componant)<<"{";
+		eis::Log(eis::Log::DEBUG)<<componant->getComponantChar()<<"{";
 		for(size_t i = 0; i < componant->paramCount(); ++i)
 		{
 			eis::Log(eis::Log::DEBUG)<<componant->getParam()[i];

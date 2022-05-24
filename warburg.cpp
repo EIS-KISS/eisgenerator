@@ -17,7 +17,7 @@ Warburg::Warburg(std::string paramStr)
 	std::vector<std::string> tokens = tokenize(paramStr, ',');
 	if(tokens.size() < 1)
 	{
-		Log(Log::WARN)<<"to few parameters in "<<__func__<<" parameter string: "<<paramStr<<'\n';
+		Log(Log::WARN)<<"to few parameters in "<<__func__<<" parameter string: "<<paramStr;
 		return;
 	}
 	else
@@ -58,4 +58,9 @@ void Warburg::setParam(const std::vector<fvalue>& param)
 size_t Warburg::paramCount()
 {
 	return 1;
+}
+
+char Warburg::getComponantChar() const
+{
+	return staticGetComponantChar();
 }
