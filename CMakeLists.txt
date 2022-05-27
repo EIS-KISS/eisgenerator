@@ -73,5 +73,3 @@ target_link_libraries(${PROJECT_NAME}_export ${LIBS_TEST})
 target_include_directories(${PROJECT_NAME}_export PUBLIC eisgenerator)
 set_target_properties(${PROJECT_NAME}_export PROPERTIES COMPILE_FLAGS "-std=c++20 -Wall -O2 -march=native -g" LINK_FLAGS "-flto")
 install(TARGETS ${PROJECT_NAME}_export DESTINATION bin)
-
-

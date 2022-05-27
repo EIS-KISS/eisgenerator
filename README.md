@@ -39,10 +39,17 @@ flags:
 
 * Supported Elements
 	* c: cap
+		* one parameter: capacitance {C}
 	* r: resistor
+		* one parameter: resistance {R}
 	* l: inductor
-	* w: warburg element
+		* one parameter: inductance {L}
+	* w: warburg element (infinite), one parameters {A}
+		* one parameter: Warburg coefficant {A}
 	* p: constant phase element
+		* two parameters: {Q, alpha}
+	* t: finite approximation of a transmition line
+		* three parameters: capacitance, resistance, approximation order {C, R, n}
 
 --omega: range of freqency values (in rad/s) to sweep
 
@@ -52,13 +59,13 @@ flags:
 
 further flags can be found with: eisgenerator_export --help
 
-### Spectra
+### Plot Spectra
 
 requires [gnuplot](http://www.gnuplot.info/) in $PATH
 
 eisgenerator_plot --model="r{1e3}-r{100}c{1e-6}" --omega=1-1e6 --log --omegasteps=100
 
-Generates Nyquist plot of model specified, allos  usage of the same flags as eisgenerator_export
+Generates Nyquist plot of model specified, allows the usage of the same flags as eisgenerator_export
 
 ## Python bindings
 
