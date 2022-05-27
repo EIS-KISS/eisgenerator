@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.20)
 
-project(eisgenerator)
+project(eisgenerator LANGUAGES C CXX)
 
 set(SRC_FILES
 	componant.cpp
@@ -41,6 +41,17 @@ set(API_HEADERS_CPP
 set(API_HEADERS_C_DIR eisgenerator/c/)
 
 set(API_HEADERS_C ${API_HEADERS_CPP_DIR}/model.h)
+
+message("Platform " ${CMAKE_SYSTEM_NAME})
+if(WIN32)
+	message("Building on Windows")
+	file(GLOB_RECURSE ARGP_SRC ${PROJECT_SOURCE_DIR}/argp/*.*)
+	set(SRC_FILES ${SRC_FILES} ${ARGP_SRC})
+	include_directories(./argp)
+else()
+	message("Building on UNIX")
+endif(WIN32)
+
 
 add_library(${PROJECT_NAME} SHARED ${SRC_FILES})
 target_link_libraries(${PROJECT_NAME} ${LIBS})
