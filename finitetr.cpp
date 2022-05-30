@@ -26,6 +26,7 @@ FiniteTransmitionline::FiniteTransmitionline(fvalue c, fvalue r, unsigned int n)
 
 FiniteTransmitionline::FiniteTransmitionline(std::string paramStr)
 {
+
 	std::vector<std::string> tokens = tokenize(paramStr, ',');
 	if(tokens.size() < paramCount())
 	{
@@ -33,6 +34,8 @@ FiniteTransmitionline::FiniteTransmitionline(std::string paramStr)
 		_C = 1e-6;
 		_R = 1000;
 		_n = 4;
+		if(subComponant)
+				delete subComponant;
 		subComponant = createTransmitionLine(_C, _R, _n);
 		return;
 	}
@@ -43,6 +46,8 @@ FiniteTransmitionline::FiniteTransmitionline(std::string paramStr)
 			_R = std::stod(tokens[0]);
 			_C = std::stod(tokens[1]);
 			_n = std::stod(tokens[2]);
+			if(subComponant)
+				delete subComponant;
 			subComponant = createTransmitionLine(_C, _R, _n);
 		}
 		catch(const std::invalid_argument& ia)
@@ -58,6 +63,8 @@ FiniteTransmitionline::FiniteTransmitionline(const FiniteTransmitionline& in)
 	_R = in._R;
 	_C = in._C;
 	_n = in._n;
+	if(subComponant)
+		delete subComponant;
 	subComponant = createTransmitionLine(_C, _R, _n);
 }
 
@@ -98,6 +105,10 @@ void FiniteTransmitionline::setParam(const std::vector<fvalue>& param)
 	}
 
 	_n = param[2];
+
+	if(subComponant)
+		delete subComponant;
+	subComponant = createTransmitionLine(_C, _R, _n);
 }
 
 char FiniteTransmitionline::getComponantChar() const
