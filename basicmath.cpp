@@ -1,5 +1,6 @@
 #include "basicmath.h"
 #include <algorithm>
+#include <random>
 
 #include "eistype.h"
 
@@ -114,4 +115,19 @@ std::vector<eis::DataPoint> eis::rescale(const std::vector<eis::DataPoint>& data
 		output[i].omega = data[sourcePos].omega*(1-frac) + data[sourcePos+1].omega*frac;
 	}
 	return output;
+}
+
+void eis::noise(std::vector<eis::DataPoint>& data, double amplitude, bool relative)
+{
+	std::random_device rd;
+	std::default_random_engine rande(rd());
+
+	for(eis::DataPoint& point : data)
+	{
+		double realNoise = (static_cast<double>(rande() >> 1) / (rande.max() >> 1))*amplitude;
+		point.im.real(relative ? point.im.real()+realNoise/point.im.real() : point.im.real()+realNoise);
+
+		double imgNoise = (static_cast<double>(rande() >> 1) / (rande.max() >> 1))*amplitude;
+		point.im.imag(relative ? point.im.imag()+imgNoise/point.im.imag() : point.im.imag()+imgNoise);
+	}
 }

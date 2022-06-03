@@ -3,6 +3,7 @@
 #include <chrono>
 #include <cmath>
 
+#include "basicmath.h"
 #include "model.h"
 #include "log.h"
 #include "options.h"
@@ -36,7 +37,8 @@ static void paramSweepCb(std::vector<eis::DataPoint>& data, const std::vector<fv
 		std::cout<<'.'<<std::flush;
 }
 
-static void runSweep(const std::string& modelString, eis::Range omega, bool normalize = false, bool reduce = false, bool hertz = false, bool invert = false)
+static void runSweep(const std::string& modelString, eis::Range omega, bool normalize = false,
+					 bool reduce = false, bool hertz = false, bool invert = false, double noise = 0)
 {
 	std::vector<eis::DataPoint> results;
 
@@ -63,6 +65,9 @@ static void runSweep(const std::string& modelString, eis::Range omega, bool norm
 	{
 		eis::Log(eis::Log::INFO)<<"results:";
 	}
+
+	if(noise > 0)
+		eis::noise(results, noise, false);
 
 	std::cout<<(hertz ? "freqency" : "omega")<<",real,im\n";
 
@@ -107,7 +112,7 @@ int main(int argc, char** argv)
 	switch(config.mode)
 	{
 		case MODE_SWEEP:
-			runSweep(config.modelStr, config.omegaRange, config.normalize, config.reduce, config.hertz, config.invert);
+			runSweep(config.modelStr, config.omegaRange, config.normalize, config.reduce, config.hertz, config.invert, config.noise);
 			break;
 		case MODE_PARAM_SWEEP:
 			runParamSweep();

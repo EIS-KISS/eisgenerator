@@ -24,6 +24,7 @@ static struct argp_option options[] =
   {"reduce",    'r', 0,      0,  "reduce values to \"interesting\" range" },
   {"hz",        'h', 0,      0,  "freqency values as temporal frequency instead of angular frequency"},
   {"invert",        'i', 0,      0,  "inverts the imaginary axis"},
+  {"noise",        'x', "[AMPLITUDE]",      0,  "add noise to output"},
   { 0 }
 };
 
@@ -42,6 +43,7 @@ struct Config
 	bool reduce = false;
 	bool hertz = false;
 	bool invert = false;
+	double noise = 0;
 
 	Config(): omegaRange(1, 1001, 1, true)
 	{}
@@ -123,6 +125,9 @@ parse_opt (int key, char *arg, struct argp_state *state)
 		}
 		break;
 	}
+	case 'x':
+		config->noise = std::stod(std::string(arg));
+		break;
 	default:
 		return ARGP_ERR_UNKNOWN;
 	}
