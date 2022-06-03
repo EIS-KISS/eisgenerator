@@ -1,5 +1,6 @@
 #pragma once
 #include <complex>
+#include <vector>
 
 typedef double fvalue;
 
@@ -42,5 +43,7 @@ struct Range
 	Range(fvalue startI, fvalue endI, size_t countI, bool logI = false, char typeI = 'x'): start(startI), end(endI), count(countI), log(logI), type(typeI){}
 	Range() = default;
 };
+
+bool saveToDisk(const std::vector<DataPoint>& data, std::string fileName);
 
 }

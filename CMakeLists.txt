@@ -19,6 +19,7 @@ set(SRC_FILES
 	normalize.cpp
 	basicmath.cpp
 	finitetr.cpp
+	eistype.cpp
 )
 
 set(API_HEADERS_CPP_DIR eisgenerator/)
