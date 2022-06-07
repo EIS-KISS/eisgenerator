@@ -24,7 +24,7 @@ static struct argp_option options[] =
   {"reduce",    'r', 0,      0,  "reduce values to \"interesting\" range" },
   {"hz",        'h', 0,      0,  "freqency values as temporal frequency instead of angular frequency"},
   {"invert",        'i', 0,      0,  "inverts the imaginary axis"},
-  {"noise",        'x', "[AMPLITUDE]",      0,  "add noise to output"},
+  {"noise",        'x', "[AMPLITUDE]",      OPTION_ARG_OPTIONAL,  "add noise to output"},
   { 0 }
 };
 

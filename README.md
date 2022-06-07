@@ -31,7 +31,7 @@ In a console do:
 
 ### Generate spectra
 
-eisgenerator_export --model="r{1e3}-r{100}c{1e-6}" --omega=1-1e6 --log --omegasteps=100
+eisgenerator_export --model="r{1e3}-r{100}c{1e-6}" --omega=1-1e6 --omegasteps=100
 
 flags:
 
@@ -52,8 +52,6 @@ flags:
 		* three parameters: capacitance, resistance, approximation order {C, R, n}
 
 --omega: range of freqency values (in rad/s) to sweep
-
---log: use logarithmic steps for omega
 
 --omegasteps: amount of steps to take in the range specified by --omega
 
