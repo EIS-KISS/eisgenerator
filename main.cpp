@@ -2,6 +2,7 @@
 #include <complex>
 #include <chrono>
 #include <cmath>
+#include <filesystem>
 
 #include "basicmath.h"
 #include "model.h"
@@ -12,6 +13,8 @@
 #ifndef M_PI
     #define M_PI 3.14159265358979323846
 #endif
+
+static constexpr char PARA_SWEEP_OUTPUT_DIR[] = "./sweep";
 
 static void printComponants(eis::Model& model)
 {
@@ -27,14 +30,6 @@ static void printComponants(eis::Model& model)
 		}
 		eis::Log(eis::Log::DEBUG)<<"}";
 	}
-}
-
-static void paramSweepCb(std::vector<eis::DataPoint>& data, const std::vector<fvalue>& parameters)
-{
-	static size_t i = 0;
-	++i;
-	if((i & 0x3FF) == 0)
-		std::cout<<'.'<<std::flush;
 }
 
 static void runSweep(const std::string& modelString, eis::Range omega, bool normalize = false,
@@ -77,19 +72,68 @@ static void runSweep(const std::string& modelString, eis::Range omega, bool norm
 	eis::Log(eis::Log::INFO)<<"time taken: "<<duration.count()<<" us";
 }
 
-static void runParamSweep()
+std::vector<eis::Range> rangesFromParamString(const std::string& parameterString, size_t modelParamCount, size_t steps)
 {
-	eis::Log(eis::Log::INFO)<<__func__;
-	std::string modelStr("w{20e3}p{1e-7, 0.9}");
+	std::vector<std::string> tokens = tokenize(parameterString, ',');
+
+	if(tokens.size() != modelParamCount)
+	{
+		eis::Log(eis::Log::ERROR)<<"Model requires "<<modelParamCount<<" parameters but "<<tokens.size()<<" parameters where provided\n";
+		return std::vector<eis::Range>();
+	}
+
+	std::vector<eis::Range> ranges;
+
+	try
+	{
+		for(const std::string& str : tokens)
+		{
+			std::vector<std::string> subtokens = tokenize(str, '-', '\0', '\0', 'e');
+			if(subtokens.size() > 2)
+			{
+				eis::Log(eis::Log::ERROR)<<"a range requires two numbers only "<<str<<" provides "<<subtokens.size()<<" numbers\n";
+				return std::vector<eis::Range>();
+			}
+			else if(subtokens.size() == 1)
+			{
+				ranges.push_back(eis::Range(std::stod(subtokens[0]), std::stod(subtokens[0]), 1, true));
+			}
+			else
+			{
+				ranges.push_back(eis::Range(std::stod(subtokens[0]), std::stod(subtokens[1]), steps, true));
+			}
+		}
+	}
+	catch (const std::invalid_argument& ia)
+	{
+		eis::Log(eis::Log::ERROR)<<ia.what();
+		return std::vector<eis::Range>();
+	}
+	return ranges;
+}
+
+static void paramSweepCb(std::vector<eis::DataPoint>& data, const std::vector<fvalue>& parameters)
+{
+	static size_t i = 0;
+	size_t outputSize = data.size();
+	data = eis::reduceRegion(data);
+	data = eis::rescale(data, outputSize);
+	eis::saveToDisk(data, std::string(PARA_SWEEP_OUTPUT_DIR)+std::string("/")+std::to_string(++i)+".csv");
+	eis::Log(eis::Log::INFO, false)<<'.';
+}
+
+static void runParamSweep(const std::string& modelstr, const eis::Range& omega, const std::string& parameterString, size_t steps)
+{
+	std::string modelStr(modelstr);
 
 	eis::Model model(modelStr);
 
-	std::vector<eis::Range> parameters;
-	parameters.push_back(eis::Range(1e3, 50e3, 100));
-	parameters.push_back(eis::Range(1e-7, 20e-7, 100));
-	parameters.push_back(eis::Range(0.7, 1.2, 100));
+	std::vector<eis::Range> parameters = rangesFromParamString(parameterString, model.getFlatParametersCount(), steps);
+	if(parameters.empty())
+		return;
 
-	eis::Range omega(0, 1e6, 25);
+	eis::Log(eis::Log::INFO)<<"Saving sweep to "<<PARA_SWEEP_OUTPUT_DIR;
+	std::filesystem::create_directory(PARA_SWEEP_OUTPUT_DIR);
 
 	auto start = std::chrono::high_resolution_clock::now();
 	model.executeParamSweep(parameters, omega, &paramSweepCb);
@@ -115,7 +159,7 @@ int main(int argc, char** argv)
 			runSweep(config.modelStr, config.omegaRange, config.normalize, config.reduce, config.hertz, config.invert, config.noise);
 			break;
 		case MODE_PARAM_SWEEP:
-			runParamSweep();
+			runParamSweep(config.modelStr, config.omegaRange, config.parameterString, config.paramSteps);
 			break;
 	}
 	return 0;
