@@ -38,7 +38,7 @@ public:
 	bool executeParamSweep(const std::vector<Range>& componantRanges, const Range& omega, std::function<void(std::vector<DataPoint>&, const std::vector<fvalue>&)> dataCb);
 	std::vector<DataPoint> executeParamByIndex(const std::vector<Range>& componantRanges, const Range& omega, size_t index);
 	std::vector<DataPoint> executeParamByIndexC(const std::vector<Range>& componantRanges, const Range& omega, size_t index);
-	std::string getModelStr();
+	std::string getModelStr() const;
 	std::vector<Componant*> getFlatComponants(Componant *model = nullptr);
 	std::vector<fvalue> getFlatParameters(Componant *model = nullptr);
 	size_t getFlatParametersCount();

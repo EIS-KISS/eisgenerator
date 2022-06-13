@@ -439,7 +439,7 @@ size_t Model::getFlatParametersCount()
 	return count;
 }
 
-std::string Model::getModelStr()
+std::string Model::getModelStr() const
 {
 	std::string output;
 	output.reserve(_modelStr.size());
