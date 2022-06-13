@@ -12,8 +12,9 @@ struct DataPoint
 	fvalue omega;
 };
 
-struct Range
+class Range
 {
+public:
 	fvalue start;
 	fvalue end;
 	size_t count;
@@ -42,6 +43,7 @@ struct Range
 	}
 	Range(fvalue startI, fvalue endI, size_t countI, bool logI = false, char typeI = 'x'): start(startI), end(endI), count(countI), log(logI), type(typeI){}
 	Range() = default;
+	void print(int level) const;
 };
 
 bool saveToDisk(const std::vector<DataPoint>& data, std::string fileName);

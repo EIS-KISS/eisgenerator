@@ -24,3 +24,8 @@ bool eis::saveToDisk(const std::vector<DataPoint>& data, std::string fileName)
 	file.close();
 	return true;
 }
+
+void eis::Range::print(int level) const
+{
+	Log(static_cast<Log::Level>(level))<<"Range for "<<type<<' '<<start<<'-'<<end<<' '<<count<<" steps";
+}
