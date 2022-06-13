@@ -233,9 +233,53 @@ void runEraseSingularities()
 	printDataVect(data);
 }
 
+inline void filterData(std::vector<eis::DataPoint>& data, size_t outputSize)
+{
+	data = eis::reduceRegion(data);
+
+	if(data.size() < outputSize/8)
+	{
+		data = std::vector<eis::DataPoint>();
+		return;
+	}
+	data = eis::rescale(data, outputSize/2);
+}
+
+std::vector<eis::DataPoint> getControll(size_t i, size_t* size = nullptr)
+{
+	eis::Model model("t{1,2,3}");
+	std::vector<eis::Range> modelRange;
+	modelRange.push_back(eis::Range(1e3, 1e4, 40, true, 't'));
+	modelRange.push_back(eis::Range(1e-6, 1e-5, 40, true, 't'));
+	modelRange.push_back(eis::Range(5, 5, 0, true, 't'));
+	eis::Range omega(10, 1e6, 100/2, true);
+	std::vector<eis::DataPoint> data = model.executeParamByIndex(modelRange, omega, i);
+	filterData(data, 100);
+	//data = torchToEis(eisToTorch(data));
+	if(size)
+		*size = eis::Model::getRequiredStepsForSweeps(modelRange);
+	return data;
+}
+
+void testExport()
+{
+
+	size_t rangeSteps;
+	getControll(0, &rangeSteps);
+	std::cout<<"need "<<rangeSteps<<" steps\n";
+	for(size_t i = 0; i < rangeSteps; ++i)
+	{
+		std::vector<eis::DataPoint> controll = getControll(i);
+
+		eis::saveToDisk(controll, std::string("./controll")+std::string("/")+std::to_string(++i)+".csv");
+		eis::Log(eis::Log::INFO,false)<<'.';
+	}
+	std::cout<<std::endl;
+}
+
 int main(int argc, char** argv)
 {
-	eis::Log::headers = true;
+	/*eis::Log::headers = true;
 	eis::Log::level = eis::Log::INFO;
 	runSingle();
 	runSweepByIndex();
@@ -243,6 +287,7 @@ int main(int argc, char** argv)
 	runRescale();
 	runNormalize();
 	runEraseSingularities();
-	runReduce();
+	runReduce();*/
+	testExport();
 	return 0;
 }
