@@ -30,20 +30,24 @@ void eis::eraseSingularites(std::vector<eis::DataPoint>& data)
 
 void eis::normalize(std::vector<eis::DataPoint>& data)
 {
-	fvalue maxRe = 0;
-	fvalue maxIm = 0;
+	fvalue maxRe = std::numeric_limits<fvalue>::min();
+	fvalue maxIm = std::numeric_limits<fvalue>::min();
+	fvalue minRe = std::numeric_limits<fvalue>::max();
 	for(const DataPoint& dataPoint : data)
 	{
-		maxRe = fabs(dataPoint.im.real()) > maxRe ? fabs(dataPoint.im.real()) :  maxRe;
+		maxRe = fabs(dataPoint.im.real()) > maxRe ? fabs(dataPoint.im.real()) : maxRe;
 		maxIm = fabs(dataPoint.im.imag()) > maxIm ? fabs(dataPoint.im.imag()) : maxIm;
+
+		if(minRe > dataPoint.im.real())
+			minRe = dataPoint.im.real();
 	}
 
-	maxRe = maxRe == 0 ? 1 : maxRe;
+	maxRe = maxRe == minRe ? 1 : maxRe-minRe;
 	maxIm = maxIm == 0 ? 1 : maxIm;
 
 	for(DataPoint& dataPoint : data)
 	{
-		dataPoint.im.real(dataPoint.im.real() / maxRe);
+		dataPoint.im.real((dataPoint.im.real()-minRe) / maxRe);
 		dataPoint.im.imag(dataPoint.im.imag() / maxIm);
 	}
 }

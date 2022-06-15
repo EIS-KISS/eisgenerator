@@ -132,6 +132,9 @@ static void runParamSweep(const std::string& modelstr, const eis::Range& omega, 
 	if(parameters.empty())
 		return;
 
+	for(const eis::Range& range : parameters)
+		range.print(eis::Log::INFO);
+
 	eis::Log(eis::Log::INFO)<<"Saving sweep to "<<PARA_SWEEP_OUTPUT_DIR;
 	std::filesystem::create_directory(PARA_SWEEP_OUTPUT_DIR);
 
