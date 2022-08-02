@@ -27,3 +27,33 @@ std::vector<std::string> tokenize(const std::string& str, const char delim, cons
 		tokens.push_back(token);
 	return tokens;
 }
+
+size_t opposingBraket(const std::string& str, size_t index, char bracketChar)
+{
+	for(size_t i = index; i < str.size(); ++i)
+	{
+		if(str[i] == bracketChar)
+			return i;
+	}
+	return std::string::npos;
+}
+
+size_t deepestBraket(const std::string& str, char bracketChar)
+{
+	size_t deepestPos = std::string::npos;
+	size_t deepestLevel = 0;
+	size_t level = 0;
+	for(size_t i = 0; i < str.size(); ++i)
+	{
+		if(str[i] == bracketChar)
+		{
+			++level;
+			if(level > deepestLevel)
+			{
+				deepestLevel = level;
+				deepestPos = i;
+			}
+		}
+	}
+	return deepestPos;
+}

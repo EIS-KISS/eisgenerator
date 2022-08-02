@@ -14,8 +14,6 @@ namespace eis
 class Model
 {
 private:
-	size_t opposingBraket(const std::string& str, size_t index, char bracketChar = ')');
-	size_t deepestBraket(const std::string& str);
 	Componant *processBrackets(std::string& str, size_t& bracketCounter);
 	Componant *processBracket(std::string& str);
 	std::string getParamStr(const std::string& str, size_t index);
