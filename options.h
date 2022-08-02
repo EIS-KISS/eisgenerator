@@ -4,7 +4,7 @@
 #include <argp.h>
 #include "model.h"
 #include "log.h"
-#include "tokenize.h"
+#include "strops.h"
 
 const char *argp_program_version = "eisgenerator-1.0";
 const char *argp_program_bug_address = "<carl@uvos.xyz>";

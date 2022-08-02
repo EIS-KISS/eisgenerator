@@ -1,5 +1,5 @@
 #include "constantphase.h"
-#include "tokenize.h"
+#include "strops.h"
 #include <cstdlib>
 #define _USE_MATH_DEFINES
 #include <cmath>

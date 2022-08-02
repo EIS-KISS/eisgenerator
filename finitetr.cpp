@@ -9,7 +9,7 @@
 #include "cap.h"
 #include "resistor.h"
 #include "log.h"
-#include "tokenize.h"
+#include "strops.h"
 
 using namespace eis;
 

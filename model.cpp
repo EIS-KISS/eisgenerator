@@ -3,7 +3,7 @@
 #include <iostream>
 #include <assert.h>
 #include <vector>
-#include "tokenize.h"
+#include "strops.h"
 #include "cap.h"
 #include "resistor.h"
 #include "inductor.h"

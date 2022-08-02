@@ -10,7 +10,6 @@ set(SRC_FILES
 	constantphase.cpp
 	warburg.cpp
 	model.cpp
-	tokenize.cpp
 	paralellseriel.cpp
 	log.cpp
 	normalize.cpp
@@ -20,6 +19,7 @@ set(SRC_FILES
 	basicmath.cpp
 	finitetr.cpp
 	eistype.cpp
+	strops.cpp
 )
 
 set(API_HEADERS_CPP_DIR eisgenerator/)

@@ -1,5 +1,5 @@
 #include "warburg.h"
-#include "tokenize.h"
+#include "strops.h"
 #include <cstdlib>
 #include <math.h>
 

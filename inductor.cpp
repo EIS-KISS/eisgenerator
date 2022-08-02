@@ -1,5 +1,5 @@
 #include "inductor.h"
-#include "tokenize.h"
+#include "strops.h"
 #include <cstdlib>
 #include <math.h>
 

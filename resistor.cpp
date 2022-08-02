@@ -1,5 +1,5 @@
 #include "resistor.h"
-#include "tokenize.h"
+#include "strops.h"
 #include <vector>
 #include <math.h>
 
