@@ -1,4 +1,33 @@
 #include "strops.h"
+#include <algorithm>
+#include <cassert>
+
+#include "log.h"
+
+char getOpposingBracketChar(const char ch)
+{
+	switch(ch)
+	{
+		case '(':
+			return ')';
+		case ')':
+			return '(';
+		case '{':
+			return '}';
+		case '}':
+			return '{';
+		case '[':
+			return ']';
+		case ']':
+			return '[';
+		case '<':
+			return '>';
+		default:
+			eis::Log(eis::Log::ERROR)<<ch<<" is not a valid bracket char";
+			assert(false);
+	}
+	return 'x';
+}
 
 std::vector<std::string> tokenize(const std::string& str, const char delim, const char ignBracketStart, const char ignBracketEnd, const char escapeChar)
 {
@@ -38,14 +67,20 @@ size_t opposingBraket(const std::string& str, size_t index, char bracketChar)
 	return std::string::npos;
 }
 
-size_t deepestBraket(const std::string& str, char bracketChar)
+size_t deepestBraket(const std::string& str, std::string bracketChars, size_t* levelOut)
 {
 	size_t deepestPos = std::string::npos;
 	size_t deepestLevel = 0;
 	size_t level = 0;
+
+	std::string opposingBraketChars;
+
+	for(char ch : bracketChars)
+		opposingBraketChars.push_back(getOpposingBracketChar(ch));
+
 	for(size_t i = 0; i < str.size(); ++i)
 	{
-		if(str[i] == bracketChar)
+		if(std::find(bracketChars.begin(), bracketChars.end(), str[i]) != bracketChars.end())
 		{
 			++level;
 			if(level > deepestLevel)
@@ -54,6 +89,13 @@ size_t deepestBraket(const std::string& str, char bracketChar)
 				deepestPos = i;
 			}
 		}
+		else if(std::find(opposingBraketChars.begin(), opposingBraketChars.end(), str[i]) != opposingBraketChars.end())
+		{
+			--level;
+		}
 	}
+
+	if(levelOut)
+		*levelOut = deepestLevel;
 	return deepestPos;
 }

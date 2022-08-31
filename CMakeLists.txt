@@ -20,6 +20,7 @@ set(SRC_FILES
 	finitetr.cpp
 	eistype.cpp
 	strops.cpp
+	translators.cpp
 )
 
 set(API_HEADERS_CPP_DIR eisgenerator/)
