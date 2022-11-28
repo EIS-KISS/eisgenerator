@@ -2,6 +2,9 @@
 #include <vector>
 #include <iostream>
 
+namespace eis
+{
+
 struct pair
 {
 	const char* a;
@@ -381,5 +384,7 @@ std::string eisToCdc(const std::string& in)
 	}
 
 	return out;
+}
+
 }
 
