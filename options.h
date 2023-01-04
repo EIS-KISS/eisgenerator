@@ -26,7 +26,16 @@ static struct argp_option options[] =
   {"hz",        'h', 0,      0,  "freqency values as temporal frequency instead of angular frequency"},
   {"invert",        'i', 0,      0,  "inverts the imaginary axis"},
   {"noise",        'x', "[AMPLITUDE]",      0,  "add noise to output"},
+  {"input-type",   't', "[STRING]",      0,  "set input string type, possible values: eis, boukamp, relaxis"},
   { 0 }
+};
+
+enum
+{
+	INPUT_TYPE_EIS,
+	INPUT_TYPE_BOUKAMP,
+	INPUT_TYPE_RELAXIS,
+	INPUT_TYPE_UNKOWN
 };
 
 enum
@@ -39,6 +48,7 @@ struct Config
 {
 	std::string modelStr = "c{1e-6}r{1e3}-r{1e3}";
 	unsigned int mode = MODE_SWEEP;
+	int inputType = INPUT_TYPE_EIS;
 	std::string parameterString;
 	size_t paramSteps = 10;
 	eis::Range omegaRange;
@@ -51,6 +61,17 @@ struct Config
 	Config(): omegaRange(1, 1e6, 50, true)
 	{}
 };
+
+static int parseInputType(const std::string& str)
+{
+	if(str == "eis")
+		return INPUT_TYPE_EIS;
+	else if(str == "boukamp")
+		return INPUT_TYPE_BOUKAMP;
+	else if(str == "relaxis")
+		return INPUT_TYPE_RELAXIS;
+	return INPUT_TYPE_UNKOWN;
+}
 
 static error_t
 parse_opt (int key, char *arg, struct argp_state *state)
@@ -131,6 +152,9 @@ parse_opt (int key, char *arg, struct argp_state *state)
 	}
 	case 'x':
 		config->noise = std::stod(std::string(arg));
+		break;
+	case 't':
+		config->inputType = parseInputType(std::string(arg));
 		break;
 	default:
 		return ARGP_ERR_UNKNOWN;

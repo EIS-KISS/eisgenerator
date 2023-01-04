@@ -9,6 +9,7 @@
 #include "log.h"
 #include "options.h"
 #include "normalize.h"
+#include "translators.h"
 
 #ifndef M_PI
     #define M_PI 3.14159265358979323846
@@ -32,13 +33,12 @@ static void printComponants(eis::Model& model)
 	}
 }
 
-static void runSweep(const std::string& modelString, eis::Range omega, bool normalize = false,
-					 bool reduce = false, bool hertz = false, bool invert = false, double noise = 0)
+static void runSweep(const Config& config)
 {
 	std::vector<eis::DataPoint> results;
 
-	eis::Model model(modelString);
-
+	eis::Range omega = config.omegaRange;
+	eis::Model model(config.modelStr);
 	printComponants(model);
 
 	auto start = std::chrono::high_resolution_clock::now();
@@ -46,12 +46,12 @@ static void runSweep(const std::string& modelString, eis::Range omega, bool norm
 	auto end = std::chrono::high_resolution_clock::now();
 	auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
 
-	if(reduce)
+	if(config.reduce)
 	{
 		eis::Log(eis::Log::INFO)<<"reduced normalized results:";
 		results = eis::reduceRegion(results);
 	}
-	else if(normalize)
+	else if(config.normalize)
 	{
 		eis::Log(eis::Log::INFO)<<"normalized results:";
 		eis::normalize(results);
@@ -61,13 +61,13 @@ static void runSweep(const std::string& modelString, eis::Range omega, bool norm
 		eis::Log(eis::Log::INFO)<<"results:";
 	}
 
-	if(noise > 0)
-		eis::noise(results, noise, false);
+	if(config.noise > 0)
+		eis::noise(results, config.noise, false);
 
-	std::cout<<(hertz ? "freqency" : "omega")<<",real,im\n";
+	std::cout<<(config.hertz ? "freqency" : "omega")<<",real,im\n";
 
 	for(const eis::DataPoint& res : results)
-		std::cout<<(hertz ? res.omega/(2*M_PI) : res.omega)<<','<<res.im.real()<<','<<(invert ? 0-res.im.imag() : res.im.imag())<<'\n';
+		std::cout<<(config.hertz ? res.omega/(2*M_PI) : res.omega)<<','<<res.im.real()<<','<<(config.invert ? 0-res.im.imag() : res.im.imag())<<'\n';
 
 	eis::Log(eis::Log::INFO)<<"time taken: "<<duration.count()<<" us";
 }
@@ -122,13 +122,11 @@ static void paramSweepCb(std::vector<eis::DataPoint>& data, const std::vector<fv
 	eis::Log(eis::Log::INFO, false)<<'.';
 }
 
-static void runParamSweep(const std::string& modelstr, const eis::Range& omega, const std::string& parameterString, size_t steps)
+static void runParamSweep(Config config)
 {
-	std::string modelStr(modelstr);
+	eis::Model model(config.modelStr);
 
-	eis::Model model(modelStr);
-
-	std::vector<eis::Range> parameters = rangesFromParamString(parameterString, model.getFlatParametersCount(), steps);
+	std::vector<eis::Range> parameters = rangesFromParamString(config.parameterString, model.getFlatParametersCount(), config.paramSteps);
 	if(parameters.empty())
 		return;
 
@@ -139,7 +137,7 @@ static void runParamSweep(const std::string& modelstr, const eis::Range& omega, 
 	std::filesystem::create_directory(PARA_SWEEP_OUTPUT_DIR);
 
 	auto start = std::chrono::high_resolution_clock::now();
-	model.executeParamSweep(parameters, omega, &paramSweepCb);
+	model.executeParamSweep(parameters, config.omegaRange, &paramSweepCb);
 	auto end = std::chrono::high_resolution_clock::now();
 	auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
 	std::cout<<std::endl;
@@ -156,13 +154,22 @@ int main(int argc, char** argv)
 	if(config.hertz)
 		config.omegaRange = config.omegaRange*static_cast<fvalue>(2*M_PI);
 
+	if(config.inputType == INPUT_TYPE_BOUKAMP)
+		config.modelStr = eis::cdcToEis(config.modelStr);
+	else if(config.inputType == INPUT_TYPE_RELAXIS)
+		config.modelStr = eis::relaxisToEis(config.modelStr);
+	else if(config.inputType == INPUT_TYPE_UNKOWN)
+		eis::Log(eis::Log::WARN)<<"Invalid input type specified, assumeing eis";
+
+	eis::Log(eis::Log::INFO)<<"Using model string: "<<config.modelStr;
+
 	switch(config.mode)
 	{
 		case MODE_SWEEP:
-			runSweep(config.modelStr, config.omegaRange, config.normalize, config.reduce, config.hertz, config.invert, config.noise);
+			runSweep(config);
 			break;
 		case MODE_PARAM_SWEEP:
-			runParamSweep(config.modelStr, config.omegaRange, config.parameterString, config.paramSteps);
+			runParamSweep(config);
 			break;
 	}
 	return 0;
