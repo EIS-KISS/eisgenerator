@@ -333,5 +333,5 @@ std::string Model::getModelStr() const
 
 bool Model::isParamSweep()
 {
-	return getRequiredStepsForSweeps() != 0;
+	return getRequiredStepsForSweeps() > 1;
 }
