@@ -79,7 +79,16 @@ std::string eis::Range::getString() const
 	if(count > 1)
 		ss<<'~'<<end;
 	if(log)
-		ss<<'F';
+		ss<<'L';
 
 	return ss.str();
+}
+
+bool eis::Range::isSane() const
+{
+	if(log && (start == 0 || end == 0))
+		return false;
+	if(end < start)
+		return false;
+	return true;
 }

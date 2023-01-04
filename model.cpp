@@ -277,21 +277,22 @@ void Model::resolveSteps(int64_t index)
 	std::vector<size_t> placeMagnitude;
 	placeMagnitude.reserve(flatRanges.size());
 
+	Log(Log::DEBUG)<<"Magnitudes:";
 	for(size_t i = 0; i < flatRanges.size(); ++i)
 	{
 		size_t magnitude = 1;
 		for(int64_t j = static_cast<int64_t>(i)-1; j >= 0; --j)
-		{
 			magnitude = magnitude*flatRanges[j]->count;
-		}
 		placeMagnitude.push_back(magnitude);
+		Log(Log::DEBUG)<<placeMagnitude.back();
 	}
 
-	for(int64_t i = flatRanges.size(); i >= 0 && index > 0; --i)
+	Log(Log::DEBUG)<<"Steps for index "<<index<<" ranges "<<flatRanges.size()<<" Ranges:";
+	for(int64_t i = flatRanges.size()-1; i >= 0; --i)
 	{
 		flatRanges[i]->step = index/placeMagnitude[i];
 		index = index % placeMagnitude[i];
-		Log(Log::DEBUG)<<placeMagnitude[i]<<'('<<flatRanges[i]->step<<')'<<(i == 0 ? "\n" : " + ");
+		Log(Log::DEBUG)<<placeMagnitude[i]<<'('<<flatRanges[i]->step<<')'<<(i == 0 ? "" : " + ");
 	}
 }
 

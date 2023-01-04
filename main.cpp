@@ -85,11 +85,12 @@ static void runParamSweep(Config config, eis::Model& model)
 	auto start = std::chrono::high_resolution_clock::now();
 	for(size_t i = 0; i < count; ++i)
 	{
+		eis::Log(eis::Log::DEBUG)<<"Executeing sweep for "<<i;
 		std::vector<eis::DataPoint> data =  model.executeSweep(config.omegaRange, i);
 		size_t outputSize = data.size();
 		data = eis::reduceRegion(data);
 		data = eis::rescale(data, outputSize);
-		eis::saveToDisk(data, std::string(PARA_SWEEP_OUTPUT_DIR)+std::string("/")+std::to_string(++i)+".csv");
+		eis::saveToDisk(data, std::string(PARA_SWEEP_OUTPUT_DIR)+std::string("/")+std::to_string(i)+".csv");
 		eis::Log(eis::Log::INFO, false)<<'.';
 	}
 	auto end = std::chrono::high_resolution_clock::now();
@@ -107,6 +108,12 @@ int main(int argc, char** argv)
 
 	if(config.hertz)
 		config.omegaRange = config.omegaRange*static_cast<fvalue>(2*M_PI);
+
+	if(!config.omegaRange.isSane())
+	{
+		eis::Log(eis::Log::INFO)<<"The Omega range: "<<config.omegaRange.getString()<<" is invalid";
+		return 1;
+	}
 
 	if(config.inputType == INPUT_TYPE_BOUKAMP)
 		config.modelStr = eis::cdcToEis(config.modelStr);

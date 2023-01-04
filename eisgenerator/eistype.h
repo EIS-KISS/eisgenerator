@@ -32,12 +32,13 @@ public:
 	{
 		return at(step);
 	}
+
 	fvalue at(size_t index) const
 	{
 		assert(index < count);
 		if(count < 2)
 			return start;
-		return log ? pow(10, stepSize()*index+start) : stepSize()*index+start;
+		return log ? pow(10, stepSize()*index+log10(start)) : stepSize()*index+start;
 	}
 	fvalue operator[](size_t index) const
 	{
@@ -63,6 +64,7 @@ public:
 	Range() = default;
 	void print(int level) const;
 	std::string getString() const;
+	bool isSane() const;
 
 	static std::vector<Range> rangesFromParamString(const std::string& paramStr, size_t count);
 };
