@@ -33,6 +33,7 @@ std::complex<fvalue> Resistor::execute(fvalue omega)
 {
 	(void)omega;
 	assert(ranges.size() == paramCount());
+	Log(Log::DEBUG)<<__func__<<"step value "<<ranges[0].stepValue()<<" for range "<<ranges[0].getString();
 	return std::complex<fvalue>(ranges[0].stepValue(), 0);
 }
 

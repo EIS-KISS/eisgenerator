@@ -35,6 +35,8 @@ public:
 	fvalue at(size_t index) const
 	{
 		assert(index < count);
+		if(count < 2)
+			return start;
 		return log ? pow(10, stepSize()*index+start) : stepSize()*index+start;
 	}
 	fvalue operator[](size_t index) const
