@@ -119,48 +119,20 @@ void sweepCb(std::vector<eis::DataPoint>& data, const std::vector<fvalue>& param
 void runSweep()
 {
 	eis::Log(eis::Log::INFO)<<__func__;
-	std::string modelStr("w{20e3}p{1e-7, 0.9}");
+	std::string modelStr("w{1e3~50e3}p{20e-7~1e-7, 0.7~0.9}");
 
 	eis::Model model(modelStr);
-
-	std::vector<eis::Range> parameters;
-	parameters.push_back(eis::Range(1e3, 50e3, 100));
-	parameters.push_back(eis::Range(1e-7, 20e-7, 100));
-	parameters.push_back(eis::Range(0.7, 1.2, 100));
 
 	eis::Range omega(0, 1e6, 25);
 
 	auto start = std::chrono::high_resolution_clock::now();
-	model.executeParamSweep(parameters, omega, &sweepCb);
+	size_t len = model.getRequiredStepsForSweeps();
+	for(size_t i = 0; i < len; ++len)
+		model.executeSweep(omega, i);
 	auto end = std::chrono::high_resolution_clock::now();
 	auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
 	std::cout<<std::endl;
 
-	eis::Log(eis::Log::INFO)<<"time taken: "<<duration.count()<<" ms";
-}
-
-void runSweepByIndex()
-{
-	eis::Log(eis::Log::INFO)<<__func__;
-	std::string modelStr("w{20e3}p{1e-7, 0.9}");
-
-	eis::Model model(modelStr);
-
-	std::vector<eis::Range> parameters;
-	parameters.push_back(eis::Range(1e3, 50e3, 100));
-	parameters.push_back(eis::Range(1e-7, 20e-7, 100));
-	parameters.push_back(eis::Range(0.7, 1.2, 100));
-	eis::Range omega(0, 1e6, 25);
-
-	auto start = std::chrono::high_resolution_clock::now();
-	std::vector<eis::DataPoint> results = model.executeParamByIndex(parameters, omega, 0);
-	auto end = std::chrono::high_resolution_clock::now();
-	auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-
-	printComponants(model);
-
-	for(const eis::DataPoint& res : results)
-		eis::Log(eis::Log::INFO)<<"omega: "<<res.omega<<" real = "<<res.im.real()<<" im = "<<res.im.imag();
 	eis::Log(eis::Log::INFO)<<"time taken: "<<duration.count()<<" ms";
 }
 
@@ -245,49 +217,15 @@ inline void filterData(std::vector<eis::DataPoint>& data, size_t outputSize)
 	data = eis::rescale(data, outputSize/2);
 }
 
-std::vector<eis::DataPoint> getControll(size_t i, size_t* size = nullptr)
-{
-	eis::Model model("t{1,2,3}");
-	std::vector<eis::Range> modelRange;
-	modelRange.push_back(eis::Range(1e3, 1e4, 40, true, 't'));
-	modelRange.push_back(eis::Range(1e-6, 1e-5, 40, true, 't'));
-	modelRange.push_back(eis::Range(5, 5, 0, true, 't'));
-	eis::Range omega(10, 1e6, 100/2, true);
-	std::vector<eis::DataPoint> data = model.executeParamByIndex(modelRange, omega, i);
-	filterData(data, 100);
-	//data = torchToEis(eisToTorch(data));
-	if(size)
-		*size = eis::Model::getRequiredStepsForSweeps(modelRange);
-	return data;
-}
-
-void testExport()
-{
-
-	size_t rangeSteps;
-	getControll(0, &rangeSteps);
-	std::cout<<"need "<<rangeSteps<<" steps\n";
-	for(size_t i = 0; i < rangeSteps; ++i)
-	{
-		std::vector<eis::DataPoint> controll = getControll(i);
-
-		eis::saveToDisk(controll, std::string("./controll")+std::string("/")+std::to_string(++i)+".csv");
-		eis::Log(eis::Log::INFO,false)<<'.';
-	}
-	std::cout<<std::endl;
-}
-
 int main(int argc, char** argv)
 {
-	/*eis::Log::headers = true;
+	eis::Log::headers = true;
 	eis::Log::level = eis::Log::INFO;
 	runSingle();
-	runSweepByIndex();
 	runSweep();
 	runRescale();
 	runNormalize();
 	runEraseSingularities();
-	runReduce();*/
-	testExport();
+	runReduce();
 	return 0;
 }

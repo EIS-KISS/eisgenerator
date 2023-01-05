@@ -15,7 +15,6 @@ static struct argp_option options[] =
 {
   {"verbose",   'v', 0,      0,  "Show debug messages" },
   {"quiet",     'q', 0,      0,  "only output data" },
-  {"param",     'p', "[STRING]",      0,  "select parameter sweep mode" },
   {"param",     's', "[COUNT]",      0,  "parameter sweep steps" },
   {"model",      'm', "[STRING]",    0,  "set model string" },
   {"omega",      'o', "[START-END]", 0,  "set omega range" },
@@ -38,18 +37,10 @@ enum
 	INPUT_TYPE_UNKOWN
 };
 
-enum
-{
-	MODE_SWEEP = 0,
-	MODE_PARAM_SWEEP
-};
-
 struct Config
 {
 	std::string modelStr = "c{1e-6}r{1e3}-r{1e3}";
-	unsigned int mode = MODE_SWEEP;
 	int inputType = INPUT_TYPE_EIS;
-	std::string parameterString;
 	size_t paramSteps = 10;
 	eis::Range omegaRange;
 	bool normalize = false;
@@ -88,10 +79,6 @@ parse_opt (int key, char *arg, struct argp_state *state)
 		break;
 	case 's':
 		config->paramSteps = std::stod(arg);
-		break;
-	case 'p':
-		config->mode = MODE_PARAM_SWEEP;
-		config->parameterString.assign(arg);
 		break;
 	case 'm':
 		config->modelStr.assign(arg);

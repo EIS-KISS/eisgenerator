@@ -10,9 +10,12 @@ namespace eis
 
 class Componant
 {
+	protected:
+		std::vector<eis::Range> ranges;
 	public:
 		virtual std::complex<fvalue> execute(fvalue omega)
 		{
+			(void)omega;
 			std::cout<<"warning incompleat model\n";
 			return std::complex<fvalue> (1,0);
 		}
@@ -21,7 +24,8 @@ class Componant
 		{
 			return std::vector<fvalue>();
 		};
-		virtual void setParam(const std::vector<fvalue>& param){};
+		virtual void setParamRanges(const std::vector<eis::Range>& ranges);
+		virtual std::vector<eis::Range>& getParamRanges();
 		virtual size_t paramCount(){return 0;}
 		virtual ~Componant() = default;
 		virtual char getComponantChar() const = 0;

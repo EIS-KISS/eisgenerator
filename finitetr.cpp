@@ -15,51 +15,51 @@ using namespace eis;
 
 FiniteTransmitionline::FiniteTransmitionline(fvalue c, fvalue r, unsigned int n): _C(c), _R(r), _n(n)
 {
+
 	if(n < 1)
 	{
 		Log(Log::WARN)<<__func__<<" n must be > 0 setting n to 4";
 		_n = 4;
 	}
 
+	ranges.clear();
+	ranges.push_back(Range(_C, _C, 1));
+	ranges.push_back(Range(_R, _R, 1));
+	ranges.push_back(Range(_n, _n, 1));
+
 	subComponant = createTransmitionLine(_C, _R, _n);
 }
 
-FiniteTransmitionline::FiniteTransmitionline(std::string paramStr)
+void FiniteTransmitionline::setDefaultParam()
 {
+	_C = 1e-6;
+	_R = 1000;
+	_n = 4;
 
-	std::vector<std::string> tokens = tokenize(paramStr, ',');
-	if(tokens.size() < paramCount())
+	ranges.clear();
+	ranges.push_back(Range(_C, _C, 1));
+	ranges.push_back(Range(_R, _R, 1));
+	ranges.push_back(Range(_n, _n, 1));
+}
+
+FiniteTransmitionline::FiniteTransmitionline(std::string paramStr, size_t count)
+{
+	ranges = Range::rangesFromParamString(paramStr, count);
+
+	if(ranges.size() != paramCount())
 	{
-		Log(Log::WARN)<<"to few parameters in "<<__func__<<" parameter string: "<<paramStr;
-		_C = 1e-6;
-		_R = 1000;
-		_n = 4;
-		if(subComponant)
-				delete subComponant;
-		subComponant = createTransmitionLine(_C, _R, _n);
-		return;
+		Log(Log::WARN)<<"invalid parameter string "<<paramStr<<" given to "<<__func__<<", will not be applied\n";
+		setDefaultParam();
 	}
-	else
-	{
-		try
-		{
-			_R = std::stod(tokens[0]);
-			_C = std::stod(tokens[1]);
-			_n = std::stod(tokens[2]);
-			if(subComponant)
-				delete subComponant;
-			subComponant = createTransmitionLine(_C, _R, _n);
-		}
-		catch(const std::invalid_argument& ia)
-		{
-			Log(Log::WARN)<<"Warning: cant parse parameter in "<<__func__<<" parameter: "<<tokens[0]<<'\n';
-			_C = 1e3;
-		}
-	}
+
+	if(subComponant)
+			delete subComponant;
+	subComponant = createTransmitionLine(_C, _R, _n);
 }
 
 FiniteTransmitionline::FiniteTransmitionline(const FiniteTransmitionline& in)
 {
+	ranges = in.ranges;
 	_R = in._R;
 	_C = in._C;
 	_n = in._n;
@@ -72,6 +72,7 @@ std::complex<fvalue> FiniteTransmitionline::execute(fvalue omega)
 {
 	if(subComponant)
 	{
+		updateValues();
 		return subComponant->execute(omega);
 	}
 	else
@@ -79,36 +80,6 @@ std::complex<fvalue> FiniteTransmitionline::execute(fvalue omega)
 		Log(Log::WARN)<<"Invalid transmitionline used";
 		return std::complex<fvalue>(1, 0);
 	}
-}
-
-std::vector<fvalue> FiniteTransmitionline::getParam()
-{
-	return std::vector<fvalue>({_R, _C, static_cast<fvalue>(_n)});
-}
-
-void FiniteTransmitionline::setParam(const std::vector<fvalue>& param)
-{
-	if(param.size() < paramCount())
-	{
-		Log(Log::WARN)<<"invalid parameter list sent to "<<__func__<<'\n';
-		return;
-	}
-
-	_R = param[0];
-	_C = param[1];
-	_n = param[2];
-
-	if(param[2] < 1)
-	{
-		Log(Log::WARN)<<"invalid parameter list sent to "<<__func__<<" n must be > 1 "<<'\n';
-		return;
-	}
-
-	_n = param[2];
-
-	if(subComponant)
-		delete subComponant;
-	subComponant = createTransmitionLine(_C, _R, _n);
 }
 
 char FiniteTransmitionline::getComponantChar() const
@@ -145,4 +116,18 @@ FiniteTransmitionline::~FiniteTransmitionline()
 {
 	if(subComponant)
 		delete subComponant;
+}
+
+void FiniteTransmitionline::updateValues()
+{
+	assert(ranges.size() == paramCount());
+	if(ranges[0].stepValue() != _C || ranges[1].stepValue() != _R || static_cast<size_t>(ranges[2].stepValue()) != _n)
+	{
+		_C = ranges[0].stepValue();
+		_R = ranges[2].stepValue();
+		_n = ranges[3].stepValue();
+		if(subComponant)
+			delete subComponant;
+		subComponant = createTransmitionLine(_C, _R, _n);
+	}
 }

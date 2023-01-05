@@ -13,14 +13,14 @@ class FiniteTransmitionline: public Componant
 	Componant* subComponant = nullptr;
 
 	static Componant* createTransmitionLine(fvalue c, fvalue r, unsigned int n);
+	void updateValues();
+	void setDefaultParam();
 
 public:
 	FiniteTransmitionline(fvalue c, fvalue r, unsigned int n);
-	FiniteTransmitionline(std::string paramStr);
+	FiniteTransmitionline(std::string paramStr, size_t count = 10);
 	FiniteTransmitionline(const FiniteTransmitionline& in);
 	virtual std::complex<fvalue> execute(fvalue omega) override;
-	virtual std::vector<fvalue> getParam();
-	virtual void setParam(const std::vector<fvalue>& param);
 	virtual size_t paramCount();
 	virtual ~FiniteTransmitionline();
 	virtual char getComponantChar() const override;

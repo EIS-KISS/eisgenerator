@@ -1,6 +1,7 @@
 #pragma once
 #include <complex>
 #include <vector>
+#include <cassert>
 
 typedef double fvalue;
 
@@ -18,12 +19,27 @@ public:
 	fvalue start;
 	fvalue end;
 	size_t count;
+	size_t step = 0;
 	bool log = false;
-	char type = 'x';
 
 	fvalue stepSize() const
 	{
-		return (end-start)/count;
+		fvalue startL = log ? log10(start) : start;
+		fvalue endL = log ? log10(end) : end;
+		return (endL-startL)/(count-1);
+	}
+	fvalue stepValue() const
+	{
+		return at(step);
+	}
+	fvalue at(size_t index) const
+	{
+		assert(index < count);
+		return log ? pow(10, stepSize()*index+start) : stepSize()*index+start;
+	}
+	fvalue operator[](size_t index) const
+	{
+		return at(index);
 	}
 	Range operator*(fvalue in) const
 	{
@@ -41,9 +57,11 @@ public:
 	{
 		return operator*(static_cast<fvalue>(1.0)/in);
 	}
-	Range(fvalue startI, fvalue endI, size_t countI, bool logI = false, char typeI = 'x'): start(startI), end(endI), count(countI), log(logI), type(typeI){}
+	Range(fvalue startI, fvalue endI, size_t countI, bool logI = false): start(startI), end(endI), count(countI), log(logI){}
 	Range() = default;
 	void print(int level) const;
+
+	static std::vector<Range> rangesFromParamString(const std::string& paramStr, size_t count);
 };
 
 bool saveToDisk(const std::vector<DataPoint>& data, std::string fileName);

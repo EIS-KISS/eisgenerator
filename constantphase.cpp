@@ -3,6 +3,7 @@
 #include <cstdlib>
 #define _USE_MATH_DEFINES
 #include <cmath>
+#include <cassert>
 
 #ifndef M_PI
     #define M_PI 3.14159265358979323846
@@ -12,58 +13,41 @@
 
 using namespace eis;
 
-Cpe::Cpe(fvalue q, fvalue alpha): _Q(q), _alpha(alpha)
+Cpe::Cpe()
 {
-
+	setDefaultParam();
 }
 
-Cpe::Cpe(std::string paramStr)
+Cpe::Cpe(fvalue q, fvalue alpha)
 {
-	std::vector<std::string> tokens = tokenize(paramStr, ',');
-	if(tokens.size() < 2)
+	ranges.clear();
+	ranges.push_back(Range(q, q, 1));
+	ranges.push_back(Range(alpha, alpha, 1));
+}
+
+Cpe::Cpe(std::string paramStr, size_t count)
+{
+	ranges = Range::rangesFromParamString(paramStr, count);
+
+	if(ranges.size() != paramCount())
 	{
-		std::cout<<"Warning: to few parameters in "<<__func__<<" parameter string: "<<paramStr<<'\n';
-		_Q = 1e-7;
-		_alpha = 0.9;
-		return;
+		Log(Log::WARN)<<"invalid parameter string "<<paramStr<<" given to "<<__func__<<", will not be applied\n";
+		setDefaultParam();
 	}
-	else
-	{
-		try
-		{
-			_Q = std::stod(tokens[0]);
-			_alpha = std::stod(tokens[1]);
-		}
-		catch(const std::invalid_argument& ia)
-		{
-			std::cout<<"Warning: cant parse parameter in "<<__func__<<" parameter: "<<tokens[0]<<'\n';
-			_Q = 1e-7;
-			_alpha = 0.9;
-		}
-	}
+}
+
+void Cpe::setDefaultParam()
+{
+	ranges.clear();
+	ranges.push_back(Range(1e-7, 1e-7, 1));
+	ranges.push_back(Range(0.9, 0.9, 1));
 }
 
 std::complex<fvalue> Cpe::execute(fvalue omega)
 {
-	return std::complex<fvalue>((1.0/(_Q*pow(omega, _alpha)))*cos((M_PI/2)*_alpha),
-	                           0-(1.0/(_Q*pow(omega, _alpha)))*sin((M_PI/2)*_alpha));
-}
-
-std::vector<fvalue> Cpe::getParam()
-{
-	return std::vector<fvalue>({_Q, _alpha});
-}
-
-void Cpe::setParam(const std::vector<fvalue>& param)
-{
-	if(param.size() < 2)
-	{
-		std::cout<<"Warning: invalid parameter list sent to "<<__func__<<'\n';
-		return;
-	}
-
-	_Q = param[0];
-	_alpha = param[1];
+	assert(ranges.size() == paramCount());
+	return std::complex<fvalue>((1.0/(ranges[0][ranges[0].step]*pow(omega, ranges[1][ranges[1].step])))*cos((M_PI/2)*ranges[1][ranges[1].step]),
+	                           0-(1.0/(ranges[0][ranges[0].step]*pow(omega, ranges[1][ranges[1].step])))*sin((M_PI/2)*ranges[1][ranges[1].step]));
 }
 
 size_t Cpe::paramCount()

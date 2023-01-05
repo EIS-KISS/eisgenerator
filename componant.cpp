@@ -11,6 +11,16 @@
 
 using namespace eis;
 
+void Componant::setParamRanges(const std::vector<eis::Range>& rangesIn)
+{
+	ranges = rangesIn;
+}
+
+std::vector<eis::Range>& Componant::getParamRanges()
+{
+	return ranges;
+}
+
 Componant* Componant::copy(Componant* componant)
 {
 	switch(componant->getComponantChar())

@@ -2,57 +2,35 @@
 #include "strops.h"
 #include <cstdlib>
 #include <math.h>
+#include <cassert>
 
 #include "log.h"
 
 using namespace eis;
 
-Warburg::Warburg(fvalue a): _A(a)
+Warburg::Warburg(fvalue a)
 {
-
+	ranges.clear();
+	ranges.push_back(Range(a, a, 1));
 }
 
-Warburg::Warburg(std::string paramStr)
+Warburg::Warburg(std::string paramStr, size_t count)
 {
-	std::vector<std::string> tokens = tokenize(paramStr, ',');
-	if(tokens.size() < 1)
+	ranges = Range::rangesFromParamString(paramStr, count);
+
+	if(ranges.size() != paramCount())
 	{
-		Log(Log::WARN)<<"to few parameters in "<<__func__<<" parameter string: "<<paramStr;
-		return;
-	}
-	else
-	{
-		try
-		{
-			_A = std::stod(tokens[0]);
-		}
-		catch(const std::invalid_argument& ia)
-		{
-			Log(Log::WARN)<<"can't parse parameter in "<<__func__<<" parameter: "<<tokens[0]<<'\n';
-		}
+		Log(Log::WARN)<<"invalid parameter string "<<paramStr<<" given to "<<__func__<<", will not be applied\n";
+		ranges.clear();
+		ranges.push_back(Range(2e4, 2e4, 1));
 	}
 }
 
 std::complex<fvalue> Warburg::execute(fvalue omega)
 {
-	fvalue N = _A/(sqrt(omega));
+	assert(ranges.size() == paramCount());
+	fvalue N = ranges[0][ranges[0].step]/(sqrt(omega));
 	return std::complex<fvalue>(N, 0-N);
-}
-
-std::vector<fvalue> Warburg::getParam()
-{
-	return std::vector<fvalue>({_A});
-}
-
-void Warburg::setParam(const std::vector<fvalue>& param)
-{
-	if(param.size() != paramCount())
-	{
-		Log(Log::WARN)<<"Warning: invalid parameter list sent to "<<__func__<<'\n';
-		return;
-	}
-
-	_A = param[0];
 }
 
 size_t Warburg::paramCount()
