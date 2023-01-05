@@ -20,10 +20,6 @@ class Componant
 			return std::complex<fvalue> (1,0);
 		}
 
-		virtual std::vector<fvalue> getParam()
-		{
-			return std::vector<fvalue>();
-		};
 		virtual void setParamRanges(const std::vector<eis::Range>& ranges);
 		virtual std::vector<eis::Range>& getParamRanges();
 		virtual size_t paramCount(){return 0;}

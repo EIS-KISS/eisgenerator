@@ -60,6 +60,7 @@ public:
 	Range(fvalue startI, fvalue endI, size_t countI, bool logI = false): start(startI), end(endI), count(countI), log(logI){}
 	Range() = default;
 	void print(int level) const;
+	std::string getString() const;
 
 	static std::vector<Range> rangesFromParamString(const std::string& paramStr, size_t count);
 };

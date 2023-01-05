@@ -24,13 +24,16 @@ Resistor::Resistor(std::string paramStr, size_t count)
 		ranges.clear();
 		ranges.push_back(Range(1e3, 1e3, 1));
 	}
+
+	for(const Range& range : ranges)
+		range.print(Log::DEBUG);
 }
 
 std::complex<fvalue> Resistor::execute(fvalue omega)
 {
 	(void)omega;
 	assert(ranges.size() == paramCount());
-	return std::complex<fvalue>(ranges[0][ranges[0].step], 0);
+	return std::complex<fvalue>(ranges[0].stepValue(), 0);
 }
 
 size_t Resistor::paramCount()

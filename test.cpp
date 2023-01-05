@@ -68,17 +68,20 @@ std::vector<eis::DataPoint> getMockData()
 	return data;
 }
 
-void printComponants(eis::Model& model)
+static void printComponants(eis::Model& model)
 {
 	eis::Log(eis::Log::DEBUG)<<"Compnants:";
 	for(eis::Componant* componant : model.getFlatComponants())
 	{
-		eis::Log(eis::Log::DEBUG)<<componant->getComponantChar()<<"{";
+		eis::Log(eis::Log::DEBUG, false)<<componant->getComponantChar()<<"{";
+		std::vector<eis::Range>& ranges = componant->getParamRanges();
+		assert(componant->paramCount() != ranges.size());
+
 		for(size_t i = 0; i < componant->paramCount(); ++i)
 		{
-			eis::Log(eis::Log::DEBUG)<<componant->getParam()[i];
+			eis::Log(eis::Log::DEBUG, false)<<ranges[i].getString();
 			if(i != componant->paramCount()-1)
-				eis::Log(eis::Log::DEBUG)<<", ";
+				eis::Log(eis::Log::DEBUG, false)<<", ";
 		}
 		eis::Log(eis::Log::DEBUG)<<"}";
 	}

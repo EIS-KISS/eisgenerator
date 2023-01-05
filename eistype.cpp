@@ -1,5 +1,6 @@
 #include "eistype.h"
 #include <fstream>
+#include <sstream>
 
 #include "strops.h"
 #include "log.h"
@@ -68,4 +69,17 @@ std::vector<Range> eis::Range::rangesFromParamString(const std::string& paramStr
 		}
 	}
 	return ranges;
+}
+
+std::string eis::Range::getString() const
+{
+	std::stringstream ss;
+
+	ss<<start;
+	if(count > 1)
+		ss<<'~'<<end;
+	if(log)
+		ss<<'F';
+
+	return ss.str();
 }
