@@ -16,6 +16,7 @@
     #define M_PI 3.14159265358979323846
 #endif
 
+static constexpr double DIST_THRESH = 0.01;
 static constexpr char PARA_SWEEP_OUTPUT_DIR[] = "./sweep";
 
 static void printComponants(eis::Model& model)
@@ -69,12 +70,13 @@ static void runSweep(const Config& config, eis::Model& model)
 	std::cout<<(config.hertz ? "freqency" : "omega")<<",real,im\n";
 
 	for(const eis::DataPoint& res : results)
-		std::cout<<(config.hertz ? res.omega/(2*M_PI) : res.omega)<<','<<res.im.real()<<','<<(config.invert ? 0-res.im.imag() : res.im.imag())<<'\n';
+		std::cout<<(config.hertz ? res.omega/(2*M_PI) : res.omega)<<','<<
+			res.im.real()<<','<<(config.invert ? 0-res.im.imag() : res.im.imag())<<'\n';
 
 	eis::Log(eis::Log::INFO)<<"time taken: "<<duration.count()<<" us";
 }
 
-static void runParamSweep(Config config, eis::Model& model)
+static void runParamSweep(const Config& config, eis::Model& model)
 {
 	eis::Log(eis::Log::INFO)<<"Saving sweep to "<<PARA_SWEEP_OUTPUT_DIR;
 	std::filesystem::create_directory(PARA_SWEEP_OUTPUT_DIR);
@@ -83,21 +85,109 @@ static void runParamSweep(Config config, eis::Model& model)
 	eis::Log(eis::Log::INFO)<<"Executeing "<<count<<" steps";
 
 	auto start = std::chrono::high_resolution_clock::now();
+
+	std::vector<std::vector<eis::DataPoint>> allSweeps;
+	if(config.threaded)
+		allSweeps = model.executeAllSweeps(config.omegaRange);
+
 	for(size_t i = 0; i < count; ++i)
 	{
-		eis::Log(eis::Log::DEBUG)<<"Executeing sweep for "<<i;
-		std::vector<eis::DataPoint> data =  model.executeSweep(config.omegaRange, i);
+		std::vector<eis::DataPoint> data;
+		if(config.threaded)
+			data = allSweeps[i];
+		else
+			data = model.executeSweep(config.omegaRange, i);
 		size_t outputSize = data.size();
 		data = eis::reduceRegion(data);
 		data = eis::rescale(data, outputSize);
-		eis::saveToDisk(data, std::string(PARA_SWEEP_OUTPUT_DIR)+std::string("/")+std::to_string(i)+".csv");
+		eis::saveToDisk(data, std::string(PARA_SWEEP_OUTPUT_DIR)+std::string("/")+std::to_string(i)+".csv", model.getModelStrWithParam(i));
 		eis::Log(eis::Log::INFO, false)<<'.';
 	}
 	auto end = std::chrono::high_resolution_clock::now();
 	auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-	std::cout<<std::endl;
+	eis::Log(eis::Log::INFO, false)<<'\n';
 
 	eis::Log(eis::Log::INFO)<<"time taken: "<<duration.count()<<" ms";
+}
+
+void findRanges(const Config& config, eis::Model& model)
+{
+	std::vector<std::vector<fvalue>> values;
+	std::vector<std::vector<eis::DataPoint>> sweeps;
+	size_t count = model.getRequiredStepsForSweeps();
+	std::vector<eis::Componant*> componants = model.getFlatComponants();
+	std::vector<std::vector<eis::DataPoint>> allSweeps;
+
+	if(config.threaded)
+		allSweeps = model.executeAllSweeps(config.omegaRange);
+
+	std::vector<char> componantChars;
+	for(eis::Componant* componant : componants)
+	{
+		std::vector<eis::Range>& ranges = componant->getParamRanges();
+		for(size_t i = 0; i < ranges.size(); ++i)
+			componantChars.push_back(componant->getComponantChar());
+	}
+
+	for(size_t i = 0; i < count; ++i)
+	{
+		std::vector<eis::DataPoint> data;
+		if(config.threaded)
+			data = allSweeps[i];
+		else
+			data = model.executeSweep(config.omegaRange, i);
+		size_t outputSize = data.size();
+		data = eis::reduceRegion(data);
+		data = eis::rescale(data, outputSize);
+
+		bool found = false;
+		for(ssize_t  i = static_cast<ssize_t>(sweeps.size())-1; i >= 0; --i)
+		{
+			if(eisDistance(data, sweeps[i]) < DIST_THRESH)
+			{
+				found = true;
+				break;
+			}
+		}
+		if(!found)
+		{
+			sweeps.push_back(data);
+			values.push_back(std::vector<fvalue>());
+			if(config.threaded)
+				model.resolveSteps(i);
+			for(eis::Componant* componant : componants)
+			{
+				std::vector<eis::Range>& ranges = componant->getParamRanges();
+				for(const eis::Range& range : ranges)
+					values.back().push_back(range.stepValue());
+			}
+		}
+		if(i % 200 == 0)
+		{
+			eis::Log(eis::Log::INFO, false)<<'.';
+			std::cout<<std::flush;
+		}
+	}
+	eis::Log(eis::Log::INFO, false)<<'\n';
+
+	std::vector<fvalue> maxValues(values[0].size(), std::numeric_limits<fvalue>::min());
+	std::vector<fvalue> minValues(values[0].size(), std::numeric_limits<fvalue>::max());
+	for(size_t i = 0; i < values.size(); ++i)
+	{
+		for(size_t j = 0; j < values[i].size(); ++j)
+		{
+			if(values[i][j] > maxValues[j])
+				maxValues[j] = values[i][j];
+			if(values[i][j] < minValues[j])
+				minValues[j] = values[i][j];
+		}
+	}
+
+	eis::Log(eis::Log::INFO)<<"Recommended ranges:";
+	for(size_t i = 0; i < maxValues.size(); ++i)
+	{
+		eis::Log(eis::Log::INFO)<<componantChars[i]<<": "<<minValues[i]<<'-'<<maxValues[i];
+	}
 }
 
 int main(int argc, char** argv)
@@ -111,7 +201,7 @@ int main(int argc, char** argv)
 
 	if(!config.omegaRange.isSane())
 	{
-		eis::Log(eis::Log::INFO)<<"The Omega range: "<<config.omegaRange.getString()<<" is invalid";
+		eis::Log(eis::Log::ERROR)<<"The Omega range: "<<config.omegaRange.getString()<<" is invalid";
 		return 1;
 	}
 
@@ -127,10 +217,18 @@ int main(int argc, char** argv)
 	eis::Model model(config.modelStr, config.paramSteps);
 	printComponants(model);
 
-	if(model.isParamSweep())
+	if(config.findRange && !model.isParamSweep())
+	{
+		eis::Log(eis::Log::ERROR)<<"Cant find range on a non-sweep model";
+		return 1;
+	}
+
+	if(model.isParamSweep() && config.findRange)
+		findRanges(config, model);
+	else if(model.isParamSweep())
 		runParamSweep(config, model);
 	else
-		runSweep(config, model);
+			runSweep(config, model);
 
 	return 0;
 }

@@ -26,6 +26,8 @@ static struct argp_option options[] =
   {"invert",        'i', 0,      0,  "inverts the imaginary axis"},
   {"noise",        'x', "[AMPLITUDE]",      0,  "add noise to output"},
   {"input-type",   't', "[STRING]",      0,  "set input string type, possible values: eis, boukamp, relaxis"},
+  {"find-range",   'f', 0,      0,  "find sensible part of parameter range"},
+  {"parallel",   'p', 0,      0,  "run on multiple threads"},
   { 0 }
 };
 
@@ -47,6 +49,8 @@ struct Config
 	bool reduce = false;
 	bool hertz = false;
 	bool invert = false;
+	bool findRange = false;
+	bool threaded = false;
 	double noise = 0;
 
 	Config(): omegaRange(1, 1e6, 50, true)
@@ -142,6 +146,12 @@ parse_opt (int key, char *arg, struct argp_state *state)
 		break;
 	case 't':
 		config->inputType = parseInputType(std::string(arg));
+		break;
+	case 'f':
+		config->findRange = true;
+		break;
+	case 'p':
+		config->threaded = true;
 		break;
 	default:
 		return ARGP_ERR_UNKNOWN;
