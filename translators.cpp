@@ -2,6 +2,8 @@
 #include <vector>
 #include <iostream>
 
+#include "strops.h"
+
 namespace eis
 {
 
@@ -156,31 +158,6 @@ std::string eisToRelaxis(const std::string& in)
 		out.pop_back();
 
 	return out;
-}
-
-static size_t eisRemoveUnneededBrackets(std::string& in, long int bracketStart = -1)
-{
-	bool bracketNeeded = false;
-	for(size_t i = (bracketStart > 0 ? bracketStart+1 : 0); i < in.size(); ++i)
-	{
-		if(in[i] == '-')
-			bracketNeeded = true;
-		if(in[i] == '(')
-		{
-			i = eisRemoveUnneededBrackets(in, i);
-		}
-		else if(in[i] == ')')
-		{
-			if(!bracketNeeded && bracketStart > 0)
-			{
-				in.erase(in.begin()+i);
-				in.erase(in.begin()+bracketStart);
-				return i-2;
-			}
-			return i;
-		}
-	}
-	return in.size()-1;
 }
 
 std::string cdcToEis(std::string in)

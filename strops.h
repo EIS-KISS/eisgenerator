@@ -11,3 +11,5 @@ size_t opposingBraket(const std::string& str, size_t index, char bracketChar = '
 size_t deepestBraket(const std::string& str, std::string bracketChars = "(", size_t* levelOut = nullptr);
 
 char getOpposingBracketChar(const char ch);
+
+size_t eisRemoveUnneededBrackets(std::string& in, long int bracketStart = -1);

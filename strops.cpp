@@ -99,3 +99,36 @@ size_t deepestBraket(const std::string& str, std::string bracketChars, size_t* l
 		*levelOut = deepestLevel;
 	return deepestPos;
 }
+
+size_t eisRemoveUnneededBrackets(std::string& in, long int bracketStart)
+{
+	bool bracketNeeded = false;
+	size_t paramBracketCount = 0;
+	for(size_t i = (bracketStart >= 0 ? bracketStart+1 : 0); i < in.size(); ++i)
+	{
+		if(paramBracketCount == 0)
+		{
+			if(in[i] == '-')
+				bracketNeeded = true;
+			else if(in[i] == '(')
+			{
+				i = eisRemoveUnneededBrackets(in, i);
+			}
+			else if(in[i] == ')')
+			{
+				if(!bracketNeeded && bracketStart >= 0)
+				{
+					in.erase(in.begin()+i);
+					in.erase(in.begin()+bracketStart);
+					return i-2;
+				}
+				return i;
+			}
+		}
+		if(in[i] == '{')
+			++paramBracketCount;
+		else if(in[i] == '}' && paramBracketCount > 0)
+			--paramBracketCount;
+	}
+	return in.size()-1;
+}
