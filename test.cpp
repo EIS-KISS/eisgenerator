@@ -6,6 +6,7 @@
 #include "log.h"
 #include "normalize.h"
 #include "basicmath.h"
+#include "strops.h"
 
 void printDataVect(const std::vector<eis::DataPoint> in)
 {
@@ -222,6 +223,8 @@ inline void filterData(std::vector<eis::DataPoint>& data, size_t outputSize)
 
 int main(int argc, char** argv)
 {
+	std::string tst("(c)");
+	eisRemoveUnneededBrackets(tst);
 	eis::Log::headers = true;
 	eis::Log::level = eis::Log::INFO;
 	runSingle();
