@@ -2,6 +2,7 @@
 #include <complex>
 #include <iostream>
 #include <vector>
+#include <string>
 
 #include "eistype.h"
 
@@ -22,9 +23,11 @@ class Componant
 
 		virtual void setParamRanges(const std::vector<eis::Range>& ranges);
 		virtual std::vector<eis::Range>& getParamRanges();
+		virtual std::vector<eis::Range> getParamRanges() const;
 		virtual size_t paramCount(){return 0;}
 		virtual ~Componant() = default;
 		virtual char getComponantChar() const = 0;
+		virtual std::string getComponantString() const;
 
 		static Componant* copy(Componant* componant);
 };

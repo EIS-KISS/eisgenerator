@@ -40,6 +40,15 @@ char Parallel::getComponantChar() const
 	return staticGetComponantChar();
 }
 
+std::string Parallel::getComponantString() const
+{
+	std::string out("(");
+	for(Componant* componant : componants)
+		out.append(componant->getComponantString());
+	out.push_back(')');
+	return out;
+}
+
 Serial::Serial(std::vector<Componant*> componantsIn): componants(componantsIn)
 {
 }
@@ -76,4 +85,16 @@ std::complex<fvalue> Serial::execute(fvalue omega)
 char Serial::getComponantChar() const
 {
 	return staticGetComponantChar();
+}
+
+std::string Serial::getComponantString() const
+{
+	std::string out("(");
+	for(Componant* componant : componants)
+	{
+		out.append(componant->getComponantString());
+		out.push_back('-');
+	}
+	out.back() = ')';
+	return out;
 }

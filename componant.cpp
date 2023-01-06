@@ -21,6 +21,27 @@ std::vector<eis::Range>& Componant::getParamRanges()
 	return ranges;
 }
 
+std::vector<eis::Range> Componant::getParamRanges() const
+{
+	return ranges;
+}
+
+std::string Componant::getComponantString() const
+{
+	std::string out;
+	out.push_back(getComponantChar());
+	std::vector<eis::Range> ranges = getParamRanges();
+	if(ranges.empty())
+		return out;
+
+	out.push_back('{');
+	for(const eis::Range& range : ranges)
+		out.append(std::to_string(range.stepValue()) + ", ");
+	out.pop_back();
+	out.back() = '}';
+	return out;
+}
+
 Componant* Componant::copy(Componant* componant)
 {
 	switch(componant->getComponantChar())

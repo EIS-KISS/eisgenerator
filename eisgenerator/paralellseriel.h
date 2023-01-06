@@ -17,6 +17,7 @@ public:
 	~Parallel();
 	virtual std::complex<fvalue> execute(fvalue omaga) override;
 	virtual char getComponantChar() const override;
+	virtual std::string getComponantString() const override;
 	static constexpr char staticGetComponantChar(){return '|';}
 };
 
@@ -31,6 +32,7 @@ public:
 	~Serial();
 	virtual std::complex<fvalue> execute(fvalue omaga) override;
 	virtual char getComponantChar() const override;
+	virtual std::string getComponantString() const override;
 	static constexpr char staticGetComponantChar(){return 's';}
 };
 
