@@ -7,7 +7,7 @@
 
 using namespace eis;
 
-bool eis::saveToDisk(const std::vector<DataPoint>& data, std::string fileName)
+bool eis::saveToDisk(const std::vector<DataPoint>& data, const std::string& fileName, std::string headStr)
 {
 	std::fstream file;
 	file.open(fileName, std::ios_base::out | std::ios_base::trunc);
@@ -17,6 +17,8 @@ bool eis::saveToDisk(const std::vector<DataPoint>& data, std::string fileName)
 		return false;
 	}
 
+	if(!headStr.empty())
+		file<<headStr<<'\n';
 	file<<"omega,real,im\n";
 
 	for(const eis::DataPoint& point : data)
@@ -91,4 +93,18 @@ bool eis::Range::isSane() const
 	if(end < start)
 		return false;
 	return true;
+}
+
+double eis::eisDistance(const std::vector<eis::DataPoint>& a, const std::vector<eis::DataPoint>& b)
+{
+	assert(a.size() == b.size());
+
+	double accum = 0;
+	for(size_t i = 0; i < a.size(); ++i)
+	{
+		double diffRe = std::pow(b[i].im.real() - a[i].im.real(), 2);
+		double diffIm = std::pow(b[i].im.imag() - a[i].im.imag(), 2);
+		accum += std::sqrt(diffRe+diffIm);
+	}
+	return accum/a.size();
 }

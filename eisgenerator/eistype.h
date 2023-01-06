@@ -7,10 +7,15 @@ typedef double fvalue;
 
 namespace eis
 {
-struct DataPoint
+class DataPoint
 {
+public:
 	std::complex<fvalue> im;
 	fvalue omega;
+	bool operator==(const DataPoint& in)
+	{
+		return im == in.im;
+	}
 };
 
 class Range
@@ -32,7 +37,6 @@ public:
 	{
 		return at(step);
 	}
-
 	fvalue at(size_t index) const
 	{
 		assert(index < count);
@@ -69,6 +73,8 @@ public:
 	static std::vector<Range> rangesFromParamString(const std::string& paramStr, size_t count);
 };
 
-bool saveToDisk(const std::vector<DataPoint>& data, std::string fileName);
+bool saveToDisk(const std::vector<DataPoint>& data, const std::string& fileName, std::string headStr = "");
+
+double eisDistance(const std::vector<eis::DataPoint>& a, const std::vector<eis::DataPoint>& b);
 
 }
