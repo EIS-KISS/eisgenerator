@@ -18,7 +18,8 @@ private:
 	Componant *processBracket(std::string& str, size_t paramSweepCount);
 	std::string getParamStr(const std::string& str, size_t index);
 	static void addComponantToFlat(Componant* componant, std::vector<Componant*>* flatComponants);
-	void resolveSteps(int64_t index);
+
+	static void sweepThreadFn(std::vector<std::vector<DataPoint>>* data, Model* model, size_t start, size_t stop, const Range& omega);
 
 private:
 	Componant *_model = nullptr;
@@ -33,8 +34,12 @@ public:
 	~Model();
 	DataPoint execute(fvalue omaga, size_t index = 0);
 	std::vector<DataPoint> executeSweep(const Range& omega, size_t index = 0);
+	std::vector<std::vector<DataPoint>> executeAllSweeps(const Range& omega);
 	std::string getModelStr() const;
+	std::string getModelStrWithParam(size_t index);
+	std::string getModelStrWithParam() const;
 	std::vector<Componant*> getFlatComponants(Componant *model = nullptr);
+	void resolveSteps(int64_t index);
 	size_t getRequiredStepsForSweeps();
 	bool isParamSweep();
 };

@@ -3,6 +3,9 @@
 #include <iostream>
 #include <assert.h>
 #include <vector>
+#include <array>
+#include <thread>
+
 #include "strops.h"
 #include "cap.h"
 #include "resistor.h"
@@ -251,6 +254,35 @@ std::vector<DataPoint> Model::executeSweep(const Range& omega, size_t index)
 	return results;
 }
 
+void Model::sweepThreadFn(std::vector<std::vector<DataPoint>>* data, Model* model, size_t start, size_t stop, const Range& omega)
+{
+	for(size_t i = start; i < stop; ++i)
+		data->at(i) = model->executeSweep(omega, i);
+}
+
+std::vector<std::vector<DataPoint>> Model::executeAllSweeps(const Range& omega)
+{
+	size_t count = getRequiredStepsForSweeps();
+	unsigned int threadsCount = std::thread::hardware_concurrency();
+	if(count < threadsCount*10)
+		threadsCount = 1;
+	size_t countPerThread = count/threadsCount;
+	std::vector<std::thread> threads(threadsCount);
+	std::vector<Model> models(threadsCount, *this);
+
+	std::vector<std::vector<DataPoint>> data(count);
+
+	for(size_t i = 0; i < threadsCount; ++i)
+	{
+		size_t start = i*countPerThread;
+		size_t stop = i < threadsCount-1 ? (i+1)*countPerThread : count;
+		threads[i] = std::thread(sweepThreadFn, &data, &models[i], start, stop, std::ref(omega));
+	}
+	for(size_t i = 0; i < threadsCount; ++i)
+		threads[i].join();
+	return data;
+}
+
 void Model::resolveSteps(int64_t index)
 {
 	std::vector<Componant*> componants = getFlatComponants();
@@ -329,6 +361,20 @@ std::string Model::getModelStr() const
 		}
 	}
 	return output;
+}
+
+std::string Model::getModelStrWithParam(size_t index)
+{
+	resolveSteps(index);
+	return getModelStrWithParam();
+}
+
+
+std::string Model::getModelStrWithParam() const
+{
+	std::string out = _model->getComponantString();
+	eisRemoveUnneededBrackets(out);
+	return out;
 }
 
 bool Model::isParamSweep()
