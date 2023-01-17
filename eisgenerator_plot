@@ -10,4 +10,4 @@ then
 	exit
 fi
 
-eisgenerator_export -q $@ | gnuplot -p -e "set datafile separator ','; plot '-' using 2:3 w l"
+eisgenerator_export -q "$@" | gnuplot -p -e "set datafile separator ','; plot '-' using 2:3 w l"
