@@ -4,18 +4,35 @@
 
 #include "eistype.h"
 
+static size_t gradIndex(size_t dataSize, size_t inputIndex)
+{
+	if(inputIndex == 0)
+		inputIndex = 1;
+	else if(inputIndex > dataSize-2)
+		inputIndex = dataSize-2;
+	return inputIndex;
+}
+
 std::complex<fvalue> eis::absGrad(const std::vector<eis::DataPoint>& data, size_t index)
 {
 	if(data.size() < 3)
 		return std::complex<fvalue>(1,1);
 
-	if(index == 0)
-		index = 1;
-	else if(index > data.size()-2)
-		index = data.size()-2;
+	index = gradIndex(data.size(), index);
 
 	return std::complex<fvalue>(std::abs((data[index+1].im.real()-data[index-1].im.real())/(data[index+1].omega-data[index-1].omega)),
 								std::abs((data[index+1].im.imag()-data[index-1].im.imag())/(data[index+1].omega-data[index-1].omega)));
+}
+
+fvalue eis::grad(const std::vector<fvalue>& data, const std::vector<fvalue>& omega, size_t index)
+{
+	assert(data.size() == omega.size());
+	if(data.size() < 3)
+		return 0;
+
+	index = gradIndex(data.size(), index);
+
+	return (data[index+1]-data[index-1])/(omega[index+1]-omega[index-1]);
 }
 
 std::complex<fvalue> eis::grad(const std::vector<eis::DataPoint>& data, size_t index)
@@ -23,10 +40,7 @@ std::complex<fvalue> eis::grad(const std::vector<eis::DataPoint>& data, size_t i
 	if(data.size() < 3)
 		return std::complex<fvalue>(1,1);
 
-	if(index == 0)
-		index = 1;
-	else if(index > data.size()-2)
-		index = data.size()-2;
+	index = gradIndex(data.size(), index);
 
 	return std::complex<fvalue>((data[index+1].im.real()-data[index-1].im.real())/(data[index+1].omega-data[index-1].omega),
 								(data[index+1].im.imag()-data[index-1].im.imag())/(data[index+1].omega-data[index-1].omega));
@@ -130,4 +144,71 @@ void eis::noise(std::vector<eis::DataPoint>& data, double amplitude, bool relati
 		double imgNoise = (static_cast<double>(rande() >> 1) / (rande.max() >> 1))*amplitude;
 		point.im.imag(relative ? point.im.imag()+imgNoise/point.im.imag() : point.im.imag()+imgNoise);
 	}
+}
+
+fvalue eis::pearsonCorrelation(const std::vector<eis::DataPoint>& data)
+{
+	std::complex<fvalue> meanValue = mean(data);
+
+	fvalue sumDeltaReDeltaIm = 0;
+	fvalue sumDeltaReSq = 0;
+	fvalue sumDeltaImSq = 0;
+
+	for(const eis::DataPoint& point : data)
+	{
+		sumDeltaReDeltaIm += (point.im.real()-meanValue.real())*(point.im.imag()-meanValue.imag());
+		sumDeltaReSq += pow(point.im.real()-meanValue.real(), 2);
+		sumDeltaImSq += pow(point.im.imag()-meanValue.imag(), 2);
+	}
+
+	return sumDeltaReDeltaIm/(sqrt(sumDeltaReSq)*sqrt(sumDeltaImSq));
+}
+
+fvalue eis::nyquistAreaVariance(const std::vector<eis::DataPoint>& data, eis::DataPoint* centroid)
+{
+	assert(data.size() > 2);
+
+	eis::DataPoint localCentroid(std::complex<fvalue>(0,0));
+	if(!centroid)
+	{
+		centroid = &localCentroid;
+		for(const eis::DataPoint& point : data)
+			*centroid = *centroid + point;
+		*centroid = (*centroid)/data.size();
+	}
+
+	double realVar = 0;
+	double imagVar = 0;
+	double realImagVar = 0;
+	for(const eis::DataPoint& point : data)
+	{
+		eis::DataPoint a = point-*centroid;
+		realVar += std::pow(a.im.real(), 2);
+		imagVar += std::pow(a.im.imag(), 2);
+		realImagVar += a.im.real()*a.im.imag();
+	}
+	realVar /= data.size();
+	imagVar /= data.size();
+	realImagVar /= data.size();
+	return std::sqrt(realVar+imagVar+std::pow(realImagVar, 2));
+}
+
+fvalue eis::maximumNyquistJump(const std::vector<eis::DataPoint>& data)
+{
+	assert(data.size() > 1);
+	fvalue maxDist = std::numeric_limits<fvalue>::min();
+	for(size_t i = 1; i < data.size(); ++i)
+	{
+		eis::DataPoint a = data[i]-data[i-1];
+		fvalue realVar = std::pow(a.im.real(), 2);
+		fvalue imagVar = std::pow(a.im.imag(), 2);
+		fvalue dist = std::sqrt(realVar+imagVar);
+		maxDist = maxDist < dist ? dist : maxDist;
+	}
+	return maxDist;
+}
+
+bool eis::fvalueEq(fvalue a, fvalue b, fvalue epsilon)
+{
+	return a - epsilon < b && a + epsilon > b;
 }
