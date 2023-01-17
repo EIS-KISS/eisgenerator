@@ -9,7 +9,7 @@ namespace eis
 {
 
 void normalize(std::vector<eis::DataPoint>& data);
-std::vector<eis::DataPoint> reduceRegion(const std::vector<eis::DataPoint>& data, fvalue gradThreshFactor = 0.01);
+std::vector<eis::DataPoint> reduceRegion(const std::vector<eis::DataPoint>& data, fvalue gradThreshFactor = 0.01, bool useSecondDeiv = false);
 void eraseSingularites(std::vector<eis::DataPoint>& data);
 
 }

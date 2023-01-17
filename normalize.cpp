@@ -52,7 +52,8 @@ void eis::normalize(std::vector<eis::DataPoint>& data)
 	}
 }
 
-std::vector<eis::DataPoint> eis::reduceRegion(const std::vector<eis::DataPoint>& inData, fvalue gradThreshFactor)
+std::vector<eis::DataPoint> eis::reduceRegion(const std::vector<eis::DataPoint>& inData,
+                                              fvalue gradThreshFactor, bool useSecondDeiv)
 {
 	if(inData.size() < 3)
 		return inData;
@@ -63,16 +64,33 @@ std::vector<eis::DataPoint> eis::reduceRegion(const std::vector<eis::DataPoint>&
 
 	std::vector<fvalue> grads;
 	grads.reserve(data.size());
-	eis::Log(eis::Log::DEBUG)<<"Grads:";
+	eis::Log(eis::Log::DEBUG)<<(useSecondDeiv ? "Second dirvative Grads:" : "First dirvative Grads:");
 	for(size_t i = 0; i < data.size(); ++i)
 	{
 		grads.push_back(std::abs(eis::absGrad(data, i)));
-		eis::Log(eis::Log::DEBUG)<<i<<": "<<inData[i].omega<<','<<grads.back();
+		if(!useSecondDeiv)
+			eis::Log(eis::Log::DEBUG)<<i<<": "<<inData[i].omega<<','<<grads.back();
 	}
 
-	fvalue gradThresh = eis::median(grads)*gradThreshFactor;
+	if(useSecondDeiv)
+	{
+		std::vector<fvalue> omegas(data.size());
+		for(size_t i = 0; i < data.size(); ++i)
+			omegas[i] = data[i].omega;
+		for(size_t i = 0; i < grads.size(); ++i)
+		{
+			grads[i] = (std::abs(eis::grad(grads, omegas, i)));
+			eis::Log(eis::Log::DEBUG)<<i<<": "<<omegas[i]<<','<<grads[i];
+		}
+	}
 
-	eis::Log(eis::Log::DEBUG)<<"Grad thresh is:"<<','<<gradThresh;
+	fvalue gradThresh;
+	if(!useSecondDeiv)
+		gradThresh = eis::median(grads)*gradThreshFactor;
+	else
+		gradThresh = 1e-12*gradThreshFactor;
+
+	eis::Log(eis::Log::DEBUG)<<"Grad thresh is: "<<gradThresh;
 
 	size_t start = 0;
 	for(size_t i = 1; i < data.size()-1; ++i)
@@ -95,7 +113,7 @@ std::vector<eis::DataPoint> eis::reduceRegion(const std::vector<eis::DataPoint>&
 	eis::Log(eis::Log::DEBUG)<<"reduced range "<<start<<'-'<<end;
 
 	data.erase(data.begin(), data.begin()+start);
-	data.erase(data.begin()+end, data.end());
+	data.erase(data.begin()+end+1, data.end());
 
 	return data;
 }
