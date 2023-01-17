@@ -2,6 +2,7 @@
 #include <complex>
 #include <vector>
 #include <cassert>
+#include <cmath>
 
 typedef double fvalue;
 
@@ -12,9 +13,44 @@ class DataPoint
 public:
 	std::complex<fvalue> im;
 	fvalue omega;
-	bool operator==(const DataPoint& in)
+	DataPoint() = default;
+	DataPoint(std::complex<fvalue> imIn, fvalue omegaIn = 0): im(imIn), omega(omegaIn){}
+	bool operator==(const DataPoint& in) const
 	{
 		return im == in.im;
+	}
+	DataPoint operator-(const DataPoint& in) const
+	{
+		DataPoint out(*this);
+		out.im = out.im - in.im;
+		return out;
+	}
+	DataPoint operator+(const DataPoint& in) const
+	{
+		DataPoint out(*this);
+		out.im = out.im + in.im;
+		return out;
+	}
+	DataPoint operator/(fvalue in) const
+	{
+		DataPoint out(*this);
+		out.im = out.im / in;
+		return out;
+	}
+	DataPoint operator*(fvalue in) const
+	{
+		DataPoint out(*this);
+		out.im = out.im * in;
+		return out;
+	}
+	DataPoint operator/=(fvalue in)
+	{
+		im = im / in;
+		return *this;
+	}
+	fvalue complexVectorLength() const
+	{
+		return std::sqrt(std::pow(im.real(), 2) + std::pow(im.imag(), 2));
 	}
 };
 
@@ -75,6 +111,8 @@ public:
 
 bool saveToDisk(const std::vector<DataPoint>& data, const std::string& fileName, std::string headStr = "");
 
-double eisDistance(const std::vector<eis::DataPoint>& a, const std::vector<eis::DataPoint>& b);
+fvalue eisDistance(const std::vector<eis::DataPoint>& a, const std::vector<eis::DataPoint>& b);
+
+fvalue eisNyquistDistance(const std::vector<eis::DataPoint>& a, const std::vector<eis::DataPoint>& b);
 
 }
