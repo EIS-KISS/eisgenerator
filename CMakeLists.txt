@@ -55,7 +55,7 @@ else()
 endif(WIN32)
 
 
-add_library(${PROJECT_NAME} SHARED ${SRC_FILES})
+add_library(${PROJECT_NAME} SHARED ${SRC_FILES} ${API_HEADERS_CPP})
 target_link_libraries(${PROJECT_NAME} ${LIBS})
 target_include_directories(${PROJECT_NAME} PUBLIC eisgenerator)
 set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "-std=c++2a -Wall -O2 -march=native -g" LINK_FLAGS "-flto")
