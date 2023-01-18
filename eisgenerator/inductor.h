@@ -10,7 +10,7 @@ namespace eis
 class Inductor: public Componant
 {
 public:
-	Inductor(std::string paramStr, size_t count = 10);
+	Inductor(std::string paramStr, size_t count = 10, bool defaultToRange = false);
 	Inductor(fvalue L = 1e-6);
 	virtual std::complex<fvalue> execute(fvalue omega) override;
 	virtual size_t paramCount() override;

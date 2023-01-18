@@ -40,11 +40,11 @@ char Parallel::getComponantChar() const
 	return staticGetComponantChar();
 }
 
-std::string Parallel::getComponantString() const
+std::string Parallel::getComponantString(bool currentValue) const
 {
 	std::string out("(");
 	for(Componant* componant : componants)
-		out.append(componant->getComponantString());
+		out.append(componant->getComponantString(currentValue));
 	out.push_back(')');
 	return out;
 }
@@ -87,12 +87,12 @@ char Serial::getComponantChar() const
 	return staticGetComponantChar();
 }
 
-std::string Serial::getComponantString() const
+std::string Serial::getComponantString(bool currentValue) const
 {
 	std::string out("(");
 	for(Componant* componant : componants)
 	{
-		out.append(componant->getComponantString());
+		out.append(componant->getComponantString(currentValue));
 		out.push_back('-');
 	}
 	out.back() = ')';

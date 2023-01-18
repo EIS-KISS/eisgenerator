@@ -14,15 +14,19 @@ Warburg::Warburg(fvalue a)
 	ranges.push_back(Range(a, a, 1));
 }
 
-Warburg::Warburg(std::string paramStr, size_t count)
+Warburg::Warburg(std::string paramStr, size_t count, bool defaultToRange)
 {
-	ranges = Range::rangesFromParamString(paramStr, count);
+	if(!paramStr.empty())
+		ranges = Range::rangesFromParamString(paramStr, count);
 
 	if(ranges.size() != paramCount())
 	{
-		Log(Log::WARN)<<"invalid parameter string "<<paramStr<<" given to "<<__func__<<", will not be applied\n";
 		ranges.clear();
-		ranges.push_back(Range(2e4, 2e4, 1));
+		if(defaultToRange)
+			ranges.push_back(Range(10, 100, count, true));
+		else
+			ranges.push_back(Range(50, 50, 1));
+		Log(Log::WARN)<<__func__<<" default range of "<<getComponantString(false)<<" will be used";
 	}
 }
 

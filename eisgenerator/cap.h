@@ -10,7 +10,7 @@ namespace eis
 class Cap: public Componant
 {
 public:
-	Cap(std::string paramStr, size_t count = 10);
+	Cap(std::string paramStr, size_t count = 10, bool defaultToRange = false);
 	Cap(fvalue c = 1e-6);
 	virtual std::complex<fvalue> execute(fvalue omega) override;
 	virtual size_t paramCount() override;

@@ -1,5 +1,6 @@
 #include "componant.h"
 #include <assert.h>
+#include <sstream>
 #include "paralellseriel.h"
 #include "resistor.h"
 #include "cap.h"
@@ -26,20 +27,28 @@ std::vector<eis::Range> Componant::getParamRanges() const
 	return ranges;
 }
 
-std::string Componant::getComponantString() const
+std::string Componant::getComponantString(bool currentValue) const
 {
-	std::string out;
-	out.push_back(getComponantChar());
+	std::stringstream out;
+	out<<getComponantChar();
 	std::vector<eis::Range> ranges = getParamRanges();
-	if(ranges.empty())
-		return out;
 
-	out.push_back('{');
+	if(ranges.empty())
+		return out.str();
+
+	out<<'{';
 	for(const eis::Range& range : ranges)
-		out.append(std::to_string(range.stepValue()) + ", ");
-	out.pop_back();
-	out.back() = '}';
-	return out;
+	{
+		if(currentValue)
+			out<<range.stepValue()<<", ";
+		else
+			out<<range.getString()<<", ";
+	}
+
+	std::string outStr = out.str();
+	outStr.pop_back();
+	outStr.back() = '}';
+	return outStr;
 }
 
 Componant* Componant::copy(Componant* componant)

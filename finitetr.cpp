@@ -15,7 +15,6 @@ using namespace eis;
 
 FiniteTransmitionline::FiniteTransmitionline(fvalue c, fvalue r, unsigned int n): _C(c), _R(r), _n(n)
 {
-
 	if(n < 1)
 	{
 		Log(Log::WARN)<<__func__<<" n must be > 0 setting n to 4";
@@ -30,31 +29,38 @@ FiniteTransmitionline::FiniteTransmitionline(fvalue c, fvalue r, unsigned int n)
 	subComponant = createTransmitionLine(_C, _R, _n);
 }
 
-void FiniteTransmitionline::setDefaultParam()
+void FiniteTransmitionline::setDefaultParam(size_t count, bool defaultToRange)
 {
 	_C = 1e-6;
 	_R = 1000;
 	_n = 4;
 
 	ranges.clear();
-	ranges.push_back(Range(_C, _C, 1));
-	ranges.push_back(Range(_R, _R, 1));
-	ranges.push_back(Range(_n, _n, 1));
+	if(defaultToRange)
+	{
+		ranges.push_back(Range(1e-10, 1e-4, count, true));
+		ranges.push_back(Range(1, 1e4, count, true));
+		ranges.push_back(Range(_n, _n, 1));
+	}
+	else
+	{
+		ranges.push_back(Range(_C, _C, 1));
+		ranges.push_back(Range(_R, _R, 1));
+		ranges.push_back(Range(_n, _n, 1));
+	}
 }
 
-FiniteTransmitionline::FiniteTransmitionline(std::string paramStr, size_t count)
+FiniteTransmitionline::FiniteTransmitionline(std::string paramStr, size_t count, bool defaultToRange)
 {
 	ranges = Range::rangesFromParamString(paramStr, count);
 
 	if(ranges.size() != paramCount())
 	{
-		Log(Log::WARN)<<"invalid parameter string "<<paramStr<<" given to "<<__func__<<", will not be applied\n";
-		setDefaultParam();
+		setDefaultParam(count, defaultToRange);
+		Log(Log::WARN)<<__func__<<" default range of "<<getComponantString(false)<<" will be used";
 	}
 
-	if(subComponant)
-			delete subComponant;
-	subComponant = createTransmitionLine(_C, _R, _n);
+	updateValues();
 }
 
 FiniteTransmitionline::FiniteTransmitionline(const FiniteTransmitionline& in)

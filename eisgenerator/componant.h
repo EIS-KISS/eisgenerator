@@ -27,7 +27,7 @@ class Componant
 		virtual size_t paramCount(){return 0;}
 		virtual ~Componant() = default;
 		virtual char getComponantChar() const = 0;
-		virtual std::string getComponantString() const;
+		virtual std::string getComponantString(bool currentValue = true) const;
 
 		static Componant* copy(Componant* componant);
 };

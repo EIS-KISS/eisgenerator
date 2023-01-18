@@ -15,7 +15,7 @@ using namespace eis;
 
 Cpe::Cpe()
 {
-	setDefaultParam();
+	setDefaultParam(1, false);
 }
 
 Cpe::Cpe(fvalue q, fvalue alpha)
@@ -25,22 +25,32 @@ Cpe::Cpe(fvalue q, fvalue alpha)
 	ranges.push_back(Range(alpha, alpha, 1));
 }
 
-Cpe::Cpe(std::string paramStr, size_t count)
+Cpe::Cpe(std::string paramStr, size_t count, bool defaultToRange)
 {
-	ranges = Range::rangesFromParamString(paramStr, count);
+	if(!paramStr.empty())
+		ranges = Range::rangesFromParamString(paramStr, count);
 
 	if(ranges.size() != paramCount())
 	{
-		Log(Log::WARN)<<"invalid parameter string "<<paramStr<<" given to "<<__func__<<", will not be applied\n";
-		setDefaultParam();
+		setDefaultParam(count, defaultToRange);
+		Log(Log::WARN)<<__func__<<" default range of "<<getComponantString(false)<<" will be used";
 	}
+
 }
 
-void Cpe::setDefaultParam()
+void Cpe::setDefaultParam(size_t count, bool defaultToRange)
 {
 	ranges.clear();
-	ranges.push_back(Range(1e-7, 1e-7, 1));
-	ranges.push_back(Range(0.9, 0.9, 1));
+	if(defaultToRange)
+	{
+		ranges.push_back(Range(1e-10, 1e-4, count, true));
+		ranges.push_back(Range(0.5, 0.9, count));
+	}
+	else
+	{
+		ranges.push_back(Range(1e-7, 1e-7, 1));
+		ranges.push_back(Range(0.9, 0.9, 1));
+	}
 }
 
 std::complex<fvalue> Cpe::execute(fvalue omega)

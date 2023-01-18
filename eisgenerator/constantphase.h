@@ -10,9 +10,9 @@ namespace eis
 class Cpe: public Componant
 {
 private:
-	void setDefaultParam();
+	void setDefaultParam(size_t count, bool defaultToRange);
 public:
-	Cpe(std::string paramStr, size_t count = 10);
+	Cpe(std::string paramStr, size_t count = 10, bool defaultToRange = false);
 	Cpe(fvalue q, fvalue alpha);
 	Cpe();
 	virtual std::complex<fvalue> execute(fvalue omega) override;

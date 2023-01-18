@@ -10,7 +10,7 @@ namespace eis
 class Warburg: public Componant
 {
 public:
-	Warburg(std::string paramStr, size_t count = 10);
+	Warburg(std::string paramStr, size_t count = 10, bool defaultToRange = false);
 	Warburg(fvalue a = 2e4);
 	virtual std::complex<fvalue> execute(fvalue omega) override;
 	virtual size_t paramCount() override;
