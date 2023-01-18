@@ -5,6 +5,7 @@
 #include <vector>
 #include <array>
 #include <thread>
+#include <fstream>
 
 #include "strops.h"
 #include "cap.h"
@@ -17,6 +18,7 @@
 #include "log.h"
 
 using namespace eis;
+
 
 Componant *Model::processBrackets(std::string& str, size_t& bracketCounter, size_t paramSweepCount)
 {
@@ -65,6 +67,17 @@ std::string Model::getParamStr(const std::string& str, size_t index)
 	return parameterStr;
 }
 
+size_t Model::paramSkipIndex(const std::string& str, size_t index)
+{
+	if(index+2 > str.size() || str[index+1] != '{')
+		return index;
+
+	size_t opposing = opposingBraket(str, index, '}');
+	if(opposing != std::string::npos)
+		return opposing;
+	return index;
+}
+
 Componant *Model::processBracket(std::string& str, size_t paramSweepCount)
 {
 	Log(Log::DEBUG)<<__func__<<'('<<str<<')';
@@ -83,50 +96,38 @@ Componant *Model::processBracket(std::string& str, size_t paramSweepCount)
 			{
 				case Cap::staticGetComponantChar():
 				{
-					componants.push_back(new Cap(getParamStr(nodeStr, i), paramSweepCount));
-					size_t opposing = opposingBraket(nodeStr, i, '}');
-					if(opposing != std::string::npos)
-						i = opposingBraket(nodeStr, i, '}');
+					componants.push_back(new Cap(getParamStr(nodeStr, i), paramSweepCount, true));
+					i = paramSkipIndex(nodeStr, i);
 					break;
 				}
 				case Resistor::staticGetComponantChar():
 				{
-					componants.push_back(new Resistor(getParamStr(nodeStr, i), paramSweepCount));
-					size_t opposing = opposingBraket(nodeStr, i, '}');
-					if(opposing != std::string::npos)
-						i = opposingBraket(nodeStr, i, '}');
+					componants.push_back(new Resistor(getParamStr(nodeStr, i), paramSweepCount, true));
+					i = paramSkipIndex(nodeStr, i);
 					break;
 				}
 				case Inductor::staticGetComponantChar():
 				{
-					componants.push_back(new Inductor(getParamStr(nodeStr, i), paramSweepCount));
-					size_t opposing = opposingBraket(nodeStr, i, '}');
-					if(opposing != std::string::npos)
-						i = opposingBraket(nodeStr, i, '}');
+					componants.push_back(new Inductor(getParamStr(nodeStr, i), paramSweepCount, true));
+					i = paramSkipIndex(nodeStr, i);
 					break;
 				}
 				case Cpe::staticGetComponantChar():
 				{
-					componants.push_back(new Cpe(getParamStr(nodeStr, i), paramSweepCount));
-					size_t opposing = opposingBraket(nodeStr, i, '}');
-					if(opposing != std::string::npos)
-						i = opposingBraket(nodeStr, i, '}');
+					componants.push_back(new Cpe(getParamStr(nodeStr, i), paramSweepCount, true));
+					i = paramSkipIndex(nodeStr, i);
 					break;
 				}
 				case Warburg::staticGetComponantChar():
 				{
-					componants.push_back(new Warburg(getParamStr(nodeStr, i), paramSweepCount));
-					size_t opposing = opposingBraket(nodeStr, i, '}');
-					if(opposing != std::string::npos)
-						i = opposingBraket(nodeStr, i, '}');
+					componants.push_back(new Warburg(getParamStr(nodeStr, i), paramSweepCount, true));
+					i = paramSkipIndex(nodeStr, i);
 					break;
 				}
 				case FiniteTransmitionline::staticGetComponantChar():
 				{
-					componants.push_back(new FiniteTransmitionline(getParamStr(nodeStr, i), paramSweepCount));
-					size_t opposing = opposingBraket(nodeStr, i, '}');
-					if(opposing != std::string::npos)
-						i = opposingBraket(nodeStr, i, '}');
+					componants.push_back(new FiniteTransmitionline(getParamStr(nodeStr, i), paramSweepCount, true));
+					i = paramSkipIndex(nodeStr, i);
 					break;
 				}
 				case '{':
@@ -249,7 +250,10 @@ std::vector<DataPoint> Model::executeSweep(const Range& omega, size_t index)
 	std::vector<DataPoint> results;
 	results.reserve(omega.count);
 	for(size_t i = 0; i < omega.count; ++i)
-		results.push_back(execute(omega[i], index));
+	{
+		fvalue omegaStep = omega[i];
+		results.push_back(execute(omegaStep, index));
+	}
 
 	return results;
 }
@@ -257,7 +261,9 @@ std::vector<DataPoint> Model::executeSweep(const Range& omega, size_t index)
 void Model::sweepThreadFn(std::vector<std::vector<DataPoint>>* data, Model* model, size_t start, size_t stop, const Range& omega)
 {
 	for(size_t i = start; i < stop; ++i)
+	{
 		data->at(i) = model->executeSweep(omega, i);
+	}
 }
 
 std::vector<std::vector<DataPoint>> Model::executeAllSweeps(const Range& omega)
@@ -365,16 +371,26 @@ std::string Model::getModelStr() const
 
 std::string Model::getModelStrWithParam(size_t index)
 {
+	if(!_model)
+		return "";
 	resolveSteps(index);
-	return getModelStrWithParam();
-}
-
-
-std::string Model::getModelStrWithParam() const
-{
 	std::string out = _model->getComponantString();
 	eisRemoveUnneededBrackets(out);
 	return out;
+}
+
+std::string Model::getModelStrWithParam() const
+{
+	if(!_model)
+		return "";
+	std::string out = _model->getComponantString(false);
+	eisRemoveUnneededBrackets(out);
+	return out;
+}
+
+bool Model::isReady()
+{
+	return _model;
 }
 
 bool Model::isParamSweep()
