@@ -16,7 +16,7 @@
     #define M_PI 3.14159265358979323846
 #endif
 
-static constexpr double DIST_THRESH = 0.01;
+static constexpr double STEP_THRESH = 0.30;
 static constexpr char PARA_SWEEP_OUTPUT_DIR[] = "./sweep";
 
 static void printComponants(eis::Model& model)
@@ -52,7 +52,8 @@ static void runSweep(const Config& config, eis::Model& model)
 	if(config.reduce)
 	{
 		eis::Log(eis::Log::INFO)<<"reduced normalized results:";
-		results = eis::reduceRegion(results);
+		results = eis::reduceRegion(results, 0.01, false);
+		results = eis::reduceRegion(results, 0.01, true);
 	}
 	else if(config.normalize)
 	{
@@ -67,7 +68,7 @@ static void runSweep(const Config& config, eis::Model& model)
 	if(config.noise > 0)
 		eis::noise(results, config.noise, false);
 
-	std::cout<<(config.hertz ? "freqency" : "omega")<<",real,im\n";
+	eis::Log(eis::Log::INFO)<<(config.hertz ? "freqency" : "omega")<<",real,im";
 
 	for(const eis::DataPoint& res : results)
 		std::cout<<(config.hertz ? res.omega/(2*M_PI) : res.omega)<<','<<
@@ -97,9 +98,32 @@ static void runParamSweep(const Config& config, eis::Model& model)
 			data = allSweeps[i];
 		else
 			data = model.executeSweep(config.omegaRange, i);
-		size_t outputSize = data.size();
-		data = eis::reduceRegion(data);
-		data = eis::rescale(data, outputSize);
+		if(config.normalize)
+			eis::normalize(data);
+		if(config.reduce)
+		{
+			size_t initalDataSize = data.size();
+			data = eis::reduceRegion(data);
+			if(data.size() < initalDataSize/8)
+			{
+				eis::Log(eis::Log::INFO)<<"\nskipping output for step "<<i
+					<<" as data has no interesting region";
+				continue;
+			}
+			//data = eis::rescale(data, initalDataSize);
+		}
+
+		if(config.skipLinear && i > 0)
+		{
+			fvalue correlation = std::abs(pearsonCorrelation(data));
+			if(correlation > 0.5)
+			{
+				eis::Log(eis::Log::INFO)<<"skipping output for step "<<i
+					<<" as data is too linear: "<<correlation;
+				continue;
+			}
+		}
+
 		eis::saveToDisk(data, std::string(PARA_SWEEP_OUTPUT_DIR)+std::string("/")+std::to_string(i)+".csv", model.getModelStrWithParam(i));
 		eis::Log(eis::Log::INFO, false)<<'.';
 	}
@@ -110,24 +134,17 @@ static void runParamSweep(const Config& config, eis::Model& model)
 	eis::Log(eis::Log::INFO)<<"time taken: "<<duration.count()<<" ms";
 }
 
-void findRanges(const Config& config, eis::Model& model)
+static std::vector<std::vector<fvalue>> getRangeValuesForModel(const Config& config, eis::Model& model, std::vector<size_t>* indices = nullptr)
 {
 	std::vector<std::vector<fvalue>> values;
 	std::vector<std::vector<eis::DataPoint>> sweeps;
 	size_t count = model.getRequiredStepsForSweeps();
+	eis::Log(eis::Log::INFO)<<"Executeing "<<count<<" steps";
 	std::vector<eis::Componant*> componants = model.getFlatComponants();
 	std::vector<std::vector<eis::DataPoint>> allSweeps;
 
 	if(config.threaded)
 		allSweeps = model.executeAllSweeps(config.omegaRange);
-
-	std::vector<char> componantChars;
-	for(eis::Componant* componant : componants)
-	{
-		std::vector<eis::Range>& ranges = componant->getParamRanges();
-		for(size_t i = 0; i < ranges.size(); ++i)
-			componantChars.push_back(componant->getComponantChar());
-	}
 
 	for(size_t i = 0; i < count; ++i)
 	{
@@ -136,14 +153,29 @@ void findRanges(const Config& config, eis::Model& model)
 			data = allSweeps[i];
 		else
 			data = model.executeSweep(config.omegaRange, i);
-		size_t outputSize = data.size();
-		data = eis::reduceRegion(data);
-		data = eis::rescale(data, outputSize);
+		normalize(data);
+
+		fvalue maxJump =  maximumNyquistJump(data);
+		if(maxJump > STEP_THRESH)
+		{
+			eis::Log(eis::Log::DEBUG)<<"skipping output for step "<<i
+				<<" is not well centered: "<<maxJump;
+			continue;
+		}
+
+		fvalue correlation = std::abs(pearsonCorrelation(data));
+		if(correlation > 0.8)
+		{
+			eis::Log(eis::Log::DEBUG)<<"skipping output for step "<<i
+				<<" as data is too linear: "<<correlation;
+			continue;
+		}
 
 		bool found = false;
-		for(ssize_t  i = static_cast<ssize_t>(sweeps.size())-1; i >= 0; --i)
+		for(ssize_t  j = static_cast<ssize_t>(sweeps.size())-1; j >= 0; --j)
 		{
-			if(eisDistance(data, sweeps[i]) < DIST_THRESH)
+			fvalue dist = eisDistance(data, sweeps[j]);
+			if(dist < config.rangeDistance)
 			{
 				found = true;
 				break;
@@ -151,6 +183,8 @@ void findRanges(const Config& config, eis::Model& model)
 		}
 		if(!found)
 		{
+			if(indices)
+				indices->push_back(i);
 			sweeps.push_back(data);
 			values.push_back(std::vector<fvalue>());
 			if(config.threaded)
@@ -170,6 +204,20 @@ void findRanges(const Config& config, eis::Model& model)
 	}
 	eis::Log(eis::Log::INFO, false)<<'\n';
 
+	return values;
+}
+
+static void findRanges(const Config& config, eis::Model& model)
+{
+	std::vector<std::vector<fvalue>> values = getRangeValuesForModel(config, model);
+	std::vector<eis::Componant*> componants = model.getFlatComponants();
+
+	if(values.empty())
+	{
+		eis::Log(eis::Log::INFO)<<"Cant recommend a range";
+		return;
+	}
+
 	std::vector<fvalue> maxValues(values[0].size(), std::numeric_limits<fvalue>::min());
 	std::vector<fvalue> minValues(values[0].size(), std::numeric_limits<fvalue>::max());
 	for(size_t i = 0; i < values.size(); ++i)
@@ -183,11 +231,45 @@ void findRanges(const Config& config, eis::Model& model)
 		}
 	}
 
-	eis::Log(eis::Log::INFO)<<"Recommended ranges:";
-	for(size_t i = 0; i < maxValues.size(); ++i)
+	size_t i = 0;
+	for(eis::Componant* componant : componants)
 	{
-		eis::Log(eis::Log::INFO)<<componantChars[i]<<": "<<minValues[i]<<'-'<<maxValues[i];
+		std::vector<eis::Range>& ranges = componant->getParamRanges();
+		for(eis::Range& range : ranges)
+		{
+			fvalue mean = (maxValues[i]+minValues[i])/2;
+			fvalue var = std::pow(maxValues[i]-minValues[i], 2)/std::pow(mean, 2);
+			if(var < 0.1)
+			{
+				range.start = mean;
+				range.end = mean;
+				range.count = 1;
+			}
+			else
+			{
+				range.start = minValues[i];
+				range.end = maxValues[i];
+			}
+			++i;
+		}
 	}
+
+	eis::Log(eis::Log::INFO)<<"Recommended ranges:\n"<<model.getModelStrWithParam();
+}
+
+static void outputRanges(const Config& config, eis::Model& model)
+{
+	std::vector<size_t> indices;
+	getRangeValuesForModel(config, model, &indices);
+
+	if(indices.empty())
+	{
+		eis::Log(eis::Log::INFO)<<"Cant recommend a range";
+		return;
+	}
+
+	for(size_t index : indices)
+		std::cout<<model.getModelStrWithParam(index)<<'\n';
 }
 
 int main(int argc, char** argv)
@@ -212,23 +294,51 @@ int main(int argc, char** argv)
 	else if(config.inputType == INPUT_TYPE_UNKOWN)
 		eis::Log(eis::Log::WARN)<<"Invalid input type specified, assumeing eis";
 
-	eis::Log(eis::Log::INFO)<<"Using model string: "<<config.modelStr;
+	if(config.inputType != INPUT_TYPE_EIS)
+		eis::Log(eis::Log::INFO)<<"Using translated model string: "<<config.modelStr;
 
-	eis::Model model(config.modelStr, config.paramSteps);
-	printComponants(model);
-
-	if(config.findRange && !model.isParamSweep())
+	try
 	{
-		eis::Log(eis::Log::ERROR)<<"Cant find range on a non-sweep model";
+		eis::Model model(config.modelStr, config.paramSteps);
+
+		eis::Log(eis::Log::INFO)<<"Using parsed model string: "<<model.getModelStrWithParam();
+
+		printComponants(model);
+
+		if(config.mode == MODE_INVALID)
+		{
+			eis::Log(eis::Log::ERROR)<<"Invalid mode selected";
+			return 1;
+		}
+
+		if(config.mode == MODE_FIND_RANGE && !model.isParamSweep())
+		{
+			eis::Log(eis::Log::ERROR)<<"Cant find range on a non-sweep model";
+			return 1;
+		}
+
+		if(config.mode == MODE_FIND_RANGE)
+		{
+			findRanges(config, model);
+		}
+		if(config.mode == MODE_OUTPUT_RANGE_DATAPOINTS)
+		{
+			outputRanges(config, model);
+		}
+		else
+		{
+			if(model.isParamSweep())
+				runParamSweep(config, model);
+			else
+				runSweep(config, model);
+		}
+
+	}
+	catch(const std::invalid_argument& ia)
+	{
+		eis::Log(eis::Log::ERROR)<<"Unable to parse model string, "<<ia.what();
 		return 1;
 	}
-
-	if(model.isParamSweep() && config.findRange)
-		findRanges(config, model);
-	else if(model.isParamSweep())
-		runParamSweep(config, model);
-	else
-			runSweep(config, model);
 
 	return 0;
 }

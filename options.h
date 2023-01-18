@@ -26,8 +26,10 @@ static struct argp_option options[] =
   {"invert",        'i', 0,      0,  "inverts the imaginary axis"},
   {"noise",        'x', "[AMPLITUDE]",      0,  "add noise to output"},
   {"input-type",   't', "[STRING]",      0,  "set input string type, possible values: eis, boukamp, relaxis"},
-  {"find-range",   'f', 0,      0,  "find sensible part of parameter range"},
+  {"find-range",   'f', "[STRING]",      0,  "mode, possible values: export, find-range, export-ranges"},
+  {"range-distance",   'd', "[DISTANCE]",      0,  "distance from a previous point where a range is considered \"new\""},
   {"parallel",   'p', 0,      0,  "run on multiple threads"},
+  {"skip-linear",   'e', 0,      0,  "dont output param sweeps that create linear nyquist plots"},
   { 0 }
 };
 
@@ -39,19 +41,29 @@ enum
 	INPUT_TYPE_UNKOWN
 };
 
+enum
+{
+	MODE_NORMAL,
+	MODE_FIND_RANGE,
+	MODE_OUTPUT_RANGE_DATAPOINTS,
+	MODE_INVALID,
+};
+
 struct Config
 {
 	std::string modelStr = "c{1e-6}r{1e3}-r{1e3}";
 	int inputType = INPUT_TYPE_EIS;
+	int mode = MODE_NORMAL;
 	size_t paramSteps = 10;
 	eis::Range omegaRange;
 	bool normalize = false;
 	bool reduce = false;
 	bool hertz = false;
 	bool invert = false;
-	bool findRange = false;
 	bool threaded = false;
+	bool skipLinear = false;
 	double noise = 0;
+	double rangeDistance = 0.35;
 
 	Config(): omegaRange(1, 1e6, 50, true)
 	{}
@@ -66,6 +78,17 @@ static int parseInputType(const std::string& str)
 	else if(str == "relaxis")
 		return INPUT_TYPE_RELAXIS;
 	return INPUT_TYPE_UNKOWN;
+}
+
+static int parseMode(const std::string& str)
+{
+	if(str == "export")
+		return INPUT_TYPE_EIS;
+	else if(str == "find-range")
+		return MODE_FIND_RANGE;
+	else if(str == "export-ranges")
+		return MODE_OUTPUT_RANGE_DATAPOINTS;
+	return MODE_INVALID;
 }
 
 static error_t
@@ -148,10 +171,16 @@ parse_opt (int key, char *arg, struct argp_state *state)
 		config->inputType = parseInputType(std::string(arg));
 		break;
 	case 'f':
-		config->findRange = true;
+		config->mode = parseMode(std::string(arg));
 		break;
 	case 'p':
 		config->threaded = true;
+		break;
+	case 'e':
+		config->skipLinear = true;
+		break;
+	case 'd':
+		config->rangeDistance = std::stod(std::string(arg));
 		break;
 	default:
 		return ARGP_ERR_UNKNOWN;
