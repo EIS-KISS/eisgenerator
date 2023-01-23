@@ -1,19 +1,19 @@
 #include "translators.h"
 #include <vector>
 #include <iostream>
+#include <cassert>
+#include <map>
+#include <algorithm>
+#include <sstream>
 
 #include "strops.h"
+#include "eistype.h"
+#include "log.h"
 
 namespace eis
 {
 
-struct pair
-{
-	const char* a;
-	const char* b;
-};
-
-const struct pair eisRelaxisTable[] =
+const struct std::pair<const char*, const char*> eisRelaxisTable[] =
 {
 	{"r", "R"},
 	{"R", "R"},
@@ -30,7 +30,7 @@ const struct pair eisRelaxisTable[] =
 	{nullptr, nullptr}
 };
 
-const struct pair eisCdcTable[] =
+const struct std::pair<const char*, const char*> eisCdcTable[] =
 {
 	{"r", "R"},
 	{"R", "R"},
@@ -47,32 +47,48 @@ const struct pair eisCdcTable[] =
 	{nullptr, nullptr}
 };
 
-static std::string translateElement(const std::string& in, const struct pair* table, bool reverse = false)
+const struct std::pair<const char*, const char*> eisMadapTable[] =
+{
+	{"r", "R"},
+	{"R", "R"},
+	{"c", "C"},
+	{"C", "C"},
+	{"l", "L"},
+	{"L", "L"},
+	{"p", "CPE"},
+	{"P", "CPE"},
+	{"w", "W"},
+	{"W", "W"},
+	{"W", "Wo"},
+	{nullptr, nullptr}
+};
+
+static std::string translateElement(const std::string& in, const struct std::pair<const char*, const char*>* table, bool reverse = false)
 {
 	size_t i = 0;
-	while(!reverse ? table[i].a : table[i].b)
+	while(!reverse ? table[i].first : table[i].second)
 	{
-		if(std::string(!reverse ? table[i].a : table[i].b) == in)
-			return std::string(reverse ? table[i].a : table[i].b);
+		if(std::string(!reverse ? table[i].first : table[i].second) == in)
+			return std::string(reverse ? table[i].first : table[i].second);
 		++i;
 	}
 
 	return std::string("x");
 }
 
-static bool isValidSymbol(const std::string& in, const struct pair* table, bool reverse = false)
+static bool isValidSymbol(const std::string& in, const struct std::pair<const char*, const char*>* table, bool reverse = false)
 {
 	size_t i = 0;
-	while(!reverse ? table[i].a : table[i].b)
+	while(!reverse ? table[i].first : table[i].second)
 	{
-		if(std::string(!reverse ? table[i].a : table[i].b) == in)
+		if(std::string(!reverse ? table[i].first : table[i].second) == in)
 			return true;
 		++i;
 	}
 	return false;
 }
 
-static void purgeBrackets(std::string& in)
+void purgeEisParamBrackets(std::string& in)
 {
 	int bracketCounter = 0;
 
@@ -94,14 +110,14 @@ std::string relaxisToEis(const std::string& in)
 {
 	std::string out;
 	std::string work(in);
-	purgeBrackets(work);
+	purgeEisParamBrackets(work);
 	for(size_t i = 0; i < work.size(); ++i)
 	{
 		if(isValidSymbol(std::string(1, work[i]), eisRelaxisTable, true))
 		{
 			out.append(translateElement(std::string(1, work[i]), eisRelaxisTable, true));
 
-			if(i+1 < work.size() && (i == 0 || work[i-1] != '(' || work[i-1] != ')'))
+			if(i+1 < work.size() && (i == 0 || work[i-1] != '(' || work[i+1] != ')'))
 				out.push_back('-');
 		}
 	}
@@ -318,7 +334,7 @@ std::string eisToCdc(const std::string& in)
 {
 	std::vector<std::string> brackets;
 	std::string workString = in;
-	purgeBrackets(workString);
+	purgeEisParamBrackets(workString);
 
 	size_t maxDepth;
 	size_t bracketStart = getDeepestBraket(workString, maxDepth);
@@ -361,6 +377,212 @@ std::string eisToCdc(const std::string& in)
 	}
 
 	return out;
+}
+
+static std::string madapStrip(const std::string& in)
+{
+	std::string out;
+	out.reserve(in.size());
+	for(char ch : in)
+	{
+		if(ch == 'p')
+			continue;
+		out.push_back(ch);
+	}
+	return out;
+}
+
+std::string madapTranslateBracket(const std::string& in, bool paralell, const std::map<std::string, std::string>& parameters)
+{
+	std::string out;
+	if(paralell)
+	{
+		out.push_back('(');
+		std::vector<std::string> tokens = tokenize(in, ',', '(', ')', '\\');
+		for(std::string& token : tokens)
+		{
+			out.push_back('(');
+			std::vector<std::string> subtokens = tokenize(token, '-', '(', ')', '\\');
+			for(std::string& subtoken : subtokens)
+			{
+				if(subtoken[0] == '(')
+				{
+					if(token.back() != ')')
+						throw parse_errror("unbounded bracket");
+					subtoken.pop_back();
+					subtoken.erase(subtoken.begin());
+					out.append(madapTranslateBracket(subtoken, true, parameters));
+				}
+				else
+				{
+					out.append(madapTranslateBracket(subtoken, false, parameters));
+				}
+			}
+			if(out.back() == '-')
+				out.pop_back();
+			out.push_back(')');
+		}
+		out.push_back(')');
+	}
+	else
+	{
+		std::vector<std::string> tokens = tokenize(in, '-', '(', ')', '\\');
+		for(std::string& token : tokens)
+		{
+			if(token[0] == '(')
+			{
+				if(token.back() != ')')
+					throw parse_errror("unbounded bracket");
+				token.pop_back();
+				token.erase(token.begin());
+				out.append(madapTranslateBracket(token, true, parameters));
+			}
+			else
+			{
+				auto paramIterator = parameters.find(token);
+				std::string parameterStr;
+				if(paramIterator != parameters.end())
+					parameterStr = paramIterator->second;
+
+				if(token.back() >= 48 && token.back() <= 57)
+					token.pop_back();
+
+				if(!isValidSymbol(token, eisMadapTable, true))
+					throw parse_errror("invalid symbol \"" + token + "\"");
+				out.append(translateElement(token, eisMadapTable, true));
+				out.append(parameterStr);
+			}
+			out.push_back('-');
+		}
+	}
+
+	return out;
+}
+
+std::vector<std::string> madapGetFlatComponants(const std::string& in)
+{
+	std::vector<std::string> out;
+	std::vector<std::string> tokens = tokenize(in, '-');
+	for(const std::string& token : tokens)
+	{
+		std::vector<std::string> subtokens = tokenize(token, ',');
+		for(std::string& subtoken : subtokens)
+		{
+			subtoken = stripWhitespace(subtoken);
+			if(subtoken.empty())
+				continue;
+			if(subtoken[0] == '(' || subtoken[0] == ')')
+				subtoken.erase(subtoken.begin());
+			if(subtoken.back() == '(' || subtoken.back() == ')')
+				subtoken.pop_back();
+			out.push_back(subtoken);
+		}
+	}
+	return out;
+}
+
+std::string madapGenerateEisParamString(const std::vector<double>& paramNums, size_t& currParam, size_t paramCount)
+{
+	if(paramCount == 0)
+		return "";
+	if(currParam+paramCount-1 >= paramNums.size())
+		throw parse_errror("Not enough parameters");
+
+	std::stringstream out;
+	out<<'{'<<std::scientific;
+
+	for(size_t i = 0; i < paramCount; ++i)
+	{
+		out<<paramNums.at(currParam);
+		if(i+1 != paramCount)
+			out<<", ";
+		++currParam;
+	}
+
+	out<<'}';
+	return out.str();
+}
+
+std::map<std::string, std::string> madapParseParameters(const std::string& in, std::string parameters)
+{
+	std::map<std::string, std::string> out;
+
+	if(parameters.empty())
+		return out;
+
+	parameters = stripWhitespace(parameters);
+	if(parameters[0] == '[')
+		parameters.erase(parameters.begin());
+	if(parameters.back() == ']')
+		parameters.pop_back();
+
+	std::vector<double> paramNums;
+	std::vector<std::string> tokens = tokenize(parameters, ',', '(', ')', '\\');
+	for(const std::string& token : tokens)
+	{
+		std::vector<std::string> subtokens = tokenize(token, ',');
+		if(subtokens[0][0] == '(')
+			subtokens[0].erase(subtokens[0].begin());
+		if(subtokens[0].back() == ')')
+			subtokens[0].pop_back();
+		Log(Log::DEBUG)<<__func__<<" Adding param "<<subtokens[0];
+		paramNums.push_back(std::stod(subtokens[0]));
+	}
+
+	if(paramNums.empty())
+		throw parse_errror("invaid parameter string");
+
+	size_t paramCounter = 0;
+	std::vector<std::string> componants = madapGetFlatComponants(in);
+	for(const std::string& componant : componants)
+	{
+		std::string workComponant = componant;
+		auto newEnd = std::remove_if(workComponant.begin(), workComponant.end(), [](char ch){return ch >= 48 && ch <= 57;});
+		workComponant.erase(newEnd, workComponant.end());
+		std::string eisComponant = translateElement(workComponant, eisMadapTable, true);
+		if(eisComponant == "x")
+			throw parse_errror("invalid symbol \"" + componant + "\"");
+		if(!out.insert({componant, ""}).second)
+			throw parse_errror("duplicate symbol \"" + componant + "\"");
+
+		if(eisComponant == "r")
+			out[componant] = madapGenerateEisParamString(paramNums, paramCounter, 1);
+		else if(eisComponant == "c")
+			out[componant] = madapGenerateEisParamString(paramNums, paramCounter, 1);
+		else if(eisComponant == "p")
+			out[componant] = madapGenerateEisParamString(paramNums, paramCounter, 2);
+		else if(eisComponant == "l")
+			out[componant] = madapGenerateEisParamString(paramNums, paramCounter, 1);
+		else if(eisComponant == "w")
+			out[componant] = madapGenerateEisParamString(paramNums, paramCounter, 1);
+	}
+
+	return out;
+}
+
+std::string madapToEis(const std::string& in, const std::string& parameters)
+{
+	if(in.empty())
+		return std::string("");
+	std::string work = madapStrip(in);
+	work = stripWhitespace(work);
+
+	std::map<std::string, std::string> parameterMap = madapParseParameters(work, parameters);
+
+	std::string out = madapTranslateBracket(work, work[0] == '(', parameterMap);
+	if(out.back() == '-')
+		out.pop_back();
+
+	eisRemoveUnneededBrackets(out);
+
+	return out;
+}
+
+std::string eisToMadap(std::string in)
+{
+	purgeEisParamBrackets(in);
+	assert(false);
+	return in;
 }
 
 }
