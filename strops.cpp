@@ -142,3 +142,16 @@ size_t eisRemoveUnneededBrackets(std::string& in, long int bracketStart)
 	}
 	return in.size()-1;
 }
+
+std::string stripWhitespace(const std::string& in)
+{
+	std::string out;
+	out.reserve(in.size());
+	for(char ch : in)
+	{
+		if(ch <= 32 || ch == 127)
+			continue;
+		out.push_back(ch);
+	}
+	return out;
+}

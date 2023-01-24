@@ -12,4 +12,6 @@ size_t deepestBraket(const std::string& str, std::string bracketChars = "(", siz
 
 char getOpposingBracketChar(const char ch);
 
+std::string stripWhitespace(const std::string& in);
+
 size_t eisRemoveUnneededBrackets(std::string& in, long int bracketStart = -1);
