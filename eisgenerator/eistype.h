@@ -8,6 +8,7 @@ typedef double fvalue;
 
 namespace eis
 {
+
 class DataPoint
 {
 public:
@@ -109,7 +110,33 @@ public:
 	static std::vector<Range> rangesFromParamString(const std::string& paramStr, size_t count);
 };
 
+class parse_errror: public std::exception
+{
+	std::string whatStr;
+public:
+	parse_errror(const std::string& whatIn): whatStr(whatIn)
+	{}
+	virtual const char* what() const noexcept override
+	{
+		return whatStr.c_str();
+	}
+};
+
+class file_error: public std::exception
+{
+	std::string whatStr;
+public:
+	file_error(const std::string& whatIn): whatStr(whatIn)
+	{}
+	virtual const char* what() const noexcept override
+	{
+		return whatStr.c_str();
+	}
+};
+
 bool saveToDisk(const std::vector<DataPoint>& data, const std::string& fileName, std::string headStr = "");
+
+std::pair<std::vector<DataPoint>, std::string> loadFromDisk(const std::string& fileName);
 
 fvalue eisDistance(const std::vector<eis::DataPoint>& a, const std::vector<eis::DataPoint>& b);
 

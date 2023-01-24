@@ -19,13 +19,41 @@ bool eis::saveToDisk(const std::vector<DataPoint>& data, const std::string& file
 	}
 
 	if(!headStr.empty())
-		file<<headStr<<'\n';
-	file<<"omega,real,im\n";
+		file<<headStr;
+	file<<"\nomega,real,im\n";
 
 	for(const eis::DataPoint& point : data)
 		file<<point.omega<<','<<point.im.real()<<','<<point.im.imag()<<'\n';
 	file.close();
 	return true;
+}
+
+std::pair<std::vector<DataPoint>, std::string> eis::loadFromDisk(const std::string& fileName)
+{
+	std::fstream file;
+	file.open(fileName, std::ios_base::in);
+	if(!file.is_open())
+		throw file_error("can not open " + fileName + " for reading\n");
+
+	std::pair<std::vector<DataPoint>, std::string> out;
+
+	std::getline(file, out.second);
+
+	std::string line;
+	std::getline(file, line);
+	while(file.good())
+	{
+		std::getline(file, line);
+		if(line.empty() || line[0] == '#')
+			continue;
+		std::vector<std::string> tokens = tokenize(line, ',');
+		if(tokens.size() != 3)
+			throw file_error("invalid line in " + fileName + ": " + line);
+		out.first.push_back(DataPoint({std::stod(tokens[1]), std::stod(tokens[2])}, std::stod(tokens[0])));
+	}
+
+	file.close();
+	return out;
 }
 
 void eis::Range::print(int level) const
