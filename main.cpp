@@ -272,6 +272,23 @@ static void outputRanges(const Config& config, eis::Model& model)
 		std::cout<<model.getModelStrWithParam(index)<<'\n';
 }
 
+
+std::string translateModelString(const std::string& in, int type)
+{
+	switch(type)
+	{
+		case INPUT_TYPE_BOUKAMP:
+			return eis::cdcToEis(in);
+		case INPUT_TYPE_RELAXIS:
+			return eis::relaxisToEis(in);
+		case INPUT_TYPE_MADAP:
+			return eis::madapToEis(in);
+		case INPUT_TYPE_EIS:
+		default:
+			return in;
+	}
+}
+
 int main(int argc, char** argv)
 {
 	eis::Log::level = eis::Log::INFO;
@@ -287,19 +304,29 @@ int main(int argc, char** argv)
 		return 1;
 	}
 
-	if(config.inputType == INPUT_TYPE_BOUKAMP)
-		config.modelStr = eis::cdcToEis(config.modelStr);
-	else if(config.inputType == INPUT_TYPE_RELAXIS)
-		config.modelStr = eis::relaxisToEis(config.modelStr);
-	else if(config.inputType == INPUT_TYPE_UNKOWN)
-		eis::Log(eis::Log::WARN)<<"Invalid input type specified, assumeing eis";
+	if(config.inputType == INPUT_TYPE_UNKOWN)
+	{
+		eis::Log(eis::Log::ERROR)<<"Invalid input type specified";
+		return 1;
+	}
+	else
+	{
+		config.modelStr = translateModelString(config.modelStr, config.inputType);
+	}
 
 	if(config.inputType != INPUT_TYPE_EIS)
 		eis::Log(eis::Log::INFO)<<"Using translated model string: "<<config.modelStr;
 
 	try
 	{
-		eis::Model model(config.modelStr, config.paramSteps);
+		eis::Model model(config.modelStr, config.paramSteps, config.defaultToRange);
+		if(!model.isReady())
+		{
+			eis::Log(eis::Log::ERROR)<<"Unable to parse "
+				<<(config.inputType == INPUT_TYPE_EIS ? "provided" : "translated")
+				<<" model string";
+			return 1;
+		}
 
 		eis::Log(eis::Log::INFO)<<"Using parsed model string: "<<model.getModelStrWithParam();
 
