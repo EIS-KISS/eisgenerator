@@ -20,16 +20,16 @@
 using namespace eis;
 
 
-Componant *Model::processBrackets(std::string& str, size_t& bracketCounter, size_t paramSweepCount)
+Componant *Model::processBrackets(std::string& str, size_t& bracketCounter, size_t paramSweepCount, bool defaultToRange)
 {
 	size_t bracketStart = deepestBraket(str);
 	Log(Log::DEBUG)<<str<<" bracket start "<<(bracketStart == std::string::npos ? std::string("npos") :  std::to_string(bracketStart));
 
 	if(bracketStart == std::string::npos)
 	{
-		Componant* componant = processBracket(str, paramSweepCount);
+		Componant* componant = processBracket(str, paramSweepCount, defaultToRange);
 		if(!componant)
-			Log(Log::DEBUG)<<"Warning: can not create componant type B for "<<str;
+			throw parse_errror("can not create componant type B for " + str);
 		return componant;
 	}
 
@@ -42,43 +42,18 @@ Componant *Model::processBrackets(std::string& str, size_t& bracketCounter, size
 
 	std::string bracket = str.substr(bracketStart+1, bracketEnd-1-bracketStart);
 
-	Componant* componant = processBracket(bracket, paramSweepCount);
+	Componant* componant = processBracket(bracket, paramSweepCount, defaultToRange);
 	if(!componant)
-		Log(Log::DEBUG)<<"can not create componant type A for "<<bracket;
+		throw parse_errror("can not create componant type B for " + str);
 	_bracketComponants.push_back(componant);
 
 	str.erase(str.begin()+bracketStart, str.begin()+bracketEnd+1);
 	str.insert(str.begin()+bracketStart, bracketCounter+48);
 	++bracketCounter;
-	return processBrackets(str, bracketCounter, paramSweepCount);
+	return processBrackets(str, bracketCounter, paramSweepCount, defaultToRange);
 }
 
-std::string Model::getParamStr(const std::string& str, size_t index)
-{
-	if(static_cast<int64_t>(str.size())-index < 3 || str[index+1] != '{')
-	{
-		Log(Log::WARN)<<"missing parameter string for "<<str[index];
-		return "";
-	}
-
-	size_t end = opposingBraket(str, index, '}');
-	std::string parameterStr = str.substr(index+2, end-index-2);
-	Log(Log::DEBUG)<<"param for "<<str[index]<<' '<<parameterStr;
-	return parameterStr;
-}
-
-size_t Model::paramSkipIndex(const std::string& str, size_t index)
-{
-	if(index+2 > str.size() || str[index+1] != '{')
-		return index;
-
-	size_t opposing = opposingBraket(str, index, '}');
-	if(opposing != std::string::npos)
-		return opposing;
-	return index;
-}
-
-Componant *Model::processBracket(std::string& str, size_t paramSweepCount)
+Componant *Model::processBracket(std::string& str, size_t paramSweepCount, bool defaultToRange)
 {
 	Log(Log::DEBUG)<<__func__<<'('<<str<<')';
 	std::vector<std::string> tokens = tokenize(str, '-', '{', '}');
@@ -96,37 +71,37 @@ Componant *Model::processBracket(std::string& str, size_t paramSweepCount)
 			{
 				case Cap::staticGetComponantChar():
 				{
-					componants.push_back(new Cap(getParamStr(nodeStr, i), paramSweepCount, true));
+					componants.push_back(new Cap(getParamStr(nodeStr, i), paramSweepCount, defaultToRange));
 					i = paramSkipIndex(nodeStr, i);
 					break;
 				}
 				case Resistor::staticGetComponantChar():
 				{
-					componants.push_back(new Resistor(getParamStr(nodeStr, i), paramSweepCount, true));
+					componants.push_back(new Resistor(getParamStr(nodeStr, i), paramSweepCount, defaultToRange));
 					i = paramSkipIndex(nodeStr, i);
 					break;
 				}
 				case Inductor::staticGetComponantChar():
 				{
-					componants.push_back(new Inductor(getParamStr(nodeStr, i), paramSweepCount, true));
+					componants.push_back(new Inductor(getParamStr(nodeStr, i), paramSweepCount, defaultToRange));
 					i = paramSkipIndex(nodeStr, i);
 					break;
 				}
 				case Cpe::staticGetComponantChar():
 				{
-					componants.push_back(new Cpe(getParamStr(nodeStr, i), paramSweepCount, true));
+					componants.push_back(new Cpe(getParamStr(nodeStr, i), paramSweepCount, defaultToRange));
 					i = paramSkipIndex(nodeStr, i);
 					break;
 				}
 				case Warburg::staticGetComponantChar():
 				{
-					componants.push_back(new Warburg(getParamStr(nodeStr, i), paramSweepCount, true));
+					componants.push_back(new Warburg(getParamStr(nodeStr, i), paramSweepCount, defaultToRange));
 					i = paramSkipIndex(nodeStr, i);
 					break;
 				}
 				case FiniteTransmitionline::staticGetComponantChar():
 				{
-					componants.push_back(new FiniteTransmitionline(getParamStr(nodeStr, i), paramSweepCount, true));
+					componants.push_back(new FiniteTransmitionline(getParamStr(nodeStr, i), paramSweepCount, defaultToRange));
 					i = paramSkipIndex(nodeStr, i);
 					break;
 				}
@@ -162,11 +137,47 @@ Componant *Model::processBracket(std::string& str, size_t paramSweepCount)
 		return nullptr;
 }
 
-Model::Model(const std::string& str, size_t paramSweepCount): _modelStr(str)
+std::string Model::getParamStr(const std::string& str, size_t index)
+{
+	if(static_cast<int64_t>(str.size())-index < 3 || str[index+1] != '{')
+	{
+		Log(Log::WARN)<<"missing parameter string for "<<str[index];
+		return "";
+	}
+
+	size_t end = opposingBraket(str, index, '}');
+	std::string parameterStr = str.substr(index+2, end-index-2);
+	Log(Log::DEBUG)<<"param for "<<str[index]<<' '<<parameterStr;
+	return parameterStr;
+}
+
+size_t Model::paramSkipIndex(const std::string& str, size_t index)
+{
+	if(index+2 > str.size() || str[index+1] != '{')
+		return index;
+
+	size_t opposing = opposingBraket(str, index, '}');
+	if(opposing != std::string::npos)
+		return opposing;
+	return index;
+}
+
+Model::Model(const std::string& str, size_t paramSweepCount, bool defaultToRange): _modelStr(str)
 {
 	size_t bracketCounter = 0;
 	std::string strCpy(str);
-	_model = processBrackets(strCpy, bracketCounter, paramSweepCount);
+	_model = nullptr;
+	try
+	{
+		_model = processBrackets(strCpy, bracketCounter, paramSweepCount, defaultToRange);
+	}
+	catch(const parse_errror& err)
+	{
+		Log(Log::ERROR)<<err.what();
+		if(_model != nullptr)
+			delete _model;
+		_model = nullptr;
+	}
 }
 
 Model::Model(const Model& in)

@@ -14,8 +14,8 @@ namespace eis
 class Model
 {
 private:
-	Componant *processBrackets(std::string& str, size_t& bracketCounter, size_t paramSweepCount);
-	Componant *processBracket(std::string& str, size_t paramSweepCount);
+	Componant *processBrackets(std::string& str, size_t& bracketCounter, size_t paramSweepCount, bool defaultToRange);
+	Componant *processBracket(std::string& str, size_t paramSweepCount, bool defaultToRange);
 	std::string getParamStr(const std::string& str, size_t index);
 	static size_t paramSkipIndex(const std::string& str, size_t index);
 	static void addComponantToFlat(Componant* componant, std::vector<Componant*>* flatComponants);
@@ -29,7 +29,7 @@ private:
 	std::vector<Componant*> _flatComponants;
 
 public:
-	Model(const std::string& str, size_t paramSweepCount = 100);
+	Model(const std::string& str, size_t paramSweepCount = 100, bool defaultToRange = true);
 	Model(const Model& in);
 	Model& operator=(const Model& in);
 	~Model();
