@@ -25,11 +25,12 @@ static struct argp_option options[] =
   {"hz",        'h', 0,      0,  "freqency values as temporal frequency instead of angular frequency"},
   {"invert",        'i', 0,      0,  "inverts the imaginary axis"},
   {"noise",        'x', "[AMPLITUDE]",      0,  "add noise to output"},
-  {"input-type",   't', "[STRING]",      0,  "set input string type, possible values: eis, boukamp, relaxis"},
+  {"input-type",   't', "[STRING]",      0,  "set input string type, possible values: eis, boukamp, relaxis, madap"},
   {"find-range",   'f', "[STRING]",      0,  "mode, possible values: export, find-range, export-ranges"},
   {"range-distance",   'd', "[DISTANCE]",      0,  "distance from a previous point where a range is considered \"new\""},
   {"parallel",   'p', 0,      0,  "run on multiple threads"},
   {"skip-linear",   'e', 0,      0,  "dont output param sweeps that create linear nyquist plots"},
+  {"default-to-range",   'b', 0,      0,  "if a element has no paramters, default to assigning it a range instead of a single value"},
   { 0 }
 };
 
@@ -38,6 +39,7 @@ enum
 	INPUT_TYPE_EIS,
 	INPUT_TYPE_BOUKAMP,
 	INPUT_TYPE_RELAXIS,
+	INPUT_TYPE_MADAP,
 	INPUT_TYPE_UNKOWN
 };
 
@@ -62,6 +64,7 @@ struct Config
 	bool invert = false;
 	bool threaded = false;
 	bool skipLinear = false;
+	bool defaultToRange = false;
 	double noise = 0;
 	double rangeDistance = 0.35;
 
@@ -77,6 +80,8 @@ static int parseInputType(const std::string& str)
 		return INPUT_TYPE_BOUKAMP;
 	else if(str == "relaxis")
 		return INPUT_TYPE_RELAXIS;
+	else if(str == "madap")
+		return INPUT_TYPE_MADAP;
 	return INPUT_TYPE_UNKOWN;
 }
 
@@ -181,6 +186,9 @@ parse_opt (int key, char *arg, struct argp_state *state)
 		break;
 	case 'd':
 		config->rangeDistance = std::stod(std::string(arg));
+		break;
+	case 'b':
+		config->defaultToRange = true;
 		break;
 	default:
 		return ARGP_ERR_UNKNOWN;
