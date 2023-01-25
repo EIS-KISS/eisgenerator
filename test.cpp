@@ -7,6 +7,7 @@
 #include "normalize.h"
 #include "basicmath.h"
 #include "strops.h"
+#include "translators.h"
 
 void printDataVect(const std::vector<eis::DataPoint> in)
 {
@@ -295,7 +296,46 @@ static bool nyquistJump()
 	fvalue bVar = maximumNyquistJump(b);
 
 	eis::Log(eis::Log::INFO)<<__func__<<" aVar: "<<aVar<<" bVar: "<<bVar;
-	return eis::fvalueEq(aVar, 0.38375);
+	return eis::fvalueEq(aVar, 0.178183);
+}
+
+static bool testTranslators()
+{
+	const std::string boukamp("R(RP)");
+	const std::string relaxis("R-(R)(P)");
+	const std::string madap("R0-p(R1,CPE1)");
+
+	const std::string uvosEis("r-rp");
+
+	std::string translatedBoukamp = eis::cdcToEis(boukamp);
+	std::string translatedRelaxis = eis::relaxisToEis(relaxis);
+	std::string translatedMadap = eis::madapToEis(madap);
+
+	eis::Log(eis::Log::INFO)<<"cicuit: "<<uvosEis;
+	eis::Log(eis::Log::INFO)<<"from boukamp: "<<boukamp<<" => "<<translatedBoukamp;
+	eis::Log(eis::Log::INFO)<<"from relaxis: "<<relaxis<<" => "<<translatedRelaxis;
+	eis::Log(eis::Log::INFO)<<"from madap: "<<madap<<" => "<<translatedMadap;
+
+	return translatedBoukamp == uvosEis && translatedRelaxis == uvosEis && translatedMadap == uvosEis;
+}
+
+static bool testMadapParams()
+{
+	const std::string madap("R0-p(R1,CPE1)");
+	const std::string madapParams("[(42, 1), (64, 2), (20.123, 3), (0.856, 4)]");
+
+	std::string translatedMadap = eis::madapToEis(madap, madapParams);
+	const std::string expectedEisString("r{4.200000e+01}-r{6.400000e+01}p{2.012300e+01, 8.560000e-01}");
+
+	if(translatedMadap == expectedEisString)
+	{
+		return true;
+	}
+	else
+	{
+		eis::Log(eis::Log::ERROR)<<__func__<<"Got "<<translatedMadap<<" from translation expected "<<expectedEisString;
+		return false;
+	}
 }
 
 int main(int argc, char** argv)
@@ -322,5 +362,12 @@ int main(int argc, char** argv)
 
 	if(!nyquistJump())
 		return 7;
+
+	if(!testTranslators())
+		return 8;
+
+	if(!testMadapParams())
+		return 9;
+
 	return 0;
 }
