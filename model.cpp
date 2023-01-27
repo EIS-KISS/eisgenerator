@@ -256,6 +256,49 @@ std::vector<Componant*> Model::getFlatComponants(Componant *model)
 	}
 }
 
+size_t Model::setParamSweepCountClosestTotal(size_t totalCount)
+{
+	size_t activeParams = getActiveParameterCount();
+	if(activeParams < 1)
+	{
+		Log(Log::WARN)<<getModelStr()<<" requested "<<totalCount<<
+		" param sweep steps from this model, but this model has no active parameters, ignoreing request";
+		return 1;
+	}
+	size_t countPerParam = std::pow(totalCount, 1.0/activeParams);
+	for(Componant* componant : getFlatComponants())
+	{
+		for(eis::Range& range : componant->getParamRanges())
+		{
+			if(range.step > 1)
+				range.step = countPerParam;
+		}
+	}
+	return std::pow(countPerParam, activeParams);
+}
+
+size_t Model::getParameterCount()
+{
+	size_t count = 0;
+	for(Componant* componant : getFlatComponants())
+		count += componant->paramCount();
+	return count;
+}
+
+size_t Model::getActiveParameterCount()
+{
+	size_t count = 0;
+	for(Componant* componant : getFlatComponants())
+	{
+		for(const eis::Range& range : componant->getParamRanges())
+		{
+			if(range.step > 1)
+				++count;
+		}
+	}
+	return count;
+}
+
 std::vector<DataPoint> Model::executeSweep(const Range& omega, size_t index)
 {
 	std::vector<DataPoint> results;
