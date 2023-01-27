@@ -62,7 +62,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC eisgenerator)
 set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "-std=c++2a -Wall -O2 -march=native -g" LINK_FLAGS "-flto -pthread")
 
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-	set(CMAKE_INSTALL_PREFIX "/usr" CACHE PATH "/usr" FORCE)
+	set(CMAKE_INSTALL_PREFIX "/usr" CACHE PATH "..." FORCE)
 endif(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 
 install(TARGETS ${PROJECT_NAME} DESTINATION lib)
