@@ -59,9 +59,12 @@ endif(WIN32)
 add_library(${PROJECT_NAME} SHARED ${SRC_FILES} ${API_HEADERS_CPP})
 target_link_libraries(${PROJECT_NAME} ${LIBS})
 target_include_directories(${PROJECT_NAME} PUBLIC eisgenerator)
-set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "-std=c++2a -Wall -O2 -march=native -g" LINK_FLAGS "-flto")
+set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "-std=c++2a -Wall -O2 -march=native -g" LINK_FLAGS "-flto -pthread")
 
-set(CMAKE_INSTALL_PREFIX "/usr")
+if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+	set(CMAKE_INSTALL_PREFIX "/usr" CACHE PATH "/usr" FORCE)
+endif(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+
 install(TARGETS ${PROJECT_NAME} DESTINATION lib)
 install(FILES ${API_HEADERS_CPP} DESTINATION include/${PROJECT_NAME})
 install(FILES eisgenerator_plot DESTINATION bin PERMISSIONS WORLD_EXECUTE WORLD_READ
