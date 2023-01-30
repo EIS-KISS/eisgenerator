@@ -61,6 +61,8 @@ FiniteTransmitionline::FiniteTransmitionline(std::string paramStr, size_t count,
 	}
 
 	updateValues();
+	if(!subComponant)
+		subComponant = createTransmitionLine(_C, _R, _n);
 }
 
 FiniteTransmitionline::FiniteTransmitionline(const FiniteTransmitionline& in)
@@ -130,8 +132,8 @@ void FiniteTransmitionline::updateValues()
 	if(ranges[0].stepValue() != _C || ranges[1].stepValue() != _R || static_cast<size_t>(ranges[2].stepValue()) != _n)
 	{
 		_C = ranges[0].stepValue();
-		_R = ranges[2].stepValue();
-		_n = ranges[3].stepValue();
+		_R = ranges[1].stepValue();
+		_n = ranges[2].stepValue();
 		if(subComponant)
 			delete subComponant;
 		subComponant = createTransmitionLine(_C, _R, _n);
