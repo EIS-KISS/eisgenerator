@@ -270,8 +270,8 @@ size_t Model::setParamSweepCountClosestTotal(size_t totalCount)
 	{
 		for(eis::Range& range : componant->getParamRanges())
 		{
-			if(range.step > 1)
-				range.step = countPerParam;
+			if(range.count > 1)
+				range.count = countPerParam;
 		}
 	}
 	return std::pow(countPerParam, activeParams);
@@ -292,7 +292,7 @@ size_t Model::getActiveParameterCount()
 	{
 		for(const eis::Range& range : componant->getParamRanges())
 		{
-			if(range.step > 1)
+			if(range.count > 1)
 				++count;
 		}
 	}
