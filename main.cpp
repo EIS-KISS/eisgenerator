@@ -348,7 +348,7 @@ int main(int argc, char** argv)
 		{
 			findRanges(config, model);
 		}
-		if(config.mode == MODE_OUTPUT_RANGE_DATAPOINTS)
+		else if(config.mode == MODE_OUTPUT_RANGE_DATAPOINTS)
 		{
 			outputRanges(config, model);
 		}
