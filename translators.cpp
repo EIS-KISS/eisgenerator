@@ -59,6 +59,7 @@ const struct std::pair<const char*, const char*> eisMadapTable[] =
 	{"P", "CPE"},
 	{"w", "W"},
 	{"W", "W"},
+	{"w", "Wo"},
 	{"W", "Wo"},
 	{nullptr, nullptr}
 };
@@ -392,69 +393,69 @@ static std::string madapStrip(const std::string& in)
 	return out;
 }
 
-std::string madapTranslateBracket(const std::string& in, bool paralell, const std::map<std::string, std::string>& parameters)
+std::string madapTranslateSerial(const std::string& in, const std::map<std::string, std::string>& parameters);
+
+std::string madapTranslateParalell(const std::string& in, const std::map<std::string, std::string>& parameters)
 {
 	std::string out;
-	if(paralell)
+	out.push_back('(');
+	std::vector<std::string> tokens = tokenize(in, ',', '(', ')', '\\');
+	for(std::string& token : tokens)
 	{
 		out.push_back('(');
-		std::vector<std::string> tokens = tokenize(in, ',', '(', ')', '\\');
-		for(std::string& token : tokens)
+		if(token[0] == '(')
 		{
-			out.push_back('(');
-			std::vector<std::string> subtokens = tokenize(token, '-', '(', ')', '\\');
-			for(std::string& subtoken : subtokens)
-			{
-				if(subtoken[0] == '(')
-				{
-					if(token.back() != ')')
-						throw parse_errror("unbounded bracket");
-					subtoken.pop_back();
-					subtoken.erase(subtoken.begin());
-					out.append(madapTranslateBracket(subtoken, true, parameters));
-				}
-				else
-				{
-					out.append(madapTranslateBracket(subtoken, false, parameters));
-				}
-			}
-			if(out.back() == '-')
-				out.pop_back();
-			out.push_back(')');
+			if(token.back() != ')')
+				throw parse_errror("unbounded bracket");
+			token.pop_back();
+			token.erase(token.begin());
+			out.append(madapTranslateParalell(token, parameters));
+		}
+		else
+		{
+			out.append(madapTranslateSerial(token, parameters));
 		}
 		out.push_back(')');
 	}
-	else
+	out.push_back(')');
+	return out;
+}
+
+std::string madapTranslateSerial(const std::string& in, const std::map<std::string, std::string>& parameters)
+{
+	std::string out;
+
+	std::vector<std::string> tokens = tokenize(in, '-', '(', ')', '\\');
+	for(std::string& token : tokens)
 	{
-		std::vector<std::string> tokens = tokenize(in, '-', '(', ')', '\\');
-		for(std::string& token : tokens)
+		if(token[0] == '(')
 		{
-			if(token[0] == '(')
-			{
-				if(token.back() != ')')
-					throw parse_errror("unbounded bracket");
-				token.pop_back();
-				token.erase(token.begin());
-				out.append(madapTranslateBracket(token, true, parameters));
-			}
-			else
-			{
-				auto paramIterator = parameters.find(token);
-				std::string parameterStr;
-				if(paramIterator != parameters.end())
-					parameterStr = paramIterator->second;
-
-				if(token.back() >= 48 && token.back() <= 57)
-					token.pop_back();
-
-				if(!isValidSymbol(token, eisMadapTable, true))
-					throw parse_errror("invalid symbol \"" + token + "\"");
-				out.append(translateElement(token, eisMadapTable, true));
-				out.append(parameterStr);
-			}
-			out.push_back('-');
+			if(token.back() != ')')
+				throw parse_errror("unbounded bracket");
+			token.pop_back();
+			token.erase(token.begin());
+			out.append(madapTranslateParalell(token, parameters));
 		}
+		else
+		{
+			auto paramIterator = parameters.find(token);
+			std::string parameterStr;
+			if(paramIterator != parameters.end())
+				parameterStr = paramIterator->second;
+
+			if(token.back() >= 48 && token.back() <= 57)
+				token.pop_back();
+
+			if(!isValidSymbol(token, eisMadapTable, true))
+				throw parse_errror("invalid symbol \"" + token + "\"");
+			out.append(translateElement(token, eisMadapTable, true));
+			out.append(parameterStr);
+		}
+		out.push_back('-');
 	}
+
+	if(out.back() == '-')
+		out.pop_back();
 
 	return out;
 }
@@ -569,9 +570,7 @@ std::string madapToEis(const std::string& in, const std::string& parameters)
 
 	std::map<std::string, std::string> parameterMap = madapParseParameters(work, parameters);
 
-	std::string out = madapTranslateBracket(work, work[0] == '(', parameterMap);
-	if(out.back() == '-')
-		out.pop_back();
+	std::string out = madapTranslateSerial(work, parameterMap);
 
 	eisRemoveUnneededBrackets(out);
 
@@ -581,6 +580,7 @@ std::string madapToEis(const std::string& in, const std::string& parameters)
 std::string eisToMadap(std::string in)
 {
 	purgeEisParamBrackets(in);
+	Log(Log::ERROR)<<__func__<<" is not implemented";
 	assert(false);
 	return in;
 }
