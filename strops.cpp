@@ -105,15 +105,6 @@ size_t eisRemoveUnneededBrackets(std::string& in, long int bracketStart)
 	bool bracketNeeded = false;
 	size_t paramBracketCount = 0;
 
-	if(bracketStart == -1 && in.size() > 2)
-	{
-		if(in[0] == '(' && in.back() == ')')
-		{
-			in.erase(in.begin());
-			in.pop_back();
-		}
-	}
-
 	for(size_t i = (bracketStart >= 0 ? bracketStart+1 : 0); i < in.size(); ++i)
 	{
 		if(paramBracketCount == 0)
