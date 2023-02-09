@@ -121,6 +121,8 @@ std::string relaxisToEis(const std::string& in)
 			if(i+1 < work.size() && (i == 0 || work[i-1] != '(' || work[i+1] != ')'))
 				out.push_back('-');
 		}
+		else if(work[i] == '-')
+			out.push_back('-');
 	}
 
 	for(size_t i = 0; i < out.size(); ++i)
@@ -132,6 +134,20 @@ std::string relaxisToEis(const std::string& in)
 			--i;
 		}
 	}
+
+	if(out.size() < 3)
+		return out;
+
+	for(size_t i = 0; i < out.size()-1; ++i)
+	{
+		if(out[i] == '-' && out[i+1] == '-' )
+		{
+			out.erase(out.begin()+i+2);
+			out.erase(out.begin()+i);
+			--i;
+		}
+	}
+
 	return out;
 }
 
