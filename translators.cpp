@@ -142,7 +142,6 @@ std::string relaxisToEis(const std::string& in)
 	{
 		if(out[i] == '-' && out[i+1] == '-' )
 		{
-			out.erase(out.begin()+i+2);
 			out.erase(out.begin()+i);
 			--i;
 		}
