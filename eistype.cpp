@@ -17,13 +17,14 @@ bool eis::saveToDisk(const std::vector<DataPoint>& data, const std::string& file
 		Log(Log::ERROR)<<"can not open "<<fileName<<" for writing\n";
 		return false;
 	}
+	file<<std::scientific;
 
 	if(!headStr.empty())
 		file<<headStr;
-	file<<"\nomega,real,im\n";
+	file<<"\nomega, real, im\n";
 
 	for(const eis::DataPoint& point : data)
-		file<<point.omega<<','<<point.im.real()<<','<<point.im.imag()<<'\n';
+		file<<point.omega<<", "<<point.im.real()<<", "<<point.im.imag()<<'\n';
 	file.close();
 	return true;
 }
