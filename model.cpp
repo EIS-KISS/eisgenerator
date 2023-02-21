@@ -6,6 +6,8 @@
 #include <array>
 #include <thread>
 #include <fstream>
+#include <algorithm>
+#include <execution>
 
 #include "strops.h"
 #include "cap.h"
@@ -16,6 +18,8 @@
 #include "warburg.h"
 #include "paralellseriel.h"
 #include "log.h"
+#include "normalize.h"
+#include "basicmath.h"
 
 using namespace eis;
 
@@ -450,4 +454,68 @@ bool Model::isReady()
 bool Model::isParamSweep()
 {
 	return getRequiredStepsForSweeps() > 1;
+}
+
+std::vector<size_t> Model::getRecommendedParamIndices(eis::Range omegaRange, double distance, bool threaded)
+{
+	std::vector<std::vector<eis::DataPoint>> sweeps;
+	size_t count = getRequiredStepsForSweeps();
+	eis::Log(eis::Log::INFO)<<"Executeing "<<count<<" steps";
+	std::vector<std::vector<eis::DataPoint>> allSweeps;
+	std::vector<size_t> indices;
+
+	if(threaded)
+		allSweeps = executeAllSweeps(omegaRange);
+
+	for(size_t i = 0; i < count; ++i)
+	{
+		std::vector<eis::DataPoint> data;
+		if(threaded)
+			data = allSweeps[i];
+		else
+			data = executeSweep(omegaRange, i);
+		normalize(data);
+
+		fvalue maxJump =  maximumNyquistJump(data);
+		if(maxJump > 0.30)
+		{
+			eis::Log(eis::Log::DEBUG)<<"skipping output for step "<<i
+				<<" is not well centered: "<<maxJump;
+			continue;
+		}
+
+		fvalue correlation = std::abs(pearsonCorrelation(data));
+		if(correlation > 0.8)
+		{
+			eis::Log(eis::Log::DEBUG)<<"skipping output for step "<<i
+				<<" as data is too linear: "<<correlation;
+			continue;
+		}
+
+		std::vector<std::vector<eis::DataPoint>>::iterator search;
+		if(threaded)
+		{
+			search = std::find_if(std::execution::par, sweeps.begin(), sweeps.end(),
+							[distance, &data](std::vector<eis::DataPoint>& a){return distance > eisDistance(data, a);});
+		}
+		else
+		{
+			search = std::find_if(std::execution::seq, sweeps.begin(), sweeps.end(),
+							[distance, &data](std::vector<eis::DataPoint>& a){return distance > eisDistance(data, a);});
+		}
+		if(search == sweeps.end())
+		{
+			indices.push_back(i);
+			sweeps.push_back(data);
+			if(threaded)
+				resolveSteps(i);
+		}
+		if(i % 200 == 0)
+		{
+			eis::Log(eis::Log::INFO, false)<<'.';
+			std::cout<<std::flush;
+		}
+	}
+	eis::Log(eis::Log::INFO, false)<<'\n';
+	return indices;
 }

@@ -48,6 +48,7 @@ public:
 	void resolveSteps(int64_t index);
 	size_t getRequiredStepsForSweeps();
 	bool isParamSweep();
+	std::vector<size_t> getRecommendedParamIndices(eis::Range omegaRange, double distance, bool threaded = false);
 };
 
 }
