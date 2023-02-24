@@ -3,6 +3,7 @@
 #include <vector>
 #include <cassert>
 #include <cmath>
+#include <filesystem>
 
 typedef double fvalue;
 
@@ -134,9 +135,19 @@ public:
 	}
 };
 
-bool saveToDisk(const std::vector<DataPoint>& data, const std::string& fileName, std::string headStr = "");
+struct EisSpectra
+{
+	std::vector<DataPoint> data;
+	std::string model;
+	std::string header;
+	EisSpectra(const std::vector<DataPoint>& dataIn, const std::string& modelIn, const std::string& headerIn):
+	data(dataIn), model(modelIn), header(headerIn) {}
+	EisSpectra(){}
+};
 
-std::pair<std::vector<DataPoint>, std::string> loadFromDisk(const std::string& fileName);
+bool saveToDisk(const EisSpectra& data, const std::filesystem::path& path);
+
+EisSpectra loadFromDisk(const std::filesystem::path& path);
 
 fvalue eisDistance(const std::vector<eis::DataPoint>& a, const std::vector<eis::DataPoint>& b);
 

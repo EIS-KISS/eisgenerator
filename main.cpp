@@ -124,7 +124,7 @@ static void runParamSweep(const Config& config, eis::Model& model)
 			}
 		}
 
-		eis::saveToDisk(data, std::string(PARA_SWEEP_OUTPUT_DIR)+std::string("/")+std::to_string(i)+".csv", model.getModelStrWithParam(i));
+		eis::saveToDisk(eis::EisSpectra(data, model.getModelStrWithParam(i), ""), std::string(PARA_SWEEP_OUTPUT_DIR)+std::string("/")+std::to_string(i)+".csv");
 		eis::Log(eis::Log::INFO, false)<<'.';
 	}
 	auto end = std::chrono::high_resolution_clock::now();

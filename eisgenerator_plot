@@ -10,4 +10,14 @@ then
 	exit
 fi
 
-eisgenerator_export -q "$@" | gnuplot -p -e "set datafile separator ','; plot '-' using 2:3 w l"
+eisgenerator_export -q "$@" | gnuplot -p -e "\
+set terminal qt enhanced font \",15\" title \"EIS Simulation\"; \
+set style line 1 lw 3 lc \"blue\"; \
+set ylabel 'Z_{im}'; \
+set xlabel 'Z_{re}'; \
+set tics font \"Helvetica,12\"; \
+set xlabel font \"Helvetica,15\"; \
+set ylabel font \"Helvetica,15\"; \
+set datafile separator ','; \
+plot '-' using 2:3 notitle w l ls 1;
+"

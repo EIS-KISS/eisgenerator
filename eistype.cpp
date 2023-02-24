@@ -8,49 +8,52 @@
 
 using namespace eis;
 
-bool eis::saveToDisk(const std::vector<DataPoint>& data, const std::string& fileName, std::string headStr)
+bool eis::saveToDisk(const EisSpectra& data, const std::filesystem::path& path)
 {
 	std::fstream file;
-	file.open(fileName, std::ios_base::out | std::ios_base::trunc);
+	file.open(path, std::ios_base::out | std::ios_base::trunc);
 	if(!file.is_open())
 	{
-		Log(Log::ERROR)<<"can not open "<<fileName<<" for writing\n";
+		Log(Log::ERROR)<<"can not open "<<path<<" for writing\n";
 		return false;
 	}
 	file<<std::scientific;
 
-	if(!headStr.empty())
-		file<<headStr;
+	file<<data.model<<(data.header.empty() ? ", " : "");
+	file<<data.header;
 	file<<"\nomega, real, im\n";
 
-	for(const eis::DataPoint& point : data)
+	for(const eis::DataPoint& point : data.data)
 		file<<point.omega<<", "<<point.im.real()<<", "<<point.im.imag()<<'\n';
 	file.close();
 	return true;
 }
 
-std::pair<std::vector<DataPoint>, std::string> eis::loadFromDisk(const std::string& fileName)
+EisSpectra eis::loadFromDisk(const std::filesystem::path& path)
 {
+	EisSpectra out;
 	std::fstream file;
-	file.open(fileName, std::ios_base::in);
+	file.open(path, std::ios_base::in);
 	if(!file.is_open())
-		throw file_error("can not open " + fileName + " for reading\n");
-
-	std::pair<std::vector<DataPoint>, std::string> out;
-
-	std::getline(file, out.second);
+		throw file_error("can not open " + path.string() + " for reading\n");
 
 	std::string line;
 	std::getline(file, line);
+	std::vector<std::string> tokens = tokenize(line, ',');
+	out.model = tokens[0];
+	line.erase(line.begin(), line.begin()+tokens.size());
+	out.header = line;
+	std::getline(file, line);
+
 	while(file.good())
 	{
 		std::getline(file, line);
 		if(line.empty() || line[0] == '#')
 			continue;
-		std::vector<std::string> tokens = tokenize(line, ',');
+		tokens = tokenize(line, ',');
 		if(tokens.size() != 3)
-			throw file_error("invalid line in " + fileName + ": " + line);
-		out.first.push_back(DataPoint({std::stod(tokens[1]), std::stod(tokens[2])}, std::stod(tokens[0])));
+			throw file_error("invalid line in " + path.string() + ": " + line);
+		out.data.push_back(DataPoint({std::stod(tokens[1]), std::stod(tokens[2])}, std::stod(tokens[0])));
 	}
 
 	file.close();
