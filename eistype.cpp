@@ -19,7 +19,7 @@ bool eis::saveToDisk(const EisSpectra& data, const std::filesystem::path& path)
 	}
 	file<<std::scientific;
 
-	file<<data.model<<(data.header.empty() ? ", " : "");
+	file<<data.model<<(!data.header.empty() ? ", " : "");
 	file<<data.header;
 	file<<"\nomega, real, im\n";
 
