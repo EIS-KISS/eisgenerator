@@ -65,6 +65,14 @@ void eis::Range::print(int level) const
 	Log(static_cast<Log::Level>(level))<<"Range "<<start<<'-'<<end<<' '<<count<<" steps"<<(log ? " Log" : "");
 }
 
+std::vector<fvalue> eis::Range::getRangeVector() const
+{
+	std::vector<fvalue> out(count, 0);
+	for(size_t i = 0; i < count; ++i)
+		out[i] = at(i);
+	return out;
+}
+
 std::vector<Range> eis::Range::rangesFromParamString(const std::string& paramStr, size_t count)
 {
 	std::vector<std::string> tokens = tokenize(paramStr, ',');

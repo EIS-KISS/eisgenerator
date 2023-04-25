@@ -61,7 +61,7 @@ class Range
 public:
 	fvalue start;
 	fvalue end;
-	size_t count;
+	size_t count = 0;
 	size_t step = 0;
 	bool log = false;
 
@@ -77,7 +77,7 @@ public:
 	}
 	fvalue at(size_t index) const
 	{
-		assert(index < count);
+		assert(index < count || (index == 0 && count == 0));
 		if(count < 2)
 			return start;
 		return log ? pow(10, stepSize()*index+log10(start)) : stepSize()*index+start;
@@ -107,6 +107,7 @@ public:
 	void print(int level) const;
 	std::string getString() const;
 	bool isSane() const;
+	std::vector<fvalue> getRangeVector() const;
 
 	static std::vector<Range> rangesFromParamString(const std::string& paramStr, size_t count);
 };
