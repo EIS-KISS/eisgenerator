@@ -18,7 +18,8 @@ public:
 	virtual std::complex<fvalue> execute(fvalue omaga) override;
 	virtual char getComponantChar() const override;
 	virtual std::string getComponantString(bool currentValue = true) const override;
-	static constexpr char staticGetComponantChar(){return '|';}
+	static constexpr char staticGetComponantChar(){return 'd';}
+	virtual std::string componantName() const override {return "Parallel";}
 };
 
 class Serial: public Componant
@@ -34,6 +35,7 @@ public:
 	virtual char getComponantChar() const override;
 	virtual std::string getComponantString(bool currentValue = true) const override;
 	static constexpr char staticGetComponantChar(){return 's';}
+	virtual std::string componantName() const override {return "Serial";}
 };
 
 }

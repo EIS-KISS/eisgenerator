@@ -24,6 +24,7 @@ public:
 	virtual size_t paramCount();
 	virtual ~FiniteTransmitionline();
 	virtual char getComponantChar() const override;
+	virtual std::string componantName() const override {return "FiniteTransmitionline";}
 	static constexpr char staticGetComponantChar(){return 't';}
 };
 

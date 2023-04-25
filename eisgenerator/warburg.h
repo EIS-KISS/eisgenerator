@@ -16,6 +16,7 @@ public:
 	virtual size_t paramCount() override;
 	virtual char getComponantChar() const override;
 	static constexpr char staticGetComponantChar(){return 'w';}
+	virtual std::string componantName() const override {return "Warburg";}
 	virtual ~Warburg() = default;
 };
 

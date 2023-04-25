@@ -16,6 +16,7 @@ public:
 	virtual size_t paramCount() override;
 	virtual char getComponantChar() const override;
 	static constexpr char staticGetComponantChar(){return 'c';}
+	virtual std::string componantName() const override {return "Capacitor";}
 	virtual ~Cap() = default;
 };
 

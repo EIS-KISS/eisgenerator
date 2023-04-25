@@ -9,6 +9,7 @@
 #include "log.h"
 #include "inductor.h"
 #include "finitetr.h"
+#include "randomgen.h"
 
 using namespace eis;
 
@@ -49,6 +50,22 @@ std::string Componant::getComponantString(bool currentValue) const
 	outStr.pop_back();
 	outStr.back() = '}';
 	return outStr;
+}
+
+std::string Componant::getUniqueName()
+{
+	if(uniqueName.empty())
+	{
+		uniqueName.assign(getComponantChar(), 5);
+		for(size_t i = 1; i < uniqueName.size(); ++i)
+		{
+			char ch = static_cast<char>(rd::rand(122-65)+65);
+			if(ch > 90 && ch < 97)
+				ch = ch + 6;
+			uniqueName[i] = ch;
+		}
+	}
+	return uniqueName;
 }
 
 Componant* Componant::copy(Componant* componant)

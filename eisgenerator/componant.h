@@ -13,6 +13,8 @@ class Componant
 {
 	protected:
 		std::vector<eis::Range> ranges;
+		std::string uniqueName;
+
 	public:
 		virtual std::complex<fvalue> execute(fvalue omega)
 		{
@@ -28,6 +30,9 @@ class Componant
 		virtual ~Componant() = default;
 		virtual char getComponantChar() const = 0;
 		virtual std::string getComponantString(bool currentValue = true) const;
+		virtual std::string componantName() const = 0;
+
+		std::string getUniqueName();
 
 		static Componant* copy(Componant* componant);
 };

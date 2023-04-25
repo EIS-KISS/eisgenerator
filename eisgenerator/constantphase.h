@@ -19,6 +19,7 @@ public:
 	virtual size_t paramCount() override;
 	virtual char getComponantChar() const override;
 	static constexpr char staticGetComponantChar(){return 'p';}
+	virtual std::string componantName() const override {return "ConstantPhase";}
 	virtual ~Cpe() = default;
 
 };

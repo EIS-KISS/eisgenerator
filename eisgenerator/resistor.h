@@ -14,6 +14,7 @@ public:
 	virtual size_t paramCount() override;
 	virtual char getComponantChar() const override;
 	static constexpr char staticGetComponantChar(){return 'r';}
+	virtual std::string componantName() const override {return "Resistor";}
 	virtual ~Resistor() = default;
 };
 
