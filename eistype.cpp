@@ -53,7 +53,14 @@ EisSpectra eis::loadFromDisk(const std::filesystem::path& path)
 		tokens = tokenize(line, ',');
 		if(tokens.size() != 3)
 			throw file_error("invalid line in " + path.string() + ": " + line);
-		out.data.push_back(DataPoint({std::stod(tokens[1]), std::stod(tokens[2])}, std::stod(tokens[0])));
+
+		#pragma GCC diagnostic push
+		#pragma GCC diagnostic ignored "-Wnarrowing"
+		if constexpr (std::is_same<fvalue, double>::value)
+			out.data.push_back(DataPoint({std::stod(tokens[1]), std::stod(tokens[2])}, std::stod(tokens[0])));
+		else
+			out.data.push_back(DataPoint({std::stof(tokens[1]), std::stof(tokens[2])}, std::stof(tokens[0])));
+		#pragma GCC diagnostic pop
 	}
 
 	file.close();

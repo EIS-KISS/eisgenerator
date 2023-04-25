@@ -5,7 +5,7 @@
 #include <cmath>
 #include <filesystem>
 
-typedef double fvalue;
+typedef float fvalue;
 
 namespace eis
 {
