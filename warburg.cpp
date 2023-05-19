@@ -1,7 +1,7 @@
 #include "warburg.h"
 #include "strops.h"
 #include <cstdlib>
-#include <math.h>
+#include <cmath>
 #include <cassert>
 
 #include "log.h"
@@ -33,7 +33,7 @@ Warburg::Warburg(std::string paramStr, size_t count, bool defaultToRange)
 std::complex<fvalue> Warburg::execute(fvalue omega)
 {
 	assert(ranges.size() == paramCount());
-	fvalue N = ranges[0][ranges[0].step]/(sqrt(omega));
+	fvalue N = ranges[0][ranges[0].step]/(std::sqrt(omega));
 	return std::complex<fvalue>(N, 0-N);
 }
 
