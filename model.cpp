@@ -27,6 +27,7 @@
 #include "basicmath.h"
 #include "randomgen.h"
 #include "compile.h"
+#include "compcache.h"
 
 using namespace eis;
 
@@ -582,7 +583,7 @@ bool Model::compile()
 		size_t uuid = getUuid();
 
 		std::filesystem::path path = tmp/(std::to_string(getUuid())+".so");
-		int ret = compile_code(getCode(), path);
+		int ret = compile_code(getCode(), path.string());
 		if(ret != 0)
 		{
 			Log(Log::WARN)<<"Unable to compile model!! expect performance degredation";
@@ -590,7 +591,7 @@ bool Model::compile()
 		}
 
 		CompiledObject object;
-		object.objectCode = dlopen(path.c_str(), RTLD_NOW);
+		object.objectCode = dlopen(path.string().c_str(), RTLD_NOW);
 		if(!object.objectCode)
 			throw std::runtime_error("Unable to dlopen compiled model " + std::string(dlerror()));
 
