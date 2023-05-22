@@ -46,3 +46,10 @@ char Resistor::getComponantChar() const
 {
 	return staticGetComponantChar();
 }
+
+std::string Resistor::getCode(std::vector<std::string>& parameters)
+{
+	parameters.push_back(getUniqueName() + "_0");
+	std::string out = "std::complex<fvalue>(" + parameters.back() + ", 0)";
+	return out;
+}

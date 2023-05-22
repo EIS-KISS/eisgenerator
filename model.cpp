@@ -2,13 +2,18 @@
 #include <model.h>
 #include <iostream>
 #include <assert.h>
+#include <string>
 #include <vector>
 #include <array>
 #include <thread>
 #include <fstream>
 #include <algorithm>
 #include <execution>
+#include <dlfcn.h>
+#include <functional>
 
+#include "componant.h"
+#include "eistype.h"
 #include "strops.h"
 #include "cap.h"
 #include "resistor.h"
@@ -20,6 +25,8 @@
 #include "log.h"
 #include "normalize.h"
 #include "basicmath.h"
+#include "randomgen.h"
+#include "compile.h"
 
 using namespace eis;
 
@@ -196,12 +203,28 @@ Model& Model::operator=(const Model& in)
 	_bracketComponants.clear();
 	_flatComponants.clear();
 	_model = Componant::copy(in._model);
+	_compiledModel = in._compiledModel;
 	return *this;
 }
 
 Model::~Model()
 {
 	delete _model;
+}
+
+std::vector<fvalue> Model::getFlatParameters()
+{
+	std::vector<Componant*> flatComponants = getFlatComponants();
+
+	std::vector<fvalue> out;
+	out.reserve(getParameterCount());
+	for(Componant* componant : flatComponants)
+	{
+		const std::vector<Range> ranges = componant->getParamRanges();
+		for(const Range& range : ranges)
+			out.push_back(range.stepValue());
+	}
+	return out;
 }
 
 DataPoint Model::execute(fvalue omega, size_t index)
@@ -307,12 +330,29 @@ std::vector<DataPoint> Model::executeSweep(const Range& omega, size_t index)
 {
 	std::vector<DataPoint> results;
 	results.reserve(omega.count);
-	for(size_t i = 0; i < omega.count; ++i)
-	{
-		fvalue omegaStep = omega[i];
-		results.push_back(execute(omegaStep, index));
-	}
 
+	if(_compiledModel)
+	{
+		resolveSteps(index);
+		std::vector<fvalue> parameters = getFlatParameters();
+		const std::vector<fvalue> omegas = omega.getRangeVector();
+		std::vector<std::complex<fvalue>> values = _compiledModel->symbol(parameters, omegas);
+		for(size_t i = 0; i < omegas.size(); ++i)
+		{
+			DataPoint dataPoint;
+			dataPoint.omega = omegas[i];
+			dataPoint.im = values[i];
+			results.push_back(dataPoint);
+		}
+	}
+	else
+	{
+		for(size_t i = 0; i < omega.count; ++i)
+		{
+			fvalue omegaStep = omega[i];
+			results.push_back(execute(omegaStep, index));
+		}
+	}
 	return results;
 }
 
@@ -373,22 +413,22 @@ void Model::resolveSteps(int64_t index)
 	std::vector<size_t> placeMagnitude;
 	placeMagnitude.reserve(flatRanges.size());
 
-	Log(Log::DEBUG)<<"Magnitudes:";
+	//Log(Log::DEBUG)<<"Magnitudes:";
 	for(size_t i = 0; i < flatRanges.size(); ++i)
 	{
 		size_t magnitude = 1;
 		for(int64_t j = static_cast<int64_t>(i)-1; j >= 0; --j)
 			magnitude = magnitude*flatRanges[j]->count;
 		placeMagnitude.push_back(magnitude);
-		Log(Log::DEBUG)<<placeMagnitude.back();
+		//Log(Log::DEBUG)<<placeMagnitude.back();
 	}
 
-	Log(Log::DEBUG)<<"Steps for index "<<index<<" ranges "<<flatRanges.size()<<" Ranges:";
+	//Log(Log::DEBUG)<<"Steps for index "<<index<<" ranges "<<flatRanges.size()<<" Ranges:";
 	for(int64_t i = flatRanges.size()-1; i >= 0; --i)
 	{
 		flatRanges[i]->step = index/placeMagnitude[i];
 		index = index % placeMagnitude[i];
-		Log(Log::DEBUG)<<placeMagnitude[i]<<'('<<flatRanges[i]->step<<')'<<(i == 0 ? "" : " + ");
+		//Log(Log::DEBUG)<<placeMagnitude[i]<<'('<<flatRanges[i]->step<<')'<<(i == 0 ? "" : " + ");
 	}
 }
 
@@ -518,4 +558,86 @@ std::vector<size_t> Model::getRecommendedParamIndices(eis::Range omegaRange, dou
 	}
 	eis::Log(eis::Log::INFO, false)<<'\n';
 	return indices;
+}
+
+size_t Model::getUuid()
+{
+	return std::hash<std::string>{}(getModelStr());
+}
+
+bool Model::compile()
+{
+	if(!_model->compileable())
+	{
+		Log(Log::WARN)<<"This model could not be compiled, expect performance degredation";
+		return false;
+	}
+
+	CompCache* cache = CompCache::getInstance();
+
+	_compiledModel = cache->getObject(getUuid());
+	if(!_compiledModel)
+	{
+		std::filesystem::path tmp = getTempdir();
+		size_t uuid = getUuid();
+
+		std::filesystem::path path = tmp/(std::to_string(getUuid())+".so");
+		int ret = compile_code(getCode(), path);
+		if(ret != 0)
+		{
+			Log(Log::WARN)<<"Unable to compile model!! expect performance degredation";
+			return false;
+		}
+
+		CompiledObject object;
+		object.objectCode = dlopen(path.c_str(), RTLD_NOW);
+		if(!object.objectCode)
+			throw std::runtime_error("Unable to dlopen compiled model " + std::string(dlerror()));
+
+		std::string symbolName = "model_" + std::to_string(getUuid());
+		object.symbol =
+			reinterpret_cast<std::vector<std::complex<fvalue>>(*)(const std::vector<fvalue>&, const std::vector<fvalue>&)>
+				(dlsym(object.objectCode, symbolName.c_str()));
+
+		if(!object.symbol)
+			throw std::runtime_error(path.string() + " dosent have a symbol " + symbolName);
+
+		cache->addObject(uuid, object);
+		_compiledModel = cache->getObject(uuid);
+	}
+
+	return true;
+}
+
+std::string Model::getCode()
+{
+	if(!_model || !_model->compileable())
+		return "";
+
+	std::vector<std::string> parameters;
+	std::string formular = _model->getCode(parameters);
+
+	std::string out =
+	"#include <cmath>\n"
+	"#include <cassert>\n"
+	"#include <vector>\n"
+	"#include <complex>\n\n"
+	"typedef float fvalue;\n\n"
+	"extern \"C\"\n{\n\n"
+	"std::vector<std::complex<fvalue>> model_";
+	out.append(std::to_string(getUuid()));
+	out.append("(const std::vector<fvalue>& parameters, const std::vector<fvalue> omegas)\n{\n\tassert(parameters.size() == ");
+	out.append(std::to_string(parameters.size()));
+	out.append(");\n\n");
+	out.append("\tstd::vector<std::complex<fvalue>> out(omegas.size());\n");
+
+	for(size_t i = 0; i < parameters.size(); ++i)
+		out.append("\tfvalue " + parameters[i] + " = parameters[" + std::to_string(i) +  "];\n");
+
+	out.append("\tfor(size_t i = 0; i < omegas.size(); ++i)\n\t{\n");
+	out.append("\t\tconst fvalue& omega = omegas[i];\n");
+	out.append("\t\tout[i] = ");
+	out.append(formular);
+	out.append(";\n\t}\n\treturn out;\n}\n\n}\n");
+	return out;
 }

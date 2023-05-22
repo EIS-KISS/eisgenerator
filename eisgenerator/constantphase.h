@@ -21,7 +21,7 @@ public:
 	static constexpr char staticGetComponantChar(){return 'p';}
 	virtual std::string componantName() const override {return "ConstantPhase";}
 	virtual ~Cpe() = default;
-
+	virtual std::string getCode(std::vector<std::string>& parameters) override;
 };
 
 }

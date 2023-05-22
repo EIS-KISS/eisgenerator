@@ -85,11 +85,18 @@ static void runParamSweep(const Config& config, eis::Model& model)
 	size_t count = model.getRequiredStepsForSweeps();
 	eis::Log(eis::Log::INFO)<<"Executeing "<<count<<" steps";
 
+	if(!config.noCompile)
+		model.compile();
+
 	auto start = std::chrono::high_resolution_clock::now();
 
 	std::vector<std::vector<eis::DataPoint>> allSweeps;
 	if(config.threaded)
+	{
+		eis::Log(eis::Log::INFO)<<"Calculateing sweeps in threads";
 		allSweeps = model.executeAllSweeps(config.omegaRange);
+		eis::Log(eis::Log::INFO)<<"Done";
+	}
 
 	for(size_t i = 0; i < count; ++i)
 	{
@@ -98,33 +105,37 @@ static void runParamSweep(const Config& config, eis::Model& model)
 			data = allSweeps[i];
 		else
 			data = model.executeSweep(config.omegaRange, i);
-		if(config.normalize)
-			eis::normalize(data);
-		if(config.reduce)
-		{
-			size_t initalDataSize = data.size();
-			data = eis::reduceRegion(data);
-			if(data.size() < initalDataSize/8)
-			{
-				eis::Log(eis::Log::INFO)<<"\nskipping output for step "<<i
-					<<" as data has no interesting region";
-				continue;
-			}
-			//data = eis::rescale(data, initalDataSize);
-		}
 
-		if(config.skipLinear && i > 0)
+		if(!config.noSave)
 		{
-			fvalue correlation = std::abs(pearsonCorrelation(data));
-			if(correlation > 0.5)
+			if(config.normalize)
+				eis::normalize(data);
+			if(config.reduce)
 			{
-				eis::Log(eis::Log::INFO)<<"skipping output for step "<<i
-					<<" as data is too linear: "<<correlation;
-				continue;
+				size_t initalDataSize = data.size();
+				data = eis::reduceRegion(data);
+				if(data.size() < initalDataSize/8)
+				{
+					eis::Log(eis::Log::INFO)<<"\nskipping output for step "<<i
+						<<" as data has no interesting region";
+					continue;
+				}
+				//data = eis::rescale(data, initalDataSize);
 			}
-		}
 
-		eis::saveToDisk(eis::EisSpectra(data, model.getModelStrWithParam(i), ""), std::string(PARA_SWEEP_OUTPUT_DIR)+std::string("/")+std::to_string(i)+".csv");
+			if(config.skipLinear && i > 0)
+			{
+				fvalue correlation = std::abs(pearsonCorrelation(data));
+				if(correlation > 0.5)
+				{
+					eis::Log(eis::Log::INFO)<<"skipping output for step "<<i
+						<<" as data is too linear: "<<correlation;
+					continue;
+				}
+			}
+
+			eis::saveToDisk(eis::EisSpectra(data, model.getModelStrWithParam(i), ""), std::string(PARA_SWEEP_OUTPUT_DIR)+std::string("/")+std::to_string(i)+".csv");
+		}
 		eis::Log(eis::Log::INFO, false)<<'.';
 	}
 	auto end = std::chrono::high_resolution_clock::now();
@@ -351,6 +362,10 @@ int main(int argc, char** argv)
 		else if(config.mode == MODE_OUTPUT_RANGE_DATAPOINTS)
 		{
 			outputRanges(config, model);
+		}
+		else if(config.mode == MODE_CODE)
+		{
+			std::cout<<model.getCode();
 		}
 		else
 		{

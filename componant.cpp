@@ -56,13 +56,13 @@ std::string Componant::getUniqueName()
 {
 	if(uniqueName.empty())
 	{
-		uniqueName.assign(getComponantChar(), 5);
-		for(size_t i = 1; i < uniqueName.size(); ++i)
+		uniqueName.push_back(getComponantChar());
+		for(size_t i = 0; i < 3; ++i)
 		{
 			char ch = static_cast<char>(rd::rand(122-65)+65);
 			if(ch > 90 && ch < 97)
 				ch = ch + 6;
-			uniqueName[i] = ch;
+			uniqueName.push_back(ch);
 		}
 	}
 	return uniqueName;
@@ -94,4 +94,15 @@ Componant* Componant::copy(Componant* componant)
 			break;
 	}
 	return nullptr;
+}
+
+bool Componant::compileable()
+{
+	std::vector<std::string> parameters;
+	return !getCode(parameters).empty();
+}
+
+std::string Componant::getCode(std::vector<std::string>& parameters)
+{
+	return std::string();
 }

@@ -1,4 +1,5 @@
 #include "paralellseriel.h"
+#include "componant.h"
 
 using namespace eis;
 
@@ -45,6 +46,30 @@ std::string Parallel::getComponantString(bool currentValue) const
 	std::string out("(");
 	for(Componant* componant : componants)
 		out.append(componant->getComponantString(currentValue));
+	out.push_back(')');
+	return out;
+}
+
+bool Parallel::compileable()
+{
+	for(Componant* componant : componants)
+	{
+		if(!componant->compileable())
+			return false;
+	}
+	return true;
+}
+
+std::string Parallel::getCode(std::vector<std::string>& parameters)
+{
+	std::string out = "std::complex<fvalue>(1,0)/(";
+	for(Componant* componant : componants)
+	{
+		out += "std::complex<fvalue>(1,0)/(" + componant->getCode(parameters) + ") + ";
+	}
+	out.pop_back();
+	out.pop_back();
+	out.pop_back();
 	out.push_back(')');
 	return out;
 }
@@ -96,5 +121,29 @@ std::string Serial::getComponantString(bool currentValue) const
 		out.push_back('-');
 	}
 	out.back() = ')';
+	return out;
+}
+
+bool Serial::compileable()
+{
+	for(Componant* componant : componants)
+	{
+		if(!componant->compileable())
+			return false;
+	}
+	return true;
+}
+
+std::string Serial::getCode(std::vector<std::string>& parameters)
+{
+	std::string out = "(";
+	for(Componant* componant : componants)
+	{
+		out += "(" + componant->getCode(parameters) + ") + ";
+	}
+	out.pop_back();
+	out.pop_back();
+	out.pop_back();
+	out.push_back(')');
 	return out;
 }

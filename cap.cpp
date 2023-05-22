@@ -45,3 +45,13 @@ size_t Cap::paramCount()
 {
 	return 1;
 }
+
+std::string Cap::getCode(std::vector<std::string>& parameters)
+{
+	std::string firstParameter = getUniqueName() + "_0";
+	parameters.push_back(firstParameter);
+	std::string real = "0";
+	std::string imag = "0.0-(1.0/(" + firstParameter + "*omega))";
+	std::string out = "std::complex<fvalue>(" + real + ", " + imag + ")";
+	return out;
+}

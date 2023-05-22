@@ -45,3 +45,11 @@ char Inductor::getComponantChar() const
 {
 	return staticGetComponantChar();
 }
+
+std::string Inductor::getCode(std::vector<std::string>& parameters)
+{
+	parameters.push_back(getUniqueName() + "_0");
+	std::string N = parameters.back() + "*omega";
+	std::string out = "std::complex<fvalue>(0, " + N + ")";
+	return out;
+}

@@ -17,6 +17,7 @@ public:
 	virtual char getComponantChar() const override;
 	static constexpr char staticGetComponantChar(){return 'c';}
 	virtual std::string componantName() const override {return "Capacitor";}
+	virtual std::string getCode(std::vector<std::string>& parameters) override;
 	virtual ~Cap() = default;
 };
 

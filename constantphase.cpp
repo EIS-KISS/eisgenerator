@@ -56,8 +56,9 @@ void Cpe::setDefaultParam(size_t count, bool defaultToRange)
 std::complex<fvalue> Cpe::execute(fvalue omega)
 {
 	assert(ranges.size() == paramCount());
-	return std::complex<fvalue>((1.0/(ranges[0][ranges[0].step]*pow(omega, ranges[1][ranges[1].step])))*cos((M_PI/2)*ranges[1][ranges[1].step]),
-	                           0-(1.0/(ranges[0][ranges[0].step]*pow(omega, ranges[1][ranges[1].step])))*sin((M_PI/2)*ranges[1][ranges[1].step]));
+	fvalue real = (1.0/(ranges[0][ranges[0].step]*std::pow(omega, ranges[1][ranges[1].step])))*std::cos((M_PI/2)*ranges[1][ranges[1].step]);
+	fvalue imag = 0-(1.0/(ranges[0][ranges[0].step]*std::pow(omega, ranges[1][ranges[1].step])))*std::sin((M_PI/2)*ranges[1][ranges[1].step]);
+	return std::complex<fvalue>(real, imag);
 }
 
 size_t Cpe::paramCount()
@@ -68,4 +69,16 @@ size_t Cpe::paramCount()
 char Cpe::getComponantChar() const
 {
 	return Cpe::staticGetComponantChar();
+}
+
+std::string Cpe::getCode(std::vector<std::string>& parameters)
+{
+	std::string firstParameter = getUniqueName() + "_0";
+	std::string secondParameter = getUniqueName() + "_1";
+	parameters.push_back(firstParameter);
+	parameters.push_back(secondParameter);
+	std::string real = "(1.0/(" + firstParameter + "*std::pow(omega," + secondParameter + ")))*std::cos((M_PI/2)*" + secondParameter + ")";
+	std::string imag = "0-(1.0/(" + firstParameter + "*std::pow(omega," + secondParameter + ")))*std::sin((M_PI/2)*" + secondParameter + ")";
+	std::string out = "std::complex<fvalue>(" + real +", " + imag + ")";
+	return out;
 }

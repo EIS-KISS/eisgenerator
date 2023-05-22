@@ -46,3 +46,11 @@ char Warburg::getComponantChar() const
 {
 	return staticGetComponantChar();
 }
+
+std::string Warburg::getCode(std::vector<std::string>& parameters)
+{
+	parameters.push_back(getUniqueName() + "_0");
+	std::string N = parameters.back() + "/std::sqrt(omega)";
+	std::string out = "std::complex<fvalue>(" + N + ", 0-" + N + ")";
+	return out;
+}

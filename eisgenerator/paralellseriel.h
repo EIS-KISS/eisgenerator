@@ -20,6 +20,8 @@ public:
 	virtual std::string getComponantString(bool currentValue = true) const override;
 	static constexpr char staticGetComponantChar(){return 'd';}
 	virtual std::string componantName() const override {return "Parallel";}
+	virtual bool compileable() override;
+	virtual std::string getCode(std::vector<std::string>& parameters) override;
 };
 
 class Serial: public Componant
@@ -36,6 +38,8 @@ public:
 	virtual std::string getComponantString(bool currentValue = true) const override;
 	static constexpr char staticGetComponantChar(){return 's';}
 	virtual std::string componantName() const override {return "Serial";}
+	virtual bool compileable() override;
+	virtual std::string getCode(std::vector<std::string>& parameters) override;
 };
 
 }

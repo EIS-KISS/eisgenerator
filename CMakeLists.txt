@@ -22,6 +22,7 @@ set(SRC_FILES
 	strops.cpp
 	translators.cpp
 	randomgen.cpp
+	compile.cpp
 )
 
 set(API_HEADERS_CPP_DIR eisgenerator/)
