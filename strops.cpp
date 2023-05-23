@@ -57,6 +57,32 @@ std::vector<std::string> tokenize(const std::string& str, const char delim, cons
 	return tokens;
 }
 
+std::vector<std::string> tokenizeBinaryIgnore(const std::string& str, const char delim, const char ignoreBraket, const char escapeChar)
+{
+	std::vector<std::string> tokens;
+
+	std::string token;
+	bool inBaracket = false;
+	for(size_t i = 0; i < str.size(); ++i)
+	{
+		if(str[i] == delim && !inBaracket && (i == 0 || str[i-1] != escapeChar))
+		{
+			tokens.push_back(token);
+			token.clear();
+		}
+		else
+		{
+			token.push_back(str[i]);
+		}
+
+		if(ignoreBraket == str[i])
+			inBaracket = !inBaracket;
+	}
+	if(!inBaracket)
+		tokens.push_back(token);
+	return tokens;
+}
+
 size_t opposingBraket(const std::string& str, size_t index, char bracketChar)
 {
 	for(size_t i = index; i < str.size(); ++i)

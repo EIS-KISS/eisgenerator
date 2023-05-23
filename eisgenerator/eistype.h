@@ -136,14 +136,28 @@ public:
 	}
 };
 
-struct EisSpectra
+class EisSpectra
 {
+public:
 	std::vector<DataPoint> data;
 	std::string model;
 	std::string header;
-	EisSpectra(const std::vector<DataPoint>& dataIn, const std::string& modelIn, const std::string& headerIn):
-	data(dataIn), model(modelIn), header(headerIn) {}
+	std::vector<double> labels;
+	std::vector<std::string> labelNames;
+
+public:
+	EisSpectra(const std::vector<DataPoint>& dataIn, const std::string& modelIn, const std::string& headerIn,
+			   std::vector<double> labelsIn = std::vector<double>(),
+			   std::vector<std::string> labelNamesIn = std::vector<std::string>());
+	EisSpectra(const std::vector<DataPoint>& dataIn, const std::string& modelIn, const std::string& headerIn,
+			   std::vector<size_t> labelsIn, std::vector<std::string> labelNamesIn = std::vector<std::string>());
+	EisSpectra(const std::vector<DataPoint>& dataIn, const std::string& modelIn, const std::string& headerIn,
+			   size_t label, size_t maxLabel, std::vector<std::string> labelNamesIn = std::vector<std::string>());
 	EisSpectra(){}
+	void setLabel(size_t label, size_t maxLabel);
+	size_t getLabel();
+	void setSzLabels(std::vector<size_t> label);
+	std::vector<size_t> getSzLabels() const;
 };
 
 bool saveToDisk(const EisSpectra& data, const std::filesystem::path& path);

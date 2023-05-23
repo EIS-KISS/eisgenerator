@@ -2,6 +2,7 @@
 #include <fstream>
 #include <sstream>
 #include <algorithm>
+#include <string>
 
 #include "strops.h"
 #include "log.h"
@@ -21,6 +22,29 @@ bool eis::saveToDisk(const EisSpectra& data, const std::filesystem::path& path)
 
 	file<<data.model<<(!data.header.empty() ? ", " : "");
 	file<<data.header;
+
+	if(!data.labels.empty())
+	{
+		if(!data.labelNames.empty())
+		{
+			file<<"\nlabelsNames\n";
+			std::string labelLine;
+			for(const std::string& name : data.labelNames)
+				labelLine += "\"" + name + "\", ";
+			labelLine.pop_back();
+			labelLine.pop_back();
+			file<<labelLine;
+		}
+		file<<"\nlabels\n";
+
+		std::string labelLine;
+		for(double label : data.labels)
+			labelLine += std::to_string(label) + ", ";
+		labelLine.pop_back();
+		labelLine.pop_back();
+		file<<labelLine;
+	}
+
 	file<<"\nomega, real, im\n";
 
 	for(const eis::DataPoint& point : data.data)
@@ -39,17 +63,32 @@ EisSpectra eis::loadFromDisk(const std::filesystem::path& path)
 
 	std::string line;
 	std::getline(file, line);
-	std::vector<std::string> tokens = tokenize(line, ',');
+	std::vector<std::string> tokens = tokenizeBinaryIgnore(line, ',', '"', '\\');
 	out.model = tokens[0];
 	line.erase(line.begin(), line.begin()+tokens.size());
 	out.header = line;
-	std::getline(file, line);
 
 	while(file.good())
 	{
 		std::getline(file, line);
-		if(line.empty() || line[0] == '#')
+		if(line.starts_with("labelsNames"))
+		{
+			std::getline(file, line);
+			out.labelNames = tokenizeBinaryIgnore(line, ',', '"', '\\');
 			continue;
+		}
+		else if(line.starts_with("labels"))
+		{
+			std::getline(file, line);
+			std::vector<std::string> tokens = tokenizeBinaryIgnore(line, ',', '"', '\\');
+			for(const std::string& token : tokens)
+				out.labels.push_back(std::stod(token));
+			continue;
+		}
+		else if(line.empty() || line[0] == '#' || line.starts_with("omega"))
+		{
+			continue;
+		}
 		tokens = tokenize(line, ',');
 		if(tokens.size() != 3)
 			throw file_error("invalid line in " + path.string() + ": " + line);
@@ -188,4 +227,55 @@ fvalue eis::eisNyquistDistance(const std::vector<eis::DataPoint>& a, const std::
 		accum += std::pow(dist, 2);
 	}
 	return std::sqrt(accum/a.size());
+}
+
+
+EisSpectra::EisSpectra(const std::vector<DataPoint>& dataIn, const std::string& modelIn,
+	const std::string& headerIn, std::vector<double> labelsIn, std::vector<std::string> labelNamesIn):
+data(dataIn), model(modelIn), header(headerIn), labels(labelsIn), labelNames(labelNamesIn)
+{
+
+}
+
+EisSpectra::EisSpectra(const std::vector<DataPoint>& dataIn, const std::string& modelIn, const std::string& headerIn,
+	std::vector<size_t> labelsIn, std::vector<std::string> labelNamesIn):
+data(dataIn), model(modelIn), header(headerIn), labelNames(labelNamesIn)
+{
+	setSzLabels(labelsIn);
+}
+
+EisSpectra::EisSpectra(const std::vector<DataPoint>& dataIn, const std::string& modelIn, const std::string& headerIn,
+			   size_t label, size_t maxLabel, std::vector<std::string> labelNamesIn):
+data(dataIn), model(modelIn), header(headerIn), labelNames(labelNamesIn)
+{
+	setLabel(label, maxLabel);
+}
+
+void EisSpectra::setLabel(size_t label, size_t maxLabel)
+{
+	labels.assign(maxLabel, 0);
+	labels[label] = 1;
+}
+
+void EisSpectra::setSzLabels(std::vector<size_t> labelsIn)
+{
+	labels.assign(labelsIn.size(), 0);
+	for(size_t i = 0; i < labelsIn.size(); ++i)
+		labels[i] = static_cast<double>(labelsIn[i]);
+}
+
+std::vector<size_t> EisSpectra::getSzLabels() const
+{
+	std::vector<size_t> out(labels.size());
+	for(size_t i = 0; i < labels.size(); ++i)
+		out[i] = static_cast<size_t>(labels[i]);
+	return out;
+}
+
+size_t EisSpectra::getLabel()
+{
+	for(size_t i = 0; i < labels.size(); ++i)
+		if(labels[i] > 0.5)
+			return i;
+	return 0;
 }
