@@ -1,0 +1,23 @@
+#!/bin/sh
+
+if ! command -v eisgenerator_export &> /dev/null
+then
+	echo "eisgenerator_export is required in \$PATH"
+	exit
+elif ! command -v gnuplot &> /dev/null
+then
+	echo "gnuplot is required in \$PATH"
+	exit
+fi
+
+cat "$1" | gnuplot -p -e "\
+set terminal qt enhanced font \",15\" title \"EIS Plot\"; \
+set style line 1 lw 3 lc \"blue\"; \
+set ylabel 'Z_{im}'; \
+set xlabel 'Z_{re}'; \
+set tics font \"Helvetica,12\"; \
+set xlabel font \"Helvetica,15\"; \
+set ylabel font \"Helvetica,15\"; \
+set datafile separator ','; \
+plot '-' using 2:3 notitle w l ls 1;
+"
