@@ -22,7 +22,6 @@ private:
 	std::string getParamStr(const std::string& str, size_t index);
 	static size_t paramSkipIndex(const std::string& str, size_t index);
 	static void addComponantToFlat(Componant* componant, std::vector<Componant*>* flatComponants);
-	std::vector<fvalue> getFlatParameters();
 
 	static void sweepThreadFn(std::vector<std::vector<DataPoint>>* data, Model* model, size_t start, size_t stop, const Range& omega);
 
@@ -50,6 +49,7 @@ public:
 	std::string getModelStrWithParam() const;
 	size_t getUuid();
 	std::vector<Componant*> getFlatComponants(Componant *model = nullptr);
+	std::vector<fvalue> getFlatParameters();
 	size_t getParameterCount();
 	bool compile();
 	bool isReady();
