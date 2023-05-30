@@ -3,6 +3,7 @@
 #include <sstream>
 #include <algorithm>
 #include <string>
+#include <vector>
 
 #include "strops.h"
 #include "log.h"
@@ -237,6 +238,13 @@ data(dataIn), model(modelIn), header(headerIn), labels(labelsIn), labelNames(lab
 
 }
 
+EisSpectra::EisSpectra(const std::vector<DataPoint>& dataIn, const std::string& modelIn,
+	const std::string& headerIn, std::vector<float> labelsIn, std::vector<std::string> labelNamesIn):
+data(dataIn), model(modelIn), header(headerIn), labelNames(labelNamesIn)
+{
+	setLabels(labelsIn);
+}
+
 EisSpectra::EisSpectra(const std::vector<DataPoint>& dataIn, const std::string& modelIn, const std::string& headerIn,
 	std::vector<size_t> labelsIn, std::vector<std::string> labelNamesIn):
 data(dataIn), model(modelIn), header(headerIn), labelNames(labelNamesIn)
@@ -275,7 +283,53 @@ std::vector<size_t> EisSpectra::getSzLabels() const
 size_t EisSpectra::getLabel()
 {
 	for(size_t i = 0; i < labels.size(); ++i)
-		if(labels[i] > 0.5)
+		if(labels[i] != 0)
 			return i;
 	return 0;
+}
+
+bool EisSpectra::isMulticlass()
+{
+	bool foundFirst = false;
+	for(size_t i = 0; i < labels.size(); ++i)
+	{
+		if(labels[i] != 0)
+		{
+			if(foundFirst)
+				return true;
+			else
+				foundFirst = true;
+		}
+	}
+	return false;
+}
+
+void EisSpectra::setLabels(const std::vector<float>& labelsIn)
+{
+	labels.assign(labelsIn.size(), 0);
+	for(size_t i = 0; i < labels.size(); ++i)
+		labels[i] = labelsIn[i];
+}
+
+void EisSpectra::setLabels(const std::vector<double>& labelsIn)
+{
+	labels = labelsIn;
+}
+
+std::vector<fvalue> EisSpectra::getFvalueLabels()
+{
+	if constexpr(std::is_same<fvalue, double>::value)
+	{
+		#pragma GCC diagnostic push
+		#pragma GCC diagnostic ignored "-Wstrict-aliasing"
+		return *reinterpret_cast<std::vector<fvalue>*>(&labels);
+		#pragma GCC diagnostic pop
+	}
+	else
+	{
+		std::vector<fvalue> out(labels.size());
+		for(size_t i = 0; i < labels.size(); ++i)
+			out[i] = static_cast<fvalue>(labels[i]);
+		return out;
+	}
 }

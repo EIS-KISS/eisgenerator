@@ -150,6 +150,8 @@ public:
 			   std::vector<double> labelsIn = std::vector<double>(),
 			   std::vector<std::string> labelNamesIn = std::vector<std::string>());
 	EisSpectra(const std::vector<DataPoint>& dataIn, const std::string& modelIn, const std::string& headerIn,
+			   std::vector<float> labelsIn, std::vector<std::string> labelNamesIn = std::vector<std::string>());
+	EisSpectra(const std::vector<DataPoint>& dataIn, const std::string& modelIn, const std::string& headerIn,
 			   std::vector<size_t> labelsIn, std::vector<std::string> labelNamesIn = std::vector<std::string>());
 	EisSpectra(const std::vector<DataPoint>& dataIn, const std::string& modelIn, const std::string& headerIn,
 			   size_t label, size_t maxLabel, std::vector<std::string> labelNamesIn = std::vector<std::string>());
@@ -157,7 +159,11 @@ public:
 	void setLabel(size_t label, size_t maxLabel);
 	size_t getLabel();
 	void setSzLabels(std::vector<size_t> label);
+	void setLabels(const std::vector<double>& labelsIn);
+	void setLabels(const std::vector<float>& labelsIn);
 	std::vector<size_t> getSzLabels() const;
+	bool isMulticlass();
+	std::vector<fvalue> getFvalueLabels();
 };
 
 bool saveToDisk(const EisSpectra& data, const std::filesystem::path& path);
