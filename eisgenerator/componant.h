@@ -37,6 +37,8 @@ class Componant
 		std::string getUniqueName();
 
 		static Componant* copy(Componant* componant);
+		static Componant* createNewComponant(char componant, std::string paramStr = "", size_t count = 1, bool defaultToRange = false);
+		static bool isValidComponantChar(char componant);
 };
 
 }

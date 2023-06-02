@@ -79,58 +79,30 @@ Componant *Model::processBracket(std::string& str, size_t paramSweepCount, bool 
 		for(size_t i = 0; i < nodeStr.size(); ++i)
 		{
 			Log(Log::DEBUG)<<__func__<<" arg: "<<nodeStr[i];
-			switch(nodeStr[i])
+			if(Componant::isValidComponantChar(nodeStr[i]))
 			{
-				case Cap::staticGetComponantChar():
+				componants.push_back(Componant::createNewComponant(nodeStr[i], getParamStr(nodeStr, i), paramSweepCount, defaultToRange));
+				i = paramSkipIndex(nodeStr, i);
+			}
+			else
+			{
+				switch(nodeStr[i])
 				{
-					componants.push_back(new Cap(getParamStr(nodeStr, i), paramSweepCount, defaultToRange));
-					i = paramSkipIndex(nodeStr, i);
-					break;
+					case '{':
+						i = opposingBraket(nodeStr, i, '}');
+					case '}':
+						Log(Log::WARN)<<getModelStr()<<" stray "<<nodeStr[i]<<" in model string";
+						break;
+					case '0' ... '9':
+					{
+						size_t j = nodeStr[i]-48;
+						if(_bracketComponants.size() > j)
+							componants.push_back(_bracketComponants[j]);
+						break;
+					}
+					default:
+						break;
 				}
-				case Resistor::staticGetComponantChar():
-				{
-					componants.push_back(new Resistor(getParamStr(nodeStr, i), paramSweepCount, defaultToRange));
-					i = paramSkipIndex(nodeStr, i);
-					break;
-				}
-				case Inductor::staticGetComponantChar():
-				{
-					componants.push_back(new Inductor(getParamStr(nodeStr, i), paramSweepCount, defaultToRange));
-					i = paramSkipIndex(nodeStr, i);
-					break;
-				}
-				case Cpe::staticGetComponantChar():
-				{
-					componants.push_back(new Cpe(getParamStr(nodeStr, i), paramSweepCount, defaultToRange));
-					i = paramSkipIndex(nodeStr, i);
-					break;
-				}
-				case Warburg::staticGetComponantChar():
-				{
-					componants.push_back(new Warburg(getParamStr(nodeStr, i), paramSweepCount, defaultToRange));
-					i = paramSkipIndex(nodeStr, i);
-					break;
-				}
-				case FiniteTransmitionline::staticGetComponantChar():
-				{
-					componants.push_back(new FiniteTransmitionline(getParamStr(nodeStr, i), paramSweepCount, defaultToRange));
-					i = paramSkipIndex(nodeStr, i);
-					break;
-				}
-				case '{':
-					i = opposingBraket(nodeStr, i, '}');
-				case '}':
-					Log(Log::WARN)<<getModelStr()<<" stray "<<nodeStr[i]<<" in model string";
-					break;
-				case '0' ... '9':
-				{
-					size_t j = nodeStr[i]-48;
-					if(_bracketComponants.size() > j)
-						componants.push_back(_bracketComponants[j]);
-					break;
-				}
-				default:
-					break;
 			}
 		}
 		if(componants.size() > 1)

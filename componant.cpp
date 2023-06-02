@@ -68,6 +68,17 @@ std::string Componant::getUniqueName()
 	return uniqueName;
 }
 
+bool Componant::compileable()
+{
+	std::vector<std::string> parameters;
+	return !getCode(parameters).empty();
+}
+
+std::string Componant::getCode(std::vector<std::string>& parameters)
+{
+	return std::string();
+}
+
 Componant* Componant::copy(Componant* componant)
 {
 	switch(componant->getComponantChar())
@@ -96,13 +107,44 @@ Componant* Componant::copy(Componant* componant)
 	return nullptr;
 }
 
-bool Componant::compileable()
+Componant* Componant::createNewComponant(char componant, std::string paramStr, size_t count, bool defaultToRange)
 {
-	std::vector<std::string> parameters;
-	return !getCode(parameters).empty();
+	switch(componant)
+	{
+		case Cap::staticGetComponantChar():
+			return new Cap(paramStr, count, defaultToRange);
+		case Resistor::staticGetComponantChar():
+			return new Resistor(paramStr, count, defaultToRange);
+		case Inductor::staticGetComponantChar():
+			return new Inductor(paramStr, count, defaultToRange);
+		case Cpe::staticGetComponantChar():
+			return new Cpe(paramStr, count, defaultToRange);
+		case Warburg::staticGetComponantChar():
+			return new Warburg(paramStr, count, defaultToRange);
+		case FiniteTransmitionline::staticGetComponantChar():
+			return new FiniteTransmitionline(paramStr, count, defaultToRange);
+		default:
+			return nullptr;
+	}
 }
 
-std::string Componant::getCode(std::vector<std::string>& parameters)
+bool Componant::isValidComponantChar(char componantCh)
 {
-	return std::string();
+	switch(componantCh)
+	{
+		case Cap::staticGetComponantChar():
+			return true;
+		case Resistor::staticGetComponantChar():
+			return true;
+		case Inductor::staticGetComponantChar():
+			return true;
+		case Cpe::staticGetComponantChar():
+			return true;
+		case Warburg::staticGetComponantChar():
+			return true;
+		case FiniteTransmitionline::staticGetComponantChar():
+			return true;
+		default:
+			return false;
+	}
 }
