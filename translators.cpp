@@ -112,22 +112,36 @@ std::string relaxisToEis(const std::string& in)
 	std::string out;
 	std::string work(in);
 	purgeEisParamBrackets(work);
+
 	for(size_t i = 0; i < work.size(); ++i)
 	{
 		if(isValidSymbol(std::string(1, work[i]), eisRelaxisTable, true))
 		{
-			out.append(translateElement(std::string(1, work[i]), eisRelaxisTable, true));
-
-			if(i+1 < work.size() && (i == 0 || work[i-1] != '(' || work[i+1] != ')'))
-				out.push_back('-');
+			if(i != 0 && work[i-1] != '(' && work[i-1] != '-')
+			{
+				work.insert(i, "-");
+				++i;
+			}
+			if(i < work.size()-1 && work[i+1] != ')' && work[i+1] != '-')
+				work.insert(i+1, "-");
 		}
-		else if(work[i] == '-')
-			out.push_back('-');
+	}
+
+	std::cout<<work<<std::endl;
+
+	for(size_t i = 0; i < work.size(); ++i)
+	{
+		if(isValidSymbol(std::string(1, work[i]), eisRelaxisTable, true))
+			out.append(translateElement(std::string(1, work[i]), eisRelaxisTable, true));
+		else if(work[i] == '-' || work[i] == '(' || work[i] == ')')
+			out.push_back(work[i]);
+		else
+			throw parse_errror("invalid or unkown symbol in relaxis circuit string: " + std::string(1, work[i]));
 	}
 
 	for(size_t i = 0; i < out.size(); ++i)
 	{
-		if(out[i] == '(' && i < out.size()-2 && out[i] == ')' )
+		if(out[i] == '(' && i < out.size()-2 && out[i+2] == ')' )
 		{
 			out.erase(out.begin()+i+2);
 			out.erase(out.begin()+i);
@@ -137,15 +151,6 @@ std::string relaxisToEis(const std::string& in)
 
 	if(out.size() < 3)
 		return out;
-
-	for(size_t i = 0; i < out.size()-1; ++i)
-	{
-		if(out[i] == '-' && out[i+1] == '-' )
-		{
-			out.erase(out.begin()+i);
-			--i;
-		}
-	}
 
 	return out;
 }
