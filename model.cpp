@@ -301,26 +301,30 @@ size_t Model::getActiveParameterCount()
 
 std::vector<DataPoint> Model::executeSweep(const Range& omega, size_t index)
 {
+	return executeSweep(omega.getRangeVector(), index);
+}
+
+std::vector<DataPoint> Model::executeSweep(const std::vector<fvalue>& omega, size_t index)
+{
 	std::vector<DataPoint> results;
-	results.reserve(omega.count);
+	results.reserve(omega.size());
 
 	if(_compiledModel)
 	{
 		resolveSteps(index);
 		std::vector<fvalue> parameters = getFlatParameters();
-		const std::vector<fvalue> omegas = omega.getRangeVector();
-		std::vector<std::complex<fvalue>> values = _compiledModel->symbol(parameters, omegas);
-		for(size_t i = 0; i < omegas.size(); ++i)
+		std::vector<std::complex<fvalue>> values = _compiledModel->symbol(parameters, omega);
+		for(size_t i = 0; i < omega.size(); ++i)
 		{
 			DataPoint dataPoint;
-			dataPoint.omega = omegas[i];
+			dataPoint.omega = omega[i];
 			dataPoint.im = values[i];
 			results.push_back(dataPoint);
 		}
 	}
 	else
 	{
-		for(size_t i = 0; i < omega.count; ++i)
+		for(size_t i = 0; i < omega.size(); ++i)
 		{
 			fvalue omegaStep = omega[i];
 			results.push_back(execute(omegaStep, index));

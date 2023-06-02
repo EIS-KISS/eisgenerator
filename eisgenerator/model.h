@@ -43,6 +43,7 @@ public:
 	size_t setParamSweepCountClosestTotal(size_t totalCount);
 	DataPoint execute(fvalue omaga, size_t index = 0);
 	std::vector<DataPoint> executeSweep(const Range& omega, size_t index = 0);
+	std::vector<DataPoint> executeSweep(const std::vector<fvalue>& omega, size_t index = 0);
 	std::vector<std::vector<DataPoint>> executeAllSweeps(const Range& omega);
 	std::string getModelStr() const;
 	std::string getModelStrWithParam(size_t index);
