@@ -1,12 +1,13 @@
 #pragma once
 #include <string>
 #include <exception>
+#include <vector>
 
 namespace eis
 {
 
 //Used by RHD Relaxis3
-std::string relaxisToEis(const std::string& in);
+std::string relaxisToEis(const std::string& in, const std::vector<double>& params = std::vector<double>());
 std::string eisToRelaxis(const std::string& in);
 
 //Circuit Description Code also known as Boukamp Codeing

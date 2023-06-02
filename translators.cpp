@@ -9,6 +9,7 @@
 #include "strops.h"
 #include "eistype.h"
 #include "log.h"
+#include "componant.h"
 
 namespace eis
 {
@@ -107,7 +108,7 @@ void purgeEisParamBrackets(std::string& in)
 	in = out;
 }
 
-std::string relaxisToEis(const std::string& in)
+std::string relaxisToEis(const std::string& in, const std::vector<double>& params)
 {
 	std::string out;
 	std::string work(in);
@@ -146,6 +147,35 @@ std::string relaxisToEis(const std::string& in)
 			out.erase(out.begin()+i+2);
 			out.erase(out.begin()+i);
 			--i;
+		}
+	}
+
+	if(!params.empty())
+	{
+		size_t elementIndex = 0;
+		for(size_t i = 0; i < out.size() && elementIndex < params.size(); ++i)
+		{
+			if(isValidSymbol(std::string(1, out[i]), eisRelaxisTable, false))
+			{
+				Componant* componant = Componant::createNewComponant(out[i]);
+				std::cout<<"componant "<<out[i]<<" has "<<componant->paramCount()<<" params\n";
+				if(componant->paramCount() > 0)
+				{
+					std::stringstream paramstream;
+					paramstream<<'{'<<std::scientific;
+					for(size_t j = 0; j < componant->paramCount() && elementIndex < params.size(); ++j)
+					{
+						paramstream<<params[elementIndex];
+						paramstream<<", ";
+						++elementIndex;
+					}
+					std::string paramStr = paramstream.str();
+					paramStr.pop_back();
+					paramStr.pop_back();
+					paramStr.push_back('}');
+					out.insert(i+1, paramStr);
+				}
+			}
 		}
 	}
 
