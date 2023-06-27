@@ -17,6 +17,7 @@ namespace eis
 	fvalue nyquistAreaVariance(const std::vector<eis::DataPoint>& data, eis::DataPoint* centroid = nullptr);
 	fvalue maximumNyquistJump(const std::vector<eis::DataPoint>& data);
 	void noise(std::vector<eis::DataPoint>& data, double amplitude, bool relative);
+	void removeDuplicates(std::vector<eis::DataPoint>& data);
 	bool fvalueEq(fvalue a, fvalue b, fvalue epsilon = 0.001);
 }
 

@@ -150,18 +150,7 @@ Model::Model(const std::string& str, size_t paramSweepCount, bool defaultToRange
 {
 	size_t bracketCounter = 0;
 	std::string strCpy(str);
-	_model = nullptr;
-	try
-	{
-		_model = processBrackets(strCpy, bracketCounter, paramSweepCount, defaultToRange);
-	}
-	catch(const parse_errror& err)
-	{
-		Log(Log::ERROR)<<err.what();
-		if(_model != nullptr)
-			delete _model;
-		_model = nullptr;
-	}
+	_model = processBrackets(strCpy, bracketCounter, paramSweepCount, defaultToRange);
 }
 
 Model::Model(const Model& in)

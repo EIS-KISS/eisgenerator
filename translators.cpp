@@ -128,8 +128,6 @@ std::string relaxisToEis(const std::string& in, const std::vector<double>& param
 		}
 	}
 
-	std::cout<<work<<std::endl;
-
 	for(size_t i = 0; i < work.size(); ++i)
 	{
 		if(isValidSymbol(std::string(1, work[i]), eisRelaxisTable, true))
@@ -157,8 +155,10 @@ std::string relaxisToEis(const std::string& in, const std::vector<double>& param
 		{
 			if(isValidSymbol(std::string(1, out[i]), eisRelaxisTable, false))
 			{
+				Log::Level oldLevel = Log::level;
+				Log::level =  Log::ERROR;
 				Componant* componant = Componant::createNewComponant(out[i]);
-				std::cout<<"componant "<<out[i]<<" has "<<componant->paramCount()<<" params\n";
+				Log::level =  oldLevel;
 				if(componant->paramCount() > 0)
 				{
 					std::stringstream paramstream;

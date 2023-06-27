@@ -83,12 +83,22 @@ std::vector<std::string> tokenizeBinaryIgnore(const std::string& str, const char
 	return tokens;
 }
 
-size_t opposingBraket(const std::string& str, size_t index, char bracketChar)
+size_t opposingBraket(const std::string& str, size_t index, char closeBracketChar)
 {
+	char openBracket = str[index];
+	int counter = 0;
 	for(size_t i = index; i < str.size(); ++i)
 	{
-		if(str[i] == bracketChar)
-			return i;
+		if(str[i] == openBracket)
+		{
+			++counter;
+		}
+		else if(str[i] == closeBracketChar)
+		{
+			--counter;
+			if(counter < 1)
+				return i;
+		}
 	}
 	return std::string::npos;
 }
@@ -126,10 +136,21 @@ size_t deepestBraket(const std::string& str, std::string bracketChars, size_t* l
 	return deepestPos;
 }
 
+void stripQuotes(std::string& in)
+{
+	in.erase(std::remove_if(in.begin(), in.end()+1, [](unsigned char ch){return ch == '"' || ch == '\'';}));
+}
+
 size_t eisRemoveUnneededBrackets(std::string& in, long int bracketStart)
 {
 	bool bracketNeeded = false;
 	size_t paramBracketCount = 0;
+
+	if(bracketStart == 0 && opposingBraket(in, bracketStart, ')') == in.size()-1 )
+	{
+		in.pop_back();
+		in.erase(in.begin());
+	}
 
 	for(size_t i = (bracketStart >= 0 ? bracketStart+1 : 0); i < in.size(); ++i)
 	{

@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <sstream>
+#include <algorithm>
 
 std::vector<std::string> tokenize(const std::string& str, const char delim = ' ', const char ignBracketStart = '\0',
 								  const char ignBracketEnd = '\0', const char escapeChar = '\0');
@@ -15,5 +16,7 @@ size_t deepestBraket(const std::string& str, std::string bracketChars = "(", siz
 char getOpposingBracketChar(const char ch);
 
 std::string stripWhitespace(const std::string& in);
+
+void stripQuotes(std::string& in);
 
 size_t eisRemoveUnneededBrackets(std::string& in, long int bracketStart = -1);

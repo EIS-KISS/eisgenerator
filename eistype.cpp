@@ -7,104 +7,20 @@
 
 #include "strops.h"
 #include "log.h"
+#include "basicmath.h"
 
 using namespace eis;
 
 bool eis::saveToDisk(const EisSpectra& data, const std::filesystem::path& path)
 {
-	std::fstream file;
-	file.open(path, std::ios_base::out | std::ios_base::trunc);
-	if(!file.is_open())
-	{
-		Log(Log::ERROR)<<"can not open "<<path<<" for writing\n";
-		return false;
-	}
-	file<<std::scientific;
-
-	file<<data.model<<(!data.header.empty() ? ", " : "");
-	file<<data.header;
-
-	if(!data.labels.empty())
-	{
-		if(!data.labelNames.empty())
-		{
-			file<<"\nlabelsNames\n";
-			std::string labelLine;
-			for(const std::string& name : data.labelNames)
-				labelLine += "\"" + name + "\", ";
-			labelLine.pop_back();
-			labelLine.pop_back();
-			file<<labelLine;
-		}
-		file<<"\nlabels\n";
-
-		std::string labelLine;
-		for(double label : data.labels)
-			labelLine += std::to_string(label) + ", ";
-		labelLine.pop_back();
-		labelLine.pop_back();
-		file<<labelLine;
-	}
-
-	file<<"\nomega, real, im\n";
-
-	for(const eis::DataPoint& point : data.data)
-		file<<point.omega<<", "<<point.im.real()<<", "<<point.im.imag()<<'\n';
-	file.close();
-	return true;
+	Log(Log::INFO)<<__func__<<" is deprecated";
+	return data.saveToDisk(path);
 }
 
 EisSpectra eis::loadFromDisk(const std::filesystem::path& path)
 {
-	EisSpectra out;
-	std::fstream file;
-	file.open(path, std::ios_base::in);
-	if(!file.is_open())
-		throw file_error("can not open " + path.string() + " for reading\n");
-
-	std::string line;
-	std::getline(file, line);
-	std::vector<std::string> tokens = tokenizeBinaryIgnore(line, ',', '"', '\\');
-	out.model = tokens[0];
-	line.erase(line.begin(), line.begin()+tokens.size());
-	out.header = line;
-
-	while(file.good())
-	{
-		std::getline(file, line);
-		if(line.starts_with("labelsNames"))
-		{
-			std::getline(file, line);
-			out.labelNames = tokenizeBinaryIgnore(line, ',', '"', '\\');
-			continue;
-		}
-		else if(line.starts_with("labels"))
-		{
-			std::getline(file, line);
-			std::vector<std::string> tokens = tokenizeBinaryIgnore(line, ',', '"', '\\');
-			for(const std::string& token : tokens)
-				out.labels.push_back(std::stod(token));
-			continue;
-		}
-		else if(line.empty() || line[0] == '#' || line.starts_with("omega"))
-		{
-			continue;
-		}
-		tokens = tokenize(line, ',');
-		if(tokens.size() != 3)
-			throw file_error("invalid line in " + path.string() + ": " + line);
-
-		#pragma GCC diagnostic push
-		#pragma GCC diagnostic ignored "-Wnarrowing"
-		if constexpr (std::is_same<fvalue, double>::value)
-			out.data.push_back(DataPoint({std::stod(tokens[1]), std::stod(tokens[2])}, std::stod(tokens[0])));
-		else
-			out.data.push_back(DataPoint({std::stof(tokens[1]), std::stof(tokens[2])}, std::stof(tokens[0])));
-		#pragma GCC diagnostic pop
-	}
-
-	file.close();
-	return out;
+	Log(Log::INFO)<<__func__<<" is deprecated";
+	return EisSpectra(path);
 }
 
 void eis::Range::print(int level) const
@@ -332,4 +248,120 @@ std::vector<fvalue> EisSpectra::getFvalueLabels()
 			out[i] = static_cast<fvalue>(labels[i]);
 		return out;
 	}
+}
+
+bool EisSpectra::saveToDisk(const std::filesystem::path& path) const
+{
+	std::fstream file;
+	file.open(path, std::ios_base::out | std::ios_base::trunc);
+	if(!file.is_open())
+	{
+		Log(Log::ERROR)<<"can not open "<<path<<" for writing\n";
+		return false;
+	}
+	file<<std::scientific;
+	file<<F_MAGIC<<", "<<std::to_string(F_VERSION_MAJOR)<<'.'
+		<<std::to_string(F_VERSION_MINOR)<<'.'<<std::to_string(F_VERSION_PATCH)<<'\n';
+
+	file<<'"'<<model<<'"'<<(!header.empty() ? ", " : "");
+	file<<header;
+
+	if(!labels.empty())
+	{
+		if(!labelNames.empty())
+		{
+			file<<"\nlabelsNames\n";
+			std::string labelLine;
+			for(const std::string& name : labelNames)
+				labelLine += "\"" + name + "\", ";
+			labelLine.pop_back();
+			labelLine.pop_back();
+			file<<labelLine;
+		}
+		file<<"\nlabels\n";
+
+		std::string labelLine;
+		for(double label : labels)
+			labelLine += std::to_string(label) + ", ";
+		labelLine.pop_back();
+		labelLine.pop_back();
+		file<<labelLine;
+	}
+
+	file<<"\nomega, real, im\n";
+
+	for(const eis::DataPoint& point : data)
+		file<<point.omega<<", "<<point.im.real()<<", "<<point.im.imag()<<'\n';
+	file.close();
+	return true;
+}
+
+EisSpectra EisSpectra::loadFromDisk(const std::filesystem::path& path)
+{
+	EisSpectra out;
+	std::fstream file;
+	file.open(path, std::ios_base::in);
+	if(!file.is_open())
+		throw file_error("can not open " + path.string() + " for reading\n");
+
+	std::string line;
+	std::getline(file, line);
+	std::vector<std::string> tokens = tokenizeBinaryIgnore(line, ',', '"', '\\');
+
+	if(tokens.size() < 2 || tokens[0] != F_MAGIC)
+	{
+		throw file_error(path.string() + " is not a valid EISGenerator file");
+	}
+	else
+	{
+		std::vector<std::string> versionTokens = tokenize(tokens[1], '.');
+		if(versionTokens.size() != 3 || std::stoi(versionTokens[0]) > F_VERSION_MAJOR || std::stoi(versionTokens[1]) > F_VERSION_MINOR)
+			throw file_error(path.string() + " was saved by a newer version of EISGenerator, can not open");
+	}
+
+	std::getline(file, line);
+	tokens = tokenizeBinaryIgnore(line, ',', '"', '\\');
+	stripQuotes(tokens[0]);
+	out.model = tokens[0];
+	line.erase(line.begin(), line.begin()+tokens.size());
+	out.header = line;
+
+	while(file.good())
+	{
+		std::getline(file, line);
+		if(line.starts_with("labelsNames"))
+		{
+			std::getline(file, line);
+			out.labelNames = tokenizeBinaryIgnore(line, ',', '"', '\\');
+			continue;
+		}
+		else if(line.starts_with("labels"))
+		{
+			std::getline(file, line);
+			std::vector<std::string> tokens = tokenizeBinaryIgnore(line, ',', '"', '\\');
+			for(const std::string& token : tokens)
+				out.labels.push_back(std::stod(token));
+			continue;
+		}
+		else if(line.empty() || line[0] == '#' || line.starts_with("omega"))
+		{
+			continue;
+		}
+		tokens = tokenize(line, ',');
+		if(tokens.size() != 3)
+			throw file_error("invalid line in " + path.string() + ": " + line);
+
+		#pragma GCC diagnostic push
+		#pragma GCC diagnostic ignored "-Wnarrowing"
+		if constexpr (std::is_same<fvalue, double>::value)
+			out.data.push_back(DataPoint({std::stod(tokens[1]), std::stod(tokens[2])}, std::stod(tokens[0])));
+		else
+			out.data.push_back(DataPoint({std::stof(tokens[1]), std::stof(tokens[2])}, std::stof(tokens[0])));
+		#pragma GCC diagnostic pop
+
+		eis::removeDuplicates(out.data);
+	}
+
+	file.close();
+	return out;
 }

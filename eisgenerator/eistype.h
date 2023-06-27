@@ -1,6 +1,7 @@
 #pragma once
 #include <complex>
 #include <vector>
+#include <valarray>
 #include <cassert>
 #include <cmath>
 #include <filesystem>
@@ -17,6 +18,14 @@ public:
 	fvalue omega;
 	DataPoint() = default;
 	DataPoint(std::complex<fvalue> imIn, fvalue omegaIn = 0): im(imIn), omega(omegaIn){}
+	bool operator<(const DataPoint& in) const
+	{
+		return omega < in.omega;
+	}
+	bool operator>(const DataPoint& in) const
+	{
+		return omega > in.omega;
+	}
 	bool operator==(const DataPoint& in) const
 	{
 		return im == in.im;
@@ -139,6 +148,12 @@ public:
 class EisSpectra
 {
 public:
+	static constexpr int F_VERSION_MAJOR = 1;
+	static constexpr int F_VERSION_MINOR = 0;
+	static constexpr int F_VERSION_PATCH = 0;
+	static constexpr char F_MAGIC[] = "EISF";
+
+public:
 	std::vector<DataPoint> data;
 	std::string model;
 	std::string header;
@@ -155,7 +170,9 @@ public:
 			   std::vector<size_t> labelsIn, std::vector<std::string> labelNamesIn = std::vector<std::string>());
 	EisSpectra(const std::vector<DataPoint>& dataIn, const std::string& modelIn, const std::string& headerIn,
 			   size_t label, size_t maxLabel, std::vector<std::string> labelNamesIn = std::vector<std::string>());
+	EisSpectra(const std::filesystem::path& path){*this = loadFromDisk(path);}
 	EisSpectra(){}
+	static EisSpectra loadFromDisk(const std::filesystem::path& path);
 	void setLabel(size_t label, size_t maxLabel);
 	size_t getLabel();
 	void setSzLabels(std::vector<size_t> label);
@@ -164,11 +181,14 @@ public:
 	std::vector<size_t> getSzLabels() const;
 	bool isMulticlass();
 	std::vector<fvalue> getFvalueLabels();
+	bool saveToDisk(const std::filesystem::path& path) const;
 };
 
 bool saveToDisk(const EisSpectra& data, const std::filesystem::path& path);
 
 EisSpectra loadFromDisk(const std::filesystem::path& path);
+
+std::pair<std::valarray<fvalue>, std::valarray<fvalue>> eisToValarrays(const std::vector<eis::DataPoint>& b);
 
 fvalue eisDistance(const std::vector<eis::DataPoint>& a, const std::vector<eis::DataPoint>& b);
 

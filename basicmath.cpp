@@ -208,6 +208,19 @@ fvalue eis::maximumNyquistJump(const std::vector<eis::DataPoint>& data)
 	return maxDist;
 }
 
+void eis::removeDuplicates(std::vector<eis::DataPoint>& data)
+{
+	std::sort(data.begin(), data.end());
+
+	std::vector<eis::DataPoint>::iterator it = data.begin();
+	while((it = std::adjacent_find(data.begin(), data.end())) != data.end())
+	{
+		std::cout<<"erase\n";
+		data.erase(it);
+	}
+
+}
+
 bool eis::fvalueEq(fvalue a, fvalue b, fvalue epsilon)
 {
 	return a - epsilon < b && a + epsilon > b;

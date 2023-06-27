@@ -1,3 +1,4 @@
+#include <cmath>
 #include <iostream>
 #include <complex>
 #include <chrono>
@@ -254,7 +255,7 @@ static bool modelConsistancy()
 
 static bool uneededBrackets()
 {
-	std::string tst("(c-(rc)-(r-cr))");
+	std::string tst("(c-(rc)-(r-c(r)))");
 	eisRemoveUnneededBrackets(tst);
 	if(tst == "c-rc-(r-cr)")
 	{
@@ -297,6 +298,40 @@ static bool nyquistJump()
 
 	eis::Log(eis::Log::INFO)<<__func__<<" aVar: "<<aVar<<" bVar: "<<bVar;
 	return eis::fvalueEq(aVar, 0.178183);
+}
+
+static bool testEisNyquistDistance()
+{
+	const std::filesystem::path filePath("./relaxis_rp-rp_0.csv");
+	eis::EisSpectra spectra(filePath);
+	if(spectra.data.empty())
+	{
+		eis::Log(eis::Log::INFO)<<__func__<<" Unable to load "<<filePath<<" skiping test";
+		return true;
+	}
+
+	std::vector<fvalue> omega(spectra.data.size());
+	for(size_t i = 0; i < spectra.data.size(); ++i)
+		omega[i] = spectra.data[i].omega;
+	eis::Log(eis::Log::INFO)<<__func__<<" using model string: "<<spectra.model;
+	eis::Model model(spectra.model);
+
+	std::vector<eis::DataPoint> genData = model.executeSweep(omega);
+	fvalue dist = eisNyquistDistance(spectra.data, genData);
+
+	if(std::isnan(dist))
+	{
+		eis::Log(eis::Log::ERROR)<<__func__<<" spectra.data:";
+		printDataVect(spectra.data);
+		eis::Log(eis::Log::ERROR)<<__func__<<" genData:";
+		printDataVect(genData);
+		eis::Log(eis::Log::ERROR)<<__func__<<" distanece is NAN!";
+		return false;
+	}
+	else
+	{
+		return true;
+	}
 }
 
 static bool testTranslators()
@@ -354,20 +389,23 @@ int main(int argc, char** argv)
 	if(!testDistance())
 		return 4;
 
-	if(!runNormalize())
+	if(!testEisNyquistDistance())
 		return 5;
 
-	if(!nyquistVariance())
+	if(!runNormalize())
 		return 6;
 
-	if(!nyquistJump())
+	if(!nyquistVariance())
 		return 7;
 
-	if(!testTranslators())
+	if(!nyquistJump())
 		return 8;
 
-	if(!testMadapParams())
+	if(!testTranslators())
 		return 9;
+
+	if(!testMadapParams())
+		return 10;
 
 	return 0;
 }
