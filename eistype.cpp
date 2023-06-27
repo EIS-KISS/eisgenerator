@@ -280,9 +280,10 @@ bool EisSpectra::saveToDisk(const std::filesystem::path& path) const
 		}
 		file<<"\nlabels\n";
 
-		std::string labelLine;
+		std::stringstream labelSs;
 		for(double label : labels)
-			labelLine += std::to_string(label) + ", ";
+			labelSs<<label<<", ";
+		std::string labelLine = labelSs.str();
 		labelLine.pop_back();
 		labelLine.pop_back();
 		file<<labelLine;
