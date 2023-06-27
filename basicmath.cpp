@@ -1,6 +1,7 @@
 #include "basicmath.h"
 #include <algorithm>
 #include <random>
+#include <limits>
 
 #include "eistype.h"
 
@@ -213,15 +214,15 @@ void eis::removeDuplicates(std::vector<eis::DataPoint>& data)
 	std::sort(data.begin(), data.end());
 
 	std::vector<eis::DataPoint>::iterator it = data.begin();
-	while((it = std::adjacent_find(data.begin(), data.end())) != data.end())
+	while((it = std::adjacent_find(data.begin(), data.end(),
+		[](const eis::DataPoint& a, const eis::DataPoint& b){return fvalueEq(a.omega, b.omega);})) != data.end())
 	{
-		std::cout<<"erase\n";
 		data.erase(it);
 	}
-
 }
 
-bool eis::fvalueEq(fvalue a, fvalue b, fvalue epsilon)
+bool eis::fvalueEq(fvalue a, fvalue b, unsigned int ulp)
 {
+	fvalue epsilon = std::numeric_limits<fvalue>::epsilon()*std::fabs(a+b)*ulp;
 	return a - epsilon < b && a + epsilon > b;
 }

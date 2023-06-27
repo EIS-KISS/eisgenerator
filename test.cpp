@@ -334,6 +334,24 @@ static bool testEisNyquistDistance()
 	}
 }
 
+static bool testLoadDeduplication()
+{
+	const std::filesystem::path filePath("./relaxis_rp-rp_0.csv");
+	eis::EisSpectra spectra(filePath);
+	if(spectra.data.empty())
+	{
+		eis::Log(eis::Log::INFO)<<__func__<<" Unable to load "<<filePath<<" skiping test";
+		return true;
+	}
+
+	if(eis::fvalueEq(spectra.data[spectra.data.size()-1].omega, spectra.data[spectra.data.size()-2].omega+2))
+	{
+		eis::Log(eis::Log::ERROR)<<__func__<<" deduplication failed";
+		return false;
+	}
+	return true;
+}
+
 static bool testTranslators()
 {
 	const std::string boukamp("R(RP)");
@@ -382,6 +400,9 @@ int main(int argc, char** argv)
 
 	if(!modelConsistancy())
 		return 2;
+
+	if(!testLoadDeduplication())
+		return 3;
 
 	if(!runRescale())
 		return 3;
