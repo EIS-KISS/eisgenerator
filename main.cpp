@@ -17,7 +17,6 @@
 #endif
 
 static constexpr double STEP_THRESH = 0.30;
-static constexpr char PARA_SWEEP_OUTPUT_DIR[] = "./sweep";
 
 static void printComponants(eis::Model& model)
 {
@@ -75,12 +74,25 @@ static void runSweep(const Config& config, eis::Model& model)
 			res.im.real()<<','<<(config.invert ? 0-res.im.imag() : res.im.imag())<<'\n';
 
 	eis::Log(eis::Log::INFO)<<"time taken: "<<duration.count()<<" us";
+
+	if(!config.saveFileName.empty())
+	{
+		eis::Log(eis::Log::INFO)<<"Saveing to "<<config.saveFileName;
+		eis::EisSpectra(results, model.getModelStrWithParam(0), "").saveToDisk(config.saveFileName);
+	}
 }
 
 static void runParamSweep(const Config& config, eis::Model& model)
 {
-	eis::Log(eis::Log::INFO)<<"Saving sweep to "<<PARA_SWEEP_OUTPUT_DIR;
-	std::filesystem::create_directory(PARA_SWEEP_OUTPUT_DIR);
+	if(config.saveFileName.empty())
+	{
+		eis::Log(eis::Log::WARN)<<"No save directory provided via --save, sweeps will not be saved to disk!";
+	}
+	else
+	{
+		eis::Log(eis::Log::INFO)<<"Saving sweep to "<<config.saveFileName;
+		std::filesystem::create_directory(config.saveFileName);
+	}
 
 	size_t count = model.getRequiredStepsForSweeps();
 	eis::Log(eis::Log::INFO)<<"Executeing "<<count<<" steps";
@@ -106,7 +118,7 @@ static void runParamSweep(const Config& config, eis::Model& model)
 		else
 			data = model.executeSweep(config.omegaRange, i);
 
-		if(!config.noSave)
+		if(!config.saveFileName.empty())
 		{
 			if(config.normalize)
 				eis::normalize(data);
@@ -134,7 +146,7 @@ static void runParamSweep(const Config& config, eis::Model& model)
 				}
 			}
 
-			eis::saveToDisk(eis::EisSpectra(data, model.getModelStrWithParam(i), ""), std::string(PARA_SWEEP_OUTPUT_DIR)+std::string("/")+std::to_string(i)+".csv");
+			eis::EisSpectra(data, model.getModelStrWithParam(i), "").saveToDisk(config.saveFileName+"/"+std::to_string(i)+".csv");
 		}
 		eis::Log(eis::Log::INFO, false)<<'.';
 	}

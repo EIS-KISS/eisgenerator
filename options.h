@@ -26,13 +26,13 @@ static struct argp_option options[] =
   {"invert",        'i', 0,      0,  "inverts the imaginary axis"},
   {"noise",        'x', "[AMPLITUDE]",      0,  "add noise to output"},
   {"input-type",   't', "[STRING]",      0,  "set input string type, possible values: eis, boukamp, relaxis, madap"},
-  {"mode", 	       'f', "[STRING]",      0,  "mode, possible values: export, code, find-range, export-ranges"},
+  {"mode",         'f', "[STRING]",      0,  "mode, possible values: export, code, find-range, export-ranges"},
   {"range-distance",   'd', "[DISTANCE]",      0,  "distance from a previous point where a range is considered \"new\""},
   {"parallel",   'p', 0,      0,  "run on multiple threads"},
   {"skip-linear",   'e', 0,      0,  "dont output param sweeps that create linear nyquist plots"},
   {"default-to-range",   'b', 0,      0,  "if a element has no paramters, default to assigning it a range instead of a single value"},
   {"no-compile",   'z', 0,      0,  "dont compile the model into a shared object"},
-  {"no-save",   'y', 0,      0,  "dont save sweeps"},
+  {"save",   'y', "[FILENAME]",      0,  "place to save sweeps"},
   { 0 }
 };
 
@@ -69,9 +69,9 @@ struct Config
 	bool skipLinear = false;
 	bool defaultToRange = false;
 	bool noCompile = false;
-	bool noSave = false;
 	double noise = 0;
 	double rangeDistance = 0.35;
+	std::string saveFileName;
 
 	Config(): omegaRange(1, 1e6, 50, true)
 	{}
@@ -198,7 +198,7 @@ parse_opt (int key, char *arg, struct argp_state *state)
 		config->defaultToRange = true;
 		break;
 	case 'y':
-		config->noSave = true;
+		config->saveFileName = std::string(arg);
 		break;
 	case 'z':
 		config->noCompile = true;
