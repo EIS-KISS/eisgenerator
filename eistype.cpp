@@ -250,6 +250,44 @@ std::vector<fvalue> EisSpectra::getFvalueLabels()
 	}
 }
 
+void EisSpectra::saveToStream(std::ostream& stream) const
+{
+	stream<<std::scientific;
+	stream<<F_MAGIC<<", "<<std::to_string(F_VERSION_MAJOR)<<'.'
+		<<std::to_string(F_VERSION_MINOR)<<'.'<<std::to_string(F_VERSION_PATCH)<<'\n';
+
+	stream<<'"'<<model<<'"'<<(!header.empty() ? ", " : "");
+	stream<<header;
+
+	if(!labels.empty())
+	{
+		if(!labelNames.empty())
+		{
+			stream<<"\nlabelsNames\n";
+			std::string labelLine;
+			for(const std::string& name : labelNames)
+				labelLine += "\"" + name + "\", ";
+			labelLine.pop_back();
+			labelLine.pop_back();
+			stream<<labelLine;
+		}
+		stream<<"\nlabels\n";
+
+		std::stringstream labelSs;
+		for(double label : labels)
+			labelSs<<label<<", ";
+		std::string labelLine = labelSs.str();
+		labelLine.pop_back();
+		labelLine.pop_back();
+		stream<<labelLine;
+	}
+
+	stream<<"\nomega, real, im\n";
+
+	for(const eis::DataPoint& point : data)
+		stream<<point.omega<<", "<<point.im.real()<<", "<<point.im.imag()<<'\n';
+}
+
 bool EisSpectra::saveToDisk(const std::filesystem::path& path) const
 {
 	std::fstream file;
@@ -259,86 +297,50 @@ bool EisSpectra::saveToDisk(const std::filesystem::path& path) const
 		Log(Log::ERROR)<<"can not open "<<path<<" for writing\n";
 		return false;
 	}
-	file<<std::scientific;
-	file<<F_MAGIC<<", "<<std::to_string(F_VERSION_MAJOR)<<'.'
-		<<std::to_string(F_VERSION_MINOR)<<'.'<<std::to_string(F_VERSION_PATCH)<<'\n';
 
-	file<<'"'<<model<<'"'<<(!header.empty() ? ", " : "");
-	file<<header;
+	saveToStream(file);
 
-	if(!labels.empty())
-	{
-		if(!labelNames.empty())
-		{
-			file<<"\nlabelsNames\n";
-			std::string labelLine;
-			for(const std::string& name : labelNames)
-				labelLine += "\"" + name + "\", ";
-			labelLine.pop_back();
-			labelLine.pop_back();
-			file<<labelLine;
-		}
-		file<<"\nlabels\n";
-
-		std::stringstream labelSs;
-		for(double label : labels)
-			labelSs<<label<<", ";
-		std::string labelLine = labelSs.str();
-		labelLine.pop_back();
-		labelLine.pop_back();
-		file<<labelLine;
-	}
-
-	file<<"\nomega, real, im\n";
-
-	for(const eis::DataPoint& point : data)
-		file<<point.omega<<", "<<point.im.real()<<", "<<point.im.imag()<<'\n';
 	file.close();
 	return true;
 }
 
-EisSpectra EisSpectra::loadFromDisk(const std::filesystem::path& path)
+EisSpectra EisSpectra::loadFromStream(std::istream& stream)
 {
 	EisSpectra out;
-	std::fstream file;
-	file.open(path, std::ios_base::in);
-	if(!file.is_open())
-		throw file_error("can not open " + path.string() + " for reading\n");
-
 	std::string line;
-	std::getline(file, line);
+	std::getline(stream, line);
 	std::vector<std::string> tokens = tokenizeBinaryIgnore(line, ',', '"', '\\');
 
 	if(tokens.size() < 2 || tokens[0] != F_MAGIC)
 	{
-		throw file_error(path.string() + " is not a valid EISGenerator file");
+		throw file_error("not a valid EISGenerator file or stream");
 	}
 	else
 	{
 		std::vector<std::string> versionTokens = tokenize(tokens[1], '.');
 		if(versionTokens.size() != 3 || std::stoi(versionTokens[0]) > F_VERSION_MAJOR || std::stoi(versionTokens[1]) > F_VERSION_MINOR)
-			throw file_error(path.string() + " was saved by a newer version of EISGenerator, can not open");
+			throw file_error("saved by a newer version of EISGenerator, can not open");
 	}
 
-	std::getline(file, line);
+	std::getline(stream, line);
 	tokens = tokenizeBinaryIgnore(line, ',', '"', '\\');
 	stripQuotes(tokens[0]);
 	out.model = tokens[0];
 	line.erase(line.begin(), line.begin()+tokens.size());
 	out.header = line;
 
-	while(file.good())
+	while(stream.good())
 	{
-		std::getline(file, line);
+		std::getline(stream, line);
 		if(line.starts_with("labelsNames"))
 		{
-			std::getline(file, line);
+			std::getline(stream, line);
 			out.labelNames = tokenizeBinaryIgnore(line, ',', '"', '\\');
 			continue;
 		}
 		else if(line.starts_with("labels"))
 		{
-			std::getline(file, line);
+			std::getline(stream, line);
 			std::vector<std::string> tokens = tokenizeBinaryIgnore(line, ',', '"', '\\');
 			for(const std::string& token : tokens)
 				out.labels.push_back(std::stod(token));
@@ -350,7 +352,7 @@ EisSpectra EisSpectra::loadFromDisk(const std::filesystem::path& path)
 		}
 		tokens = tokenize(line, ',');
 		if(tokens.size() != 3)
-			throw file_error("invalid line in " + path.string() + ": " + line);
+			throw file_error("invalid line: " + line);
 
 		#pragma GCC diagnostic push
 		#pragma GCC diagnostic ignored "-Wnarrowing"
@@ -363,6 +365,23 @@ EisSpectra EisSpectra::loadFromDisk(const std::filesystem::path& path)
 		eis::removeDuplicates(out.data);
 	}
 
-	file.close();
 	return out;
+}
+
+EisSpectra EisSpectra::loadFromDisk(const std::filesystem::path& path)
+{
+	std::fstream file;
+	file.open(path, std::ios_base::in);
+	if(!file.is_open())
+		throw file_error("can not open " + path.string() + " for reading\n");
+
+	try
+	{
+		EisSpectra out = loadFromStream(file);
+		return out;
+	}
+	catch(const file_error& err)
+	{
+		throw file_error(path.string() + std::string(": ") + err.what());
+	}
 }

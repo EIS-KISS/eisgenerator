@@ -173,6 +173,7 @@ public:
 	EisSpectra(const std::filesystem::path& path){*this = loadFromDisk(path);}
 	EisSpectra(){}
 	static EisSpectra loadFromDisk(const std::filesystem::path& path);
+	static EisSpectra loadFromStream(std::istream& path);
 	void setLabel(size_t label, size_t maxLabel);
 	size_t getLabel();
 	void setSzLabels(std::vector<size_t> label);
@@ -182,6 +183,7 @@ public:
 	bool isMulticlass();
 	std::vector<fvalue> getFvalueLabels();
 	bool saveToDisk(const std::filesystem::path& path) const;
+	void saveToStream(std::ostream& stream) const;
 };
 
 bool saveToDisk(const EisSpectra& data, const std::filesystem::path& path);
