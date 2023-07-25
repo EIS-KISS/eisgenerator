@@ -24,7 +24,18 @@ In a console do:
 * mkdir build
 * cd build
 * cmake ..
-* make -j8
+* make
+* sudo make install
+
+### Cross-compile for windows on UNIX
+
+* Have mingw cross-compile toolchaing installed
+* git clone https://git-ce.rwth-aachen.de/carl_philipp.klemm/eisgenerator.git
+* cd eisgenerator
+* mkdir build
+* cd build
+* cmake -DCMAKE_TOOLCHAIN_FILE=./crossW64.cmake ..
+* make
 * sudo make install
 
 ## Basic usage of CLI application
