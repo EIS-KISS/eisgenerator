@@ -366,8 +366,6 @@ void Model::resolveSteps(int64_t index)
 		return;
 	}
 
-	assert(static_cast<size_t>(index) < getRequiredStepsForSweeps());
-
 	std::vector<Range*> flatRanges;
 
 	for(Componant* componant : componants)
