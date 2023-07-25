@@ -314,6 +314,7 @@ std::string translateModelString(const std::string& in, int type)
 
 int main(int argc, char** argv)
 {
+	std::ios_base::sync_with_stdio(false);
 	eis::Log::level = eis::Log::INFO;
 	Config config;
 	argp_parse(&argp, argc, argv, 0, 0, &config);
