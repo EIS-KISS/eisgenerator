@@ -172,8 +172,8 @@ public:
 			   size_t label, size_t maxLabel, std::vector<std::string> labelNamesIn = std::vector<std::string>());
 	EisSpectra(const std::filesystem::path& path){*this = loadFromDisk(path);}
 	EisSpectra(){}
-	static EisSpectra loadFromDisk(const std::filesystem::path& path);
-	static EisSpectra loadFromStream(std::istream& path);
+	[[nodiscard]] static  EisSpectra loadFromDisk(const std::filesystem::path& path);
+	[[nodiscard]] static EisSpectra loadFromStream(std::istream& path);
 	void setLabel(size_t label, size_t maxLabel);
 	size_t getLabel();
 	void setSzLabels(std::vector<size_t> label);
