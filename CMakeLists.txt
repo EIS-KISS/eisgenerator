@@ -4,6 +4,8 @@ project(eisgenerator LANGUAGES C CXX)
 
 set (CMAKE_CXX_STANDARD 20)
 
+option(PROFILE_ENABLED "instrument for gprof" OFF)
+
 set(SRC_FILES
 	componant.cpp
 	cap.cpp
@@ -69,15 +71,22 @@ else()
 	set(SRC_FILES ${SRC_FILES}
 		compile.cpp
 	)
+
 	set(COMMON_LINK_FLAGS "-flto -ltbb -pthread")
 endif(WIN32)
 
+set(COMMON_COMPILE_FLAGS "-Wall -O2 -march=native -g")
+
+if(PROFILE_ENABLED)
+	set(COMMON_COMPILE_FLAGS "${COMMON_COMPILE_FLAGS} -pg -fno-omit-frame-pointer")
+	set(COMMON_LINK_FLAGS "${COMMON_LINK_FLAGS} -pg -fno-omit-frame-pointer")
+endif(PROFILE_ENABLED)
 
 add_library(${PROJECT_NAME}_obj OBJECT ${SRC_FILES} ${API_HEADERS_CPP})
 target_link_libraries(${PROJECT_NAME}_obj ${LIBS})
 target_include_directories(${PROJECT_NAME}_obj PUBLIC eisgenerator)
 set_target_properties(${PROJECT_NAME}_obj PROPERTIES POSITION_INDEPENDENT_CODE 1)
-set_target_properties(${PROJECT_NAME}_obj PROPERTIES COMPILE_FLAGS "-Wall -O2 -march=native -g" LINK_FLAGS ${COMMON_LINK_FLAGS})
+set_target_properties(${PROJECT_NAME}_obj PROPERTIES COMPILE_FLAGS ${COMMON_COMPILE_FLAGS} LINK_FLAGS ${COMMON_LINK_FLAGS})
 add_library(${PROJECT_NAME} SHARED $<TARGET_OBJECTS:${PROJECT_NAME}_obj>)
 set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS ${COMMON_LINK_FLAGS})
 add_library(${PROJECT_NAME}_static STATIC $<TARGET_OBJECTS:${PROJECT_NAME}_obj>)
@@ -113,7 +122,7 @@ add_executable(${PROJECT_NAME}_test ${SRC_FILES_TEST_APP})
 add_dependencies(${PROJECT_NAME}_test ${PROJECT_NAME})
 target_link_libraries(${PROJECT_NAME}_test ${LIBS_TEST})
 target_include_directories(${PROJECT_NAME}_test PUBLIC eisgenerator)
-set_target_properties(${PROJECT_NAME}_test PROPERTIES COMPILE_FLAGS "-Wall -O2 -march=native -g" LINK_FLAGS ${COMMON_LINK_FLAGS})
+set_target_properties(${PROJECT_NAME}_test PROPERTIES COMPILE_FLAGS ${COMMON_COMPILE_FLAGS} LINK_FLAGS ${COMMON_LINK_FLAGS})
 install(TARGETS ${PROJECT_NAME}_test DESTINATION bin)
 
 link_directories(${CMAKE_CURRENT_BINARY_DIR})
@@ -123,5 +132,5 @@ add_executable(${PROJECT_NAME}_export ${SRC_FILES_TEST_APP})
 add_dependencies(${PROJECT_NAME}_export ${PROJECT_NAME})
 target_link_libraries(${PROJECT_NAME}_export ${LIBS_TEST})
 target_include_directories(${PROJECT_NAME}_export PUBLIC eisgenerator)
-set_target_properties(${PROJECT_NAME}_export PROPERTIES COMPILE_FLAGS "-Wall -O2 -march=native -g" LINK_FLAGS ${COMMON_LINK_FLAGS})
+set_target_properties(${PROJECT_NAME}_export PROPERTIES COMPILE_FLAGS ${COMMON_COMPILE_FLAGS} LINK_FLAGS ${COMMON_LINK_FLAGS})
 install(TARGETS ${PROJECT_NAME}_export DESTINATION bin)
