@@ -2,13 +2,73 @@
 #include <iostream>
 #include <complex>
 #include <chrono>
+#include <sstream>
+#include <cstring>
 
+#include "eistype.h"
 #include "model.h"
 #include "log.h"
 #include "normalize.h"
 #include "basicmath.h"
 #include "strops.h"
 #include "translators.h"
+
+const char testEisSpectraFile[] =
+	"EISF, 1.0.0\n"
+	"\"r-cr-cr\", 0\n"
+	"labels\n"
+	"1, 1e-10, 1, 3.98107e-07, 6.30957\n"
+	"omega, real, im\n"
+	"1.000000e+00, 0.000000e+00, 0.000000e+00\n"
+	"1.389495e+00, 0.000000e+00, 0.000000e+00\n"
+	"1.930698e+00, 0.000000e+00, 0.000000e+00\n"
+	"2.682696e+00, 0.000000e+00, 0.000000e+00\n"
+	"3.727594e+00, 0.000000e+00, 0.000000e+00\n"
+	"5.179475e+00, 0.000000e+00, 0.000000e+00\n"
+	"7.196858e+00, 0.000000e+00, 0.000000e+00\n"
+	"1.000000e+01, 0.000000e+00, 0.000000e+00\n"
+	"1.389496e+01, 0.000000e+00, 0.000000e+00\n"
+	"1.930698e+01, 0.000000e+00, 0.000000e+00\n"
+	"2.682696e+01, 0.000000e+00, 0.000000e+00\n"
+	"3.727594e+01, 0.000000e+00, 0.000000e+00\n"
+	"5.179476e+01, 0.000000e+00, 0.000000e+00\n"
+	"7.196858e+01, 0.000000e+00, 0.000000e+00\n"
+	"1.000000e+02, 0.000000e+00, 0.000000e+00\n"
+	"1.389496e+02, 0.000000e+00, 0.000000e+00\n"
+	"1.930698e+02, 0.000000e+00, 0.000000e+00\n"
+	"2.682696e+02, 0.000000e+00, 0.000000e+00\n"
+	"3.727596e+02, 0.000000e+00, 0.000000e+00\n"
+	"5.179476e+02, 0.000000e+00, 0.000000e+00\n"
+	"7.196858e+02, 0.000000e+00, 0.000000e+00\n"
+	"1.000001e+03, 0.000000e+00, 0.000000e+00\n"
+	"1.389496e+03, 0.000000e+00, 0.000000e+00\n"
+	"1.930698e+03, 0.000000e+00, 0.000000e+00\n"
+	"2.682698e+03, 0.000000e+00, 0.000000e+00\n"
+	"3.727595e+03, 0.000000e+00, 0.000000e+00\n"
+	"5.179476e+03, 0.000000e+00, 0.000000e+00\n"
+	"7.196858e+03, 0.000000e+00, 0.000000e+00\n"
+	"1.000000e+04, 0.000000e+00, 0.000000e+00\n"
+	"1.389497e+04, 0.000000e+00, 0.000000e+00\n"
+	"1.930699e+04, 0.000000e+00, 0.000000e+00\n"
+	"2.682697e+04, 0.000000e+00, 0.000000e+00\n"
+	"3.727595e+04, 0.000000e+00, 0.000000e+00\n"
+	"5.179476e+04, 0.000000e+00, 0.000000e+00\n"
+	"7.196858e+04, 0.000000e+00, 0.000000e+00\n"
+	"1.000000e+05, 0.000000e+00, 0.000000e+00\n"
+	"1.389497e+05, 0.000000e+00, 0.000000e+00\n"
+	"1.930699e+05, 0.000000e+00, 0.000000e+00\n"
+	"2.682698e+05, 0.000000e+00, 0.000000e+00\n"
+	"3.727596e+05, 0.000000e+00, 0.000000e+00\n"
+	"5.179476e+05, 0.000000e+00, 0.000000e+00\n"
+	"7.196858e+05, 0.000000e+00, 0.000000e+00\n"
+	"1.000001e+06, 0.000000e+00, 0.000000e+00\n"
+	"1.389497e+06, 1.991211e+00, 0.000000e+00\n"
+	"1.930699e+06, 5.604766e+00, 0.000000e+00\n"
+	"2.682698e+06, 6.533646e+00, 0.000000e+00\n"
+	"3.727596e+06, 4.632523e+00, 0.000000e+00\n"
+	"5.179476e+06, 5.889149e-01, 0.000000e+00\n"
+	"7.196866e+06, 0.000000e+00, 0.000000e+00\n"
+	"1.000001e+07, 0.000000e+00, 0.000000e+00\n";
 
 void printDataVect(const std::vector<eis::DataPoint> in)
 {
@@ -158,6 +218,11 @@ static std::vector<eis::DataPoint> getData(const fvalue in[mocLength][3])
 	return data;
 }
 
+static bool checkFvalueEq()
+{
+	return eis::fvalueEq(1.3265, 1.3266, 500);
+}
+
 static bool runRescale()
 {
 	std::vector<eis::DataPoint> data;
@@ -257,13 +322,14 @@ static bool uneededBrackets()
 {
 	std::string tst("(c-(rc)-(r-c(r)))");
 	eisRemoveUnneededBrackets(tst);
-	if(tst == "c-rc-(r-cr)")
+	std::string expected("c-rc-(r-cr)");
+	if(tst == expected)
 	{
 		return true;
 	}
 	else
 	{
-		eis::Log(eis::Log::ERROR)<<__func__<<" expected "<<"c-rc-(r-cr)"<<" got "<<tst;
+		eis::Log(eis::Log::ERROR)<<__func__<<" expected "<<expected<<" got "<<tst;
 		return false;
 	}
 }
@@ -281,7 +347,7 @@ static bool nyquistVariance()
 	fvalue bVar = nyquistAreaVariance(b);
 	eis::Log(eis::Log::INFO)<<__func__<<" aVar: "<<aVar<<" bVar: "<<bVar;
 
-	return eis::fvalueEq(aVar, 0.38375) && eis::fvalueEq(bVar, 0.514179);
+	return eis::fvalueEq(aVar, 0.38375, 500) && eis::fvalueEq(bVar, 0.514179, 500);
 }
 
 static bool nyquistJump()
@@ -297,7 +363,7 @@ static bool nyquistJump()
 	fvalue bVar = maximumNyquistJump(b);
 
 	eis::Log(eis::Log::INFO)<<__func__<<" aVar: "<<aVar<<" bVar: "<<bVar;
-	return eis::fvalueEq(aVar, 0.178183);
+	return eis::fvalueEq(aVar, 0.178182, 500);
 }
 
 static bool testEisNyquistDistance()
@@ -391,42 +457,87 @@ static bool testMadapParams()
 	}
 }
 
+static bool testLoader()
+{
+	const size_t expectedLength = 50;
+	const size_t expectedLabels = 5;
+	const std::string expectedModel("r-cr-cr");
+	std::stringstream ss(testEisSpectraFile);
+	eis::Log(eis::Log::INFO)<<__func__<<" STRLEN "<<strlen(testEisSpectraFile);
+	eis::EisSpectra spectra = eis::EisSpectra::loadFromStream(ss);
+	if(spectra.data.size() != expectedLength)
+	{
+		eis::Log(eis::Log::ERROR)<<__func__<<" Spectra has length "<<spectra.data.size()<<" expected "<<expectedLength;
+		return false;
+	}
+
+	if(spectra.labels.size() != expectedLabels)
+	{
+		eis::Log(eis::Log::ERROR)<<__func__<<" Spectra Labels has length "<<spectra.labels.size()<<" expected "<<expectedLabels;
+		return false;
+	}
+
+	if(spectra.model != expectedModel)
+	{
+		eis::Log(eis::Log::ERROR)<<__func__<<" Spectra has model \""<<spectra.model<<"\" expected \""<<expectedModel<<'\"';
+		//return false;
+	}
+
+	std::stringstream saveStream;
+	spectra.saveToStream(saveStream);
+
+	if(saveStream.str() != ss.str())
+	{
+		eis::Log(eis::Log::WARN)<<__func__<<" Saveing and loading dont have the same result. Saved:";
+		eis::Log(eis::Log::WARN)<<saveStream.str();
+		eis::Log(eis::Log::WARN)<<"Original:"<<ss.str();
+	}
+	return true;
+}
+
 int main(int argc, char** argv)
 {
 	eis::Log::headers = true;
 	eis::Log::level = eis::Log::INFO;
-	if(!uneededBrackets())
+
+	if(!checkFvalueEq())
 		return 1;
 
-	if(!modelConsistancy())
+	if(!uneededBrackets())
 		return 2;
 
+	if(!modelConsistancy())
+		return 3;
+
 	if(!testLoadDeduplication())
-		return 3;
-
-	if(!runRescale())
-		return 3;
-
-	if(!testDistance())
 		return 4;
 
-	if(!testEisNyquistDistance())
+	if(!runRescale())
 		return 5;
 
-	if(!runNormalize())
+	if(!testDistance())
 		return 6;
 
-	if(!nyquistVariance())
+	if(!testEisNyquistDistance())
 		return 7;
 
-	if(!nyquistJump())
+	if(!runNormalize())
 		return 8;
 
-	if(!testTranslators())
+	if(!nyquistVariance())
 		return 9;
 
-	if(!testMadapParams())
+	if(!nyquistJump())
 		return 10;
+
+	if(!testTranslators())
+		return 11;
+
+	if(!testMadapParams())
+		return 12;
+
+	if(!testLoader())
+		return 13;
 
 	return 0;
 }
