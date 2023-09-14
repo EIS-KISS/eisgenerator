@@ -53,3 +53,10 @@ std::string Inductor::getCode(std::vector<std::string>& parameters)
 	std::string out = "std::complex<fvalue>(0, " + N + ")";
 	return out;
 }
+
+std::string Inductor::getTorchScript(std::vector<std::string>& parameters)
+{
+	parameters.push_back(getUniqueName() + "_0");
+	std::string out = parameters.back() + "*omegas*1j";
+	return out;
+}

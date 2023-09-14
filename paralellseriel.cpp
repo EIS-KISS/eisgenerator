@@ -74,6 +74,20 @@ std::string Parallel::getCode(std::vector<std::string>& parameters)
 	return out;
 }
 
+std::string Parallel::getTorchScript(std::vector<std::string>& parameters)
+{
+	std::string out = "1/(";
+	for(Componant* componant : componants)
+	{
+		out += "1/(" + componant->getTorchScript(parameters) + ") + ";
+	}
+	out.pop_back();
+	out.pop_back();
+	out.pop_back();
+	out.push_back(')');
+	return out;
+}
+
 Serial::Serial(std::vector<Componant*> componantsIn): componants(componantsIn)
 {
 }
@@ -140,6 +154,20 @@ std::string Serial::getCode(std::vector<std::string>& parameters)
 	for(Componant* componant : componants)
 	{
 		out += "(" + componant->getCode(parameters) + ") + ";
+	}
+	out.pop_back();
+	out.pop_back();
+	out.pop_back();
+	out.push_back(')');
+	return out;
+}
+
+std::string Serial::getTorchScript(std::vector<std::string>& parameters)
+{
+	std::string out = "(";
+	for(Componant* componant : componants)
+	{
+		out += "(" + componant->getTorchScript(parameters) + ") + ";
 	}
 	out.pop_back();
 	out.pop_back();

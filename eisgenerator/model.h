@@ -58,6 +58,8 @@ public:
 	size_t getRequiredStepsForSweeps();
 	bool isParamSweep();
 	std::string getCode();
+	std::string getTorchScript();
+	std::string getCompiledFunctionName();
 	std::vector<size_t> getRecommendedParamIndices(eis::Range omegaRange, double distance, bool threaded = false);
 };
 

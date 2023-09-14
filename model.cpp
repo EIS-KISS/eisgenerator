@@ -2,6 +2,7 @@
 #include <model.h>
 #include <iostream>
 #include <assert.h>
+#include <sstream>
 #include <string>
 #include <vector>
 #include <array>
@@ -558,7 +559,7 @@ bool Model::compile()
 		if(!object.objectCode)
 			throw std::runtime_error("Unable to dlopen compiled model " + std::string(dlerror()));
 
-		std::string symbolName = "model_" + std::to_string(getUuid());
+		std::string symbolName = getCompiledFunctionName();
 		object.symbol =
 			reinterpret_cast<std::vector<std::complex<fvalue>>(*)(const std::vector<fvalue>&, const std::vector<fvalue>&)>
 				(dlsym(object.objectCode, symbolName.c_str()));
@@ -588,8 +589,8 @@ std::string Model::getCode()
 	"#include <complex>\n\n"
 	"typedef float fvalue;\n\n"
 	"extern \"C\"\n{\n\n"
-	"std::vector<std::complex<fvalue>> model_";
-	out.append(std::to_string(getUuid()));
+	"std::vector<std::complex<fvalue>> ";
+	out.append(getCompiledFunctionName());
 	out.append("(const std::vector<fvalue>& parameters, const std::vector<fvalue> omegas)\n{\n\tassert(parameters.size() == ");
 	out.append(std::to_string(parameters.size()));
 	out.append(");\n\n");
@@ -604,4 +605,26 @@ std::string Model::getCode()
 	out.append(formular);
 	out.append(";\n\t}\n\treturn out;\n}\n\n}\n");
 	return out;
+}
+
+std::string Model::getTorchScript()
+{
+	if(!_model || !_model->compileable())
+		return "";
+
+	std::vector<std::string> parameters;
+	std::string formular = _model->getTorchScript(parameters);
+
+	std::stringstream out;
+	out<<"def "<<getCompiledFunctionName()<<"(parameters: torch.Tensor, omegas: torch.Tensor) -> torch.Tensor:\n";
+	out<<"    assert parameters.size(0) is "<<parameters.size()<<"\n\n";
+	for(size_t i = 0; i < parameters.size(); ++i)
+		out<<"    "<<parameters[i]<<" = parameters["<<i<<"]\n";
+	out<<"\n    return "<<formular<<'\n';
+	return out.str();
+}
+
+std::string Model::getCompiledFunctionName()
+{
+	return "model_"+std::to_string(getUuid());
 }

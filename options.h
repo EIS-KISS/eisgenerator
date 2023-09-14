@@ -26,7 +26,7 @@ static struct argp_option options[] =
   {"invert",        'i', 0,      0,  "inverts the imaginary axis"},
   {"noise",        'x', "[AMPLITUDE]",      0,  "add noise to output"},
   {"input-type",   't', "[STRING]",      0,  "set input string type, possible values: eis, boukamp, relaxis, madap"},
-  {"mode",         'f', "[STRING]",      0,  "mode, possible values: export, code, find-range, export-ranges"},
+  {"mode",         'f', "[STRING]",      0,  "mode, possible values: export, code, script, find-range, export-ranges"},
   {"range-distance",   'd', "[DISTANCE]",      0,  "distance from a previous point where a range is considered \"new\""},
   {"parallel",   'p', 0,      0,  "run on multiple threads"},
   {"skip-linear",   'e', 0,      0,  "dont output param sweeps that create linear nyquist plots"},
@@ -51,7 +51,8 @@ enum
 	MODE_FIND_RANGE,
 	MODE_OUTPUT_RANGE_DATAPOINTS,
 	MODE_INVALID,
-	MODE_CODE
+	MODE_CODE,
+	MODE_TORCH_SCRIPT
 };
 
 struct Config
@@ -100,6 +101,8 @@ static int parseMode(const std::string& str)
 		return MODE_OUTPUT_RANGE_DATAPOINTS;
 	else if(str == "code")
 		return MODE_CODE;
+	else if(str == "script")
+		return MODE_TORCH_SCRIPT;
 	return MODE_INVALID;
 }
 

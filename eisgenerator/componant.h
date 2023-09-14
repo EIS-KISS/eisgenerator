@@ -32,6 +32,7 @@ class Componant
 		virtual std::string getComponantString(bool currentValue = true) const;
 		virtual std::string componantName() const = 0;
 		virtual std::string getCode(std::vector<std::string>& parameters);
+		virtual std::string getTorchScript(std::vector<std::string>& parameters);
 		virtual bool compileable();
 
 		std::string getUniqueName();

@@ -18,6 +18,7 @@ public:
 	static constexpr char staticGetComponantChar(){return 'c';}
 	virtual std::string componantName() const override {return "Capacitor";}
 	virtual std::string getCode(std::vector<std::string>& parameters) override;
+	virtual std::string getTorchScript(std::vector<std::string>& parameters) override;
 	virtual ~Cap() = default;
 };
 

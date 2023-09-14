@@ -82,3 +82,15 @@ std::string Cpe::getCode(std::vector<std::string>& parameters)
 	std::string out = "std::complex<fvalue>(" + real +", " + imag + ")";
 	return out;
 }
+
+std::string Cpe::getTorchScript(std::vector<std::string>& parameters)
+{
+	std::string firstParameter = getUniqueName() + "_0";
+	std::string secondParameter = getUniqueName() + "_1";
+	parameters.push_back(firstParameter);
+	parameters.push_back(secondParameter);
+	std::string real = "(1/(" + firstParameter + "*torch.pow(omegas,"+ secondParameter +")))*torch.cos((torch.pi/2)*" + secondParameter + ")";
+	std::string imag = "(1/(" + firstParameter + "*torch.pow(omegas,"+ secondParameter +")))*torch.sin((torch.pi/2)*" + secondParameter + ")";
+	std::string out = real + '-' + imag + "*1j";
+	return out;
+}

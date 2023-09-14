@@ -54,3 +54,12 @@ std::string Warburg::getCode(std::vector<std::string>& parameters)
 	std::string out = "std::complex<fvalue>(" + N + ", 0-" + N + ")";
 	return out;
 }
+
+std::string Warburg::getTorchScript(std::vector<std::string>& parameters)
+{
+	parameters.push_back(getUniqueName() + "_0");
+
+	std::string N = "(" + parameters.back() + "/torch.sqrt(omegas))";
+	std::string out =  N + "-" + N + "*1j";
+	return out;
+}

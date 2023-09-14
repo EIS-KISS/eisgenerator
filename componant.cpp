@@ -76,6 +76,13 @@ bool Componant::compileable()
 
 std::string Componant::getCode(std::vector<std::string>& parameters)
 {
+	(void)parameters;
+	return std::string();
+}
+
+std::string Componant::getTorchScript(std::vector<std::string>& parameters)
+{
+	(void)parameters;
 	return std::string();
 }
 

@@ -380,6 +380,10 @@ int main(int argc, char** argv)
 		{
 			std::cout<<model.getCode();
 		}
+		else if(config.mode == MODE_TORCH_SCRIPT)
+		{
+			std::cout<<model.getTorchScript();
+		}
 		else
 		{
 			if(model.isParamSweep())

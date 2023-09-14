@@ -55,3 +55,12 @@ std::string Cap::getCode(std::vector<std::string>& parameters)
 	std::string out = "std::complex<fvalue>(" + real + ", " + imag + ")";
 	return out;
 }
+
+std::string Cap::getTorchScript(std::vector<std::string>& parameters)
+{
+	parameters.push_back(getUniqueName() + "_0");
+
+	std::string N = "1/(" + parameters.back() + "*omegas)";
+	std::string out =  "0-" + N + "*1j";
+	return out;
+}

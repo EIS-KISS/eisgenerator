@@ -22,6 +22,7 @@ public:
 	virtual std::string componantName() const override {return "ConstantPhase";}
 	virtual ~Cpe() = default;
 	virtual std::string getCode(std::vector<std::string>& parameters) override;
+	virtual std::string getTorchScript(std::vector<std::string>& parameters) override;
 };
 
 }

@@ -22,6 +22,7 @@ public:
 	virtual std::string componantName() const override {return "Parallel";}
 	virtual bool compileable() override;
 	virtual std::string getCode(std::vector<std::string>& parameters) override;
+	virtual std::string getTorchScript(std::vector<std::string>& parameters) override;
 };
 
 class Serial: public Componant
@@ -40,6 +41,7 @@ public:
 	virtual std::string componantName() const override {return "Serial";}
 	virtual bool compileable() override;
 	virtual std::string getCode(std::vector<std::string>& parameters) override;
+	virtual std::string getTorchScript(std::vector<std::string>& parameters) override;
 };
 
 }
