@@ -48,7 +48,7 @@ int eis::compile_code(const std::string& code, const std::string& outputName)
 		close(childStdoutPipe[PIPE_WRITE]);
 		close(childStdoutPipe[PIPE_READ]);
 
-		ret = execlp("g++", "gcc", "--shared", "-O2", "-ffast-math", "-ftree-vectorize", "-mavx", "-x", "c++", "-o", outputName.c_str(), "-", NULL);
+		ret = execlp("g++", "gcc", "--shared", "-O2", "-ffast-math", "-ftree-vectorize", "-march=native", "-x", "c++", "-o", outputName.c_str(), "-", NULL);
 
 		exit(ret);
 	}
