@@ -58,5 +58,5 @@ std::string Resistor::getTorchScript(std::vector<std::string>& parameters)
 {
 	parameters.push_back(getUniqueName() + "_0");
 
-	return parameters.back();
+	return parameters.back() + "*(1+0j)";
 }

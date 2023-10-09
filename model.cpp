@@ -620,7 +620,7 @@ std::string Model::getTorchScript()
 	out<<"    assert parameters.size(0) is "<<parameters.size()<<"\n\n";
 	for(size_t i = 0; i < parameters.size(); ++i)
 		out<<"    "<<parameters[i]<<" = parameters["<<i<<"]\n";
-	out<<"\n    return "<<formular<<'\n';
+	out<<"\n    return "<<formular<<"+0*omegas\n";
 	return out.str();
 }
 
