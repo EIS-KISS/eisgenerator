@@ -106,6 +106,7 @@ endif(WIN32)
 configure_file(pkgconfig/libeisgenerator.pc.in pkgconfig/libeisgenerator.pc @ONLY)
 
 install(TARGETS ${PROJECT_NAME} DESTINATION lib)
+install(TARGETS ${PROJECT_NAME}_static DESTINATION lib)
 install(FILES ${API_HEADERS_CPP} DESTINATION include/${PROJECT_NAME})
 install(FILES ${API_HEADERS_CPP} DESTINATION include/${PROJECT_NAME})
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/pkgconfig/libeisgenerator.pc DESTINATION lib/pkgconfig)
