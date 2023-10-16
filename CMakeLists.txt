@@ -72,6 +72,10 @@ else()
 		compile.cpp
 	)
 
+	if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+		set(CMAKE_INSTALL_PREFIX "/usr" CACHE PATH "..." FORCE)
+	endif(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+
 	set(COMMON_LINK_FLAGS "-flto -ltbb -pthread")
 endif(WIN32)
 
@@ -98,9 +102,6 @@ else()
 	set(EISGEN_LINK_FLAG ${PROJECT_NAME})
 endif(WIN32)
 
-if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-	set(CMAKE_INSTALL_PREFIX "/usr" CACHE PATH "..." FORCE)
-endif(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 
 configure_file(pkgconfig/libeisgenerator.pc.in pkgconfig/libeisgenerator.pc @ONLY)
 
