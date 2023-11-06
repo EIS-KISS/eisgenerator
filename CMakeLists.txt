@@ -7,14 +7,14 @@ set (CMAKE_CXX_STANDARD 20)
 option(PROFILE_ENABLED "instrument for gprof" OFF)
 
 set(SRC_FILES
-	componant.cpp
-	cap.cpp
-	inductor.cpp
-	resistor.cpp
-	constantphase.cpp
-	warburg.cpp
+	componant/componant.cpp
+	componant/cap.cpp
+	componant/inductor.cpp
+	componant/resistor.cpp
+	componant/constantphase.cpp
+	componant/warburg.cpp
+	componant/paralellseriel.cpp
 	model.cpp
-	paralellseriel.cpp
 	log.cpp
 	normalize.cpp
 	basicmath.cpp
@@ -88,7 +88,7 @@ endif(PROFILE_ENABLED)
 
 add_library(${PROJECT_NAME}_obj OBJECT ${SRC_FILES} ${API_HEADERS_CPP})
 target_link_libraries(${PROJECT_NAME}_obj ${LIBS})
-target_include_directories(${PROJECT_NAME}_obj PUBLIC eisgenerator)
+target_include_directories(${PROJECT_NAME}_obj PUBLIC eisgenerator .)
 set_target_properties(${PROJECT_NAME}_obj PROPERTIES POSITION_INDEPENDENT_CODE 1)
 set_target_properties(${PROJECT_NAME}_obj PROPERTIES COMPILE_FLAGS ${COMMON_COMPILE_FLAGS} LINK_FLAGS ${COMMON_LINK_FLAGS})
 add_library(${PROJECT_NAME} SHARED $<TARGET_OBJECTS:${PROJECT_NAME}_obj>)
