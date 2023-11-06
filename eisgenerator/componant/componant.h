@@ -4,7 +4,7 @@
 #include <vector>
 #include <string>
 
-#include "eistype.h"
+#include "../eistype.h"
 
 namespace eis
 {

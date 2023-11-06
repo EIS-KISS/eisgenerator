@@ -51,6 +51,8 @@ public:
 	size_t getUuid();
 	std::vector<Componant*> getFlatComponants(Componant *model = nullptr);
 	std::vector<fvalue> getFlatParameters();
+	std::vector<Range> getFlatParameterRanges();
+	std::vector<Range> getDefaultParameters();
 	size_t getParameterCount();
 	bool compile();
 	bool isReady();

@@ -168,17 +168,43 @@ Model::~Model()
 	delete _model;
 }
 
-std::vector<fvalue> Model::getFlatParameters()
+
+std::vector<Range> Model::getFlatParameterRanges()
 {
 	std::vector<Componant*> flatComponants = getFlatComponants();
-
-	std::vector<fvalue> out;
+	std::vector<Range> out;
 	out.reserve(getParameterCount());
 	for(Componant* componant : flatComponants)
 	{
 		const std::vector<Range> ranges = componant->getParamRanges();
 		for(const Range& range : ranges)
-			out.push_back(range.stepValue());
+			out.push_back(range);
+	}
+	return out;
+}
+
+std::vector<fvalue> Model::getFlatParameters()
+{
+	std::vector<Range> flatRanges = getFlatParameterRanges();
+
+	std::vector<fvalue> out;
+	out.reserve(flatRanges.size());
+	for(const Range& range : flatRanges)
+		out.push_back(range.stepValue());
+	return out;
+}
+
+std::vector<Range> Model::getDefaultParameters()
+{
+	std::vector<Componant*> flatComponants = getFlatComponants();
+
+	std::vector<Range> out;
+	out.reserve(getParameterCount());
+	for(Componant* componant : flatComponants)
+	{
+		const std::vector<Range> ranges = componant->getDefaultParameters(true);
+		for(const Range& range : ranges)
+			out.push_back(range);
 	}
 	return out;
 }
@@ -527,7 +553,8 @@ bool Model::compile()
 {
 	if(!_model->compileable())
 	{
-		Log(Log::WARN)<<"This model could not be compiled, expect performance degredation";
+		Log(Log::WARN)<<"This model can not be compiled, because it contains "
+			<<"componants that lack a compiled reprisentation, expect performance degredation";
 		return false;
 	}
 
