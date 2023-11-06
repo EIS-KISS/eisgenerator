@@ -40,17 +40,31 @@ Cpe::Cpe(std::string paramStr, size_t count, bool defaultToRange)
 
 void Cpe::setDefaultParam(size_t count, bool defaultToRange)
 {
-	ranges.clear();
+	ranges = getDefaultRange(defaultToRange);
 	if(defaultToRange)
 	{
-		ranges.push_back(Range(1e-10, 1e-4, count, true));
-		ranges.push_back(Range(0.5, 0.9, count));
+		for(eis::Range& range : ranges)
+			range.count = count;
+	}
+}
+
+std::vector<eis::Range> Cpe::getDefaultRange(bool range) const
+{
+	std::vector<eis::Range> out;
+
+	if(range)
+	{
+		out.push_back(Range(1e-10, 1e-4, 2, true));
+		out.push_back(Range(0.5, 0.9, 2));
 	}
 	else
 	{
-		ranges.push_back(Range(1e-7, 1e-7, 1));
-		ranges.push_back(Range(0.9, 0.9, 1));
+		out.push_back(Range(1e-7, 1e-7, 1));
+		out.push_back(Range(0.9, 0.9, 1));
 	}
+
+	assert(out.size() == paramCount());
+	return out;
 }
 
 std::complex<fvalue> Cpe::execute(fvalue omega)
@@ -61,7 +75,7 @@ std::complex<fvalue> Cpe::execute(fvalue omega)
 	return std::complex<fvalue>(real, imag);
 }
 
-size_t Cpe::paramCount()
+size_t Cpe::paramCount() const
 {
 	return 2;
 }

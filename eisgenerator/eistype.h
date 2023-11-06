@@ -84,6 +84,10 @@ public:
 	{
 		return at(step);
 	}
+	fvalue center() const
+	{
+		return (start+end)/2;
+	}
 	fvalue at(size_t index) const
 	{
 		assert(index < count || (index == 0 && count == 0));

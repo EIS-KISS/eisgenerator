@@ -21,7 +21,8 @@ public:
 	FiniteTransmitionline(std::string paramStr, size_t count = 10, bool defaultToRange = false);
 	FiniteTransmitionline(const FiniteTransmitionline& in);
 	virtual std::complex<fvalue> execute(fvalue omega) override;
-	virtual size_t paramCount();
+	virtual size_t paramCount() const override;
+	virtual std::vector<eis::Range> getDefaultRange(bool range = true) const override;
 	virtual ~FiniteTransmitionline();
 	virtual char getComponantChar() const override;
 	virtual std::string componantName() const override {return "FiniteTransmitionline";}

@@ -7,7 +7,6 @@
 #include "componant/resistor.h"
 #include "componant/cap.h"
 #include "log.h"
-#include "strops.h"
 
 using namespace eis;
 
@@ -33,19 +32,38 @@ void FiniteTransmitionline::setDefaultParam(size_t count, bool defaultToRange)
 	_R = 1000;
 	_n = 4;
 
-	ranges.clear();
+	ranges = getDefaultRange(defaultToRange);
+
 	if(defaultToRange)
 	{
-		ranges.push_back(Range(1e-10, 1e-4, count, true));
-		ranges.push_back(Range(1, 1e4, count, true));
-		ranges.push_back(Range(_n, _n, 1));
+		for(eis::Range& range : ranges)
+			range.count = count;
+	}
+}
+
+std::vector<eis::Range> FiniteTransmitionline::getDefaultRange(bool range) const
+{
+	const fvalue C = 1e-6;
+	const fvalue R = 1000;
+	const fvalue n = 4;
+
+	std::vector<eis::Range> out(paramCount());
+
+	if(range)
+	{
+		out[0] = Range(1e-10, 1e-4, 2, true);
+		out[1] = Range(1, 1e4, 2, true);
+		out[2] = Range(n, n, 1);
 	}
 	else
 	{
-		ranges.push_back(Range(_C, _C, 1));
-		ranges.push_back(Range(_R, _R, 1));
-		ranges.push_back(Range(_n, _n, 1));
+		out[0] = Range(C, C, 1);
+		out[1] = Range(R, R, 1);
+		out[2] = Range(n, n, 1);
 	}
+
+	assert(out.size() == paramCount());
+	return out;
 }
 
 FiniteTransmitionline::FiniteTransmitionline(std::string paramStr, size_t count, bool defaultToRange)
@@ -93,7 +111,7 @@ char FiniteTransmitionline::getComponantChar() const
 	return FiniteTransmitionline::staticGetComponantChar();
 }
 
-size_t FiniteTransmitionline::paramCount()
+size_t FiniteTransmitionline::paramCount() const
 {
 	return 3;
 }

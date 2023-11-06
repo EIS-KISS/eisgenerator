@@ -28,6 +28,13 @@ std::vector<eis::Range> Componant::getParamRanges() const
 	return ranges;
 }
 
+std::vector<eis::Range> Componant::getDefaultRange(bool range) const
+{
+	(void)range;
+	assert(paramCount() == 0);
+	return std::vector<eis::Range>();
+}
+
 std::string Componant::getComponantString(bool currentValue) const
 {
 	std::stringstream out;

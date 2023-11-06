@@ -16,11 +16,12 @@ public:
 	Cpe(fvalue q, fvalue alpha);
 	Cpe();
 	virtual std::complex<fvalue> execute(fvalue omega) override;
-	virtual size_t paramCount() override;
+	virtual size_t paramCount() const override;
 	virtual char getComponantChar() const override;
 	static constexpr char staticGetComponantChar(){return 'p';}
 	virtual std::string componantName() const override {return "ConstantPhase";}
 	virtual ~Cpe() = default;
+	virtual std::vector<eis::Range> getDefaultRange(bool range = true) const override;
 	virtual std::string getCode(std::vector<std::string>& parameters) override;
 	virtual std::string getTorchScript(std::vector<std::string>& parameters) override;
 };

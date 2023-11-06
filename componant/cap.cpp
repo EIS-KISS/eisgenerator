@@ -20,13 +20,27 @@ Cap::Cap(std::string paramStr, size_t count, bool defaultToRange)
 
 	if(ranges.size() != paramCount())
 	{
-		ranges.clear();
+		ranges = getDefaultRange(defaultToRange);
 		if(defaultToRange)
-			ranges.push_back(Range(1e-10, 1e-4, count, true));
-		else
-			ranges.push_back(Range(1e-6, 1e-6, 1));
+		{
+			for(eis::Range& range : ranges)
+				range.count = count;
+		}
 		Log(Log::WARN)<<__func__<<" default range of "<<getComponantString(false)<<" will be used";
 	}
+}
+
+std::vector<eis::Range> Cap::getDefaultRange(bool range) const
+{
+	std::vector<eis::Range> out;
+
+	if(range)
+		out.push_back(Range(1e-10, 1e-4, 2, true));
+	else
+		out.push_back(Range(1e-6, 1e-6, 1));
+
+	assert(out.size() == paramCount());
+	return out;
 }
 
 std::complex<fvalue> Cap::execute(fvalue omega)
@@ -40,7 +54,7 @@ char Cap::getComponantChar() const
 	return Cap::staticGetComponantChar();
 }
 
-size_t Cap::paramCount()
+size_t Cap::paramCount() const
 {
 	return 1;
 }
