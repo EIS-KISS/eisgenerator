@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.19)
+cmake_minimum_required(VERSION 3.23)
 
 project(eisgenerator LANGUAGES C CXX)
 
@@ -90,6 +90,7 @@ endif(PROFILE_ENABLED)
 
 add_library(${PROJECT_NAME}_obj OBJECT ${SRC_FILES} ${API_HEADERS_CPP})
 target_link_libraries(${PROJECT_NAME}_obj ${LIBS})
+target_sources(${PROJECT_NAME}_obj INTERFACE FILE_SET header_set TYPE HEADERS BASE_DIRS ${API_HEADERS_CPP_DIR} FILES ${API_HEADERS_CPP})
 target_include_directories(${PROJECT_NAME}_obj PUBLIC eisgenerator .)
 set_target_properties(${PROJECT_NAME}_obj PROPERTIES POSITION_INDEPENDENT_CODE 1)
 set_target_properties(${PROJECT_NAME}_obj PROPERTIES COMPILE_FLAGS ${COMMON_COMPILE_FLAGS} LINK_FLAGS ${COMMON_LINK_FLAGS})
@@ -109,8 +110,7 @@ configure_file(pkgconfig/libeisgenerator.pc.in pkgconfig/libeisgenerator.pc @ONL
 
 install(TARGETS ${PROJECT_NAME} DESTINATION lib)
 install(TARGETS ${PROJECT_NAME}_static DESTINATION lib)
-install(FILES ${API_HEADERS_CPP} DESTINATION include/${PROJECT_NAME})
-install(FILES ${API_HEADERS_CPP} DESTINATION include/${PROJECT_NAME})
+install(TARGETS ${PROJECT_NAME}_obj FILE_SET header_set DESTINATION include/${PROJECT_NAME})
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/pkgconfig/libeisgenerator.pc DESTINATION lib/pkgconfig)
 install(FILES eisgenerator_plot DESTINATION bin PERMISSIONS WORLD_EXECUTE WORLD_READ
 OWNER_READ OWNER_WRITE OWNER_EXECUTE
