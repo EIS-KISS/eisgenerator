@@ -1,5 +1,5 @@
-#include "paralellseriel.h"
-#include "componant.h"
+#include "componant/paralellseriel.h"
+#include "componant/componant.h"
 
 using namespace eis;
 

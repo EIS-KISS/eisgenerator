@@ -9,7 +9,7 @@
 #include "strops.h"
 #include "eistype.h"
 #include "log.h"
-#include "componant.h"
+#include "componant/componant.h"
 
 namespace eis
 {

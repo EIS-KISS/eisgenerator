@@ -1,5 +1,4 @@
-#include "warburg.h"
-#include "strops.h"
+#include "componant/warburg.h"
 #include <cstdlib>
 #include <cmath>
 #include <cassert>

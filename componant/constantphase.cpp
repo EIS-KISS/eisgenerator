@@ -1,5 +1,4 @@
-#include "constantphase.h"
-#include "strops.h"
+#include "componant/constantphase.h"
 #include <cstdlib>
 #include <string>
 #define _USE_MATH_DEFINES

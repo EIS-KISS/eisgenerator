@@ -1,5 +1,4 @@
-#include "cap.h"
-#include "strops.h"
+#include "componant/cap.h"
 #include <cstdlib>
 #include <math.h>
 #include <cassert>

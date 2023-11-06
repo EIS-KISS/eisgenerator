@@ -14,6 +14,7 @@ set(SRC_FILES
 	componant/constantphase.cpp
 	componant/warburg.cpp
 	componant/paralellseriel.cpp
+	componant/finitetr.cpp
 	model.cpp
 	log.cpp
 	normalize.cpp
@@ -21,7 +22,6 @@ set(SRC_FILES
 	log.cpp
 	normalize.cpp
 	basicmath.cpp
-	finitetr.cpp
 	eistype.cpp
 	strops.cpp
 	translators.cpp
@@ -32,18 +32,19 @@ set(SRC_FILES
 set(API_HEADERS_CPP_DIR eisgenerator/)
 
 set(API_HEADERS_CPP
-	${API_HEADERS_CPP_DIR}/componant.h
-	${API_HEADERS_CPP_DIR}/cap.h
-	${API_HEADERS_CPP_DIR}/resistor.h
-	${API_HEADERS_CPP_DIR}/constantphase.h
-	${API_HEADERS_CPP_DIR}/warburg.h
+	${API_HEADERS_CPP_DIR}/componant/componant.h
+	${API_HEADERS_CPP_DIR}/componant/cap.h
+	${API_HEADERS_CPP_DIR}/componant/resistor.h
+	${API_HEADERS_CPP_DIR}/componant/constantphase.h
+	${API_HEADERS_CPP_DIR}/componant/warburg.h
+	${API_HEADERS_CPP_DIR}/componant/inductor.h
+	${API_HEADERS_CPP_DIR}/componant/finitetr.h
+	${API_HEADERS_CPP_DIR}/componant/paralellseriel.h
 	${API_HEADERS_CPP_DIR}/model.h
 	${API_HEADERS_CPP_DIR}/log.h
-	${API_HEADERS_CPP_DIR}/paralellseriel.h
 	${API_HEADERS_CPP_DIR}/basicmath.h
 	${API_HEADERS_CPP_DIR}/eistype.h
 	${API_HEADERS_CPP_DIR}/normalize.h
-	${API_HEADERS_CPP_DIR}/inductor.h
 	${API_HEADERS_CPP_DIR}/translators.h
 )
 
@@ -82,6 +83,7 @@ endif(WIN32)
 set(COMMON_COMPILE_FLAGS "-Wall -O2 -march=native -g")
 
 if(PROFILE_ENABLED)
+	message("Profileing enabled")
 	set(COMMON_COMPILE_FLAGS "${COMMON_COMPILE_FLAGS} -pg -fno-omit-frame-pointer")
 	set(COMMON_LINK_FLAGS "${COMMON_LINK_FLAGS} -pg -fno-omit-frame-pointer")
 endif(PROFILE_ENABLED)

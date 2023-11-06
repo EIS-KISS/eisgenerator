@@ -1,13 +1,11 @@
-#include "finitetr.h"
+#include "componant/finitetr.h"
 #include <cstdlib>
 #include <math.h>
 
-#include "eisgenerator/componant.h"
-#include "eisgenerator/paralellseriel.h"
-#include "eisgenerator/resistor.h"
-#include "paralellseriel.h"
-#include "cap.h"
-#include "resistor.h"
+#include "componant/componant.h"
+#include "componant/paralellseriel.h"
+#include "componant/resistor.h"
+#include "componant/cap.h"
 #include "log.h"
 #include "strops.h"
 

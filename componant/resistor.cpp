@@ -1,5 +1,4 @@
-#include "resistor.h"
-#include "strops.h"
+#include "componant/resistor.h"
 #include <vector>
 #include <math.h>
 #include <cassert>

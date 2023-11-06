@@ -1,14 +1,14 @@
-#include "componant.h"
+#include "componant/componant.h"
 #include <assert.h>
 #include <sstream>
-#include "paralellseriel.h"
-#include "resistor.h"
-#include "cap.h"
-#include "constantphase.h"
-#include "warburg.h"
+#include "componant/paralellseriel.h"
+#include "componant/resistor.h"
+#include "componant/cap.h"
+#include "componant/constantphase.h"
+#include "componant/warburg.h"
 #include "log.h"
-#include "inductor.h"
-#include "finitetr.h"
+#include "componant/inductor.h"
+#include "componant/finitetr.h"
 #include "randomgen.h"
 
 using namespace eis;

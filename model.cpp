@@ -13,20 +13,13 @@
 #include <dlfcn.h>
 #include <functional>
 
-#include "componant.h"
+#include "componant/componant.h"
 #include "eistype.h"
 #include "strops.h"
-#include "cap.h"
-#include "resistor.h"
-#include "inductor.h"
-#include "constantphase.h"
-#include "finitetr.h"
-#include "warburg.h"
-#include "paralellseriel.h"
+#include "componant/paralellseriel.h"
 #include "log.h"
 #include "normalize.h"
 #include "basicmath.h"
-#include "randomgen.h"
 #include "compile.h"
 #include "compcache.h"
 

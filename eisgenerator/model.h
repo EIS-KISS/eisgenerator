@@ -7,7 +7,7 @@
 #include <functional>
 
 #include "eistype.h"
-#include "componant.h"
+#include "componant/componant.h"
 
 namespace eis
 {
