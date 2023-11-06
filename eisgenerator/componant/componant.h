@@ -26,7 +26,7 @@ class Componant
 		virtual void setParamRanges(const std::vector<eis::Range>& ranges);
 		virtual std::vector<eis::Range>& getParamRanges();
 		virtual std::vector<eis::Range> getParamRanges() const;
-		virtual std::vector<eis::Range> getDefaultRange(bool range = true) const;
+		virtual std::vector<eis::Range> getDefaultParameters(bool range = true) const;
 		virtual size_t paramCount() const {return 0;};
 		virtual ~Componant() = default;
 		virtual char getComponantChar() const = 0;

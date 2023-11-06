@@ -20,7 +20,7 @@ Resistor::Resistor(std::string paramStr, size_t count, bool defaultToRange)
 
 	if(ranges.size() != paramCount())
 	{
-		ranges = getDefaultRange(defaultToRange);
+		ranges = getDefaultParameters(defaultToRange);
 		if(defaultToRange)
 		{
 			for(eis::Range& range : ranges)
@@ -30,7 +30,7 @@ Resistor::Resistor(std::string paramStr, size_t count, bool defaultToRange)
 	}
 }
 
-std::vector<eis::Range> Resistor::getDefaultRange(bool range) const
+std::vector<eis::Range> Resistor::getDefaultParameters(bool range) const
 {
 	std::vector<eis::Range> out;
 

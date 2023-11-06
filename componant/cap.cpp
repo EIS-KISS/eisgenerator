@@ -20,7 +20,7 @@ Cap::Cap(std::string paramStr, size_t count, bool defaultToRange)
 
 	if(ranges.size() != paramCount())
 	{
-		ranges = getDefaultRange(defaultToRange);
+		ranges = getDefaultParameters(defaultToRange);
 		if(defaultToRange)
 		{
 			for(eis::Range& range : ranges)
@@ -30,7 +30,7 @@ Cap::Cap(std::string paramStr, size_t count, bool defaultToRange)
 	}
 }
 
-std::vector<eis::Range> Cap::getDefaultRange(bool range) const
+std::vector<eis::Range> Cap::getDefaultParameters(bool range) const
 {
 	std::vector<eis::Range> out;
 

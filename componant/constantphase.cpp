@@ -40,7 +40,7 @@ Cpe::Cpe(std::string paramStr, size_t count, bool defaultToRange)
 
 void Cpe::setDefaultParam(size_t count, bool defaultToRange)
 {
-	ranges = getDefaultRange(defaultToRange);
+	ranges = getDefaultParameters(defaultToRange);
 	if(defaultToRange)
 	{
 		for(eis::Range& range : ranges)
@@ -48,7 +48,7 @@ void Cpe::setDefaultParam(size_t count, bool defaultToRange)
 	}
 }
 
-std::vector<eis::Range> Cpe::getDefaultRange(bool range) const
+std::vector<eis::Range> Cpe::getDefaultParameters(bool range) const
 {
 	std::vector<eis::Range> out;
 

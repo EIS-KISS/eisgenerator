@@ -32,7 +32,7 @@ void FiniteTransmitionline::setDefaultParam(size_t count, bool defaultToRange)
 	_R = 1000;
 	_n = 4;
 
-	ranges = getDefaultRange(defaultToRange);
+	ranges = getDefaultParameters(defaultToRange);
 
 	if(defaultToRange)
 	{
@@ -41,7 +41,7 @@ void FiniteTransmitionline::setDefaultParam(size_t count, bool defaultToRange)
 	}
 }
 
-std::vector<eis::Range> FiniteTransmitionline::getDefaultRange(bool range) const
+std::vector<eis::Range> FiniteTransmitionline::getDefaultParameters(bool range) const
 {
 	const fvalue C = 1e-6;
 	const fvalue R = 1000;

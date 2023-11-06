@@ -21,7 +21,7 @@ public:
 	static constexpr char staticGetComponantChar(){return 'p';}
 	virtual std::string componantName() const override {return "ConstantPhase";}
 	virtual ~Cpe() = default;
-	virtual std::vector<eis::Range> getDefaultRange(bool range = true) const override;
+	virtual std::vector<eis::Range> getDefaultParameters(bool range = true) const override;
 	virtual std::string getCode(std::vector<std::string>& parameters) override;
 	virtual std::string getTorchScript(std::vector<std::string>& parameters) override;
 };

@@ -22,7 +22,7 @@ public:
 	FiniteTransmitionline(const FiniteTransmitionline& in);
 	virtual std::complex<fvalue> execute(fvalue omega) override;
 	virtual size_t paramCount() const override;
-	virtual std::vector<eis::Range> getDefaultRange(bool range = true) const override;
+	virtual std::vector<eis::Range> getDefaultParameters(bool range = true) const override;
 	virtual ~FiniteTransmitionline();
 	virtual char getComponantChar() const override;
 	virtual std::string componantName() const override {return "FiniteTransmitionline";}

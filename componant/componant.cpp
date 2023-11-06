@@ -28,7 +28,7 @@ std::vector<eis::Range> Componant::getParamRanges() const
 	return ranges;
 }
 
-std::vector<eis::Range> Componant::getDefaultRange(bool range) const
+std::vector<eis::Range> Componant::getDefaultParameters(bool range) const
 {
 	(void)range;
 	assert(paramCount() == 0);
