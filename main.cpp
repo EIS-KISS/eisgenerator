@@ -1,3 +1,4 @@
+#include <eisgenerator/eistype.h>
 #include <iostream>
 #include <complex>
 #include <chrono>
@@ -67,11 +68,9 @@ static void runSweep(const Config& config, eis::Model& model)
 	if(config.noise > 0)
 		eis::noise(results, config.noise, false);
 
-	eis::Log(eis::Log::INFO)<<(config.hertz ? "freqency" : "omega")<<",real,im";
+	eis::EisSpectra spectra(results, model.getModelStrWithParam(), "exported by eisgenerator_export");
 
-	for(const eis::DataPoint& res : results)
-		std::cout<<(config.hertz ? res.omega/(2*M_PI) : res.omega)<<','<<
-			res.im.real()<<','<<(config.invert ? 0-res.im.imag() : res.im.imag())<<'\n';
+	spectra.saveToStream(std::cout);
 
 	eis::Log(eis::Log::INFO)<<"time taken: "<<duration.count()<<" us";
 

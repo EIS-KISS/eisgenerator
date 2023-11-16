@@ -19,5 +19,5 @@ set tics font \"Helvetica,12\"; \
 set xlabel font \"Helvetica,15\"; \
 set ylabel font \"Helvetica,15\"; \
 set datafile separator ','; \
-plot '-' using 2:3 notitle w l ls 1;
+plot '-' using 2:3 skip 3 notitle w l;
 "
