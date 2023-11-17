@@ -36,6 +36,40 @@ std::vector<fvalue> eis::Range::getRangeVector() const
 	return out;
 }
 
+eis::Range eis::Range::fromString(std::string str, size_t count)
+{
+	bool log = false;
+	std::vector<std::string> tokens = tokenize(str, '~');
+	eis::Range out;
+
+	if(str.back() == 'l' || str.back() == 'L')
+	{
+		log = true;
+		str.pop_back();
+	}
+
+	try
+	{
+		if(tokens.size() == 1)
+		{
+			out = Range(std::stod(tokens[0]), std::stod(tokens[0]), 1, log);
+		}
+		else
+		{
+			out = Range(std::stod(tokens[0]), std::stod(tokens[1]), count, log);
+			if(tokens.size() > 2)
+				throw std::invalid_argument("");
+		}
+
+	}
+	catch(const std::invalid_argument& ia)
+	{
+		throw std::invalid_argument("invalid parameter \""+ str + "\"");
+	}
+
+	return out;
+}
+
 std::vector<Range> eis::Range::rangesFromParamString(const std::string& paramStr, size_t count)
 {
 	std::vector<std::string> tokens = tokenize(paramStr, ',');
@@ -43,29 +77,10 @@ std::vector<Range> eis::Range::rangesFromParamString(const std::string& paramStr
 	std::vector<Range> ranges(tokens.size());
 	for(size_t i = 0; i < tokens.size(); ++i)
 	{
-		bool log = false;
 		std::string& token = tokens[i];
-		std::vector<std::string> subTokens = tokenize(token, '~');
-
-		if(token.back() == 'l' || token.back() == 'L')
-		{
-			log = true;
-			token.pop_back();
-		}
-
 		try
 		{
-			if(subTokens.size() == 1)
-			{
-				ranges[i] = Range(std::stod(subTokens[0]), std::stod(subTokens[0]), 1, log);
-			}
-			else
-			{
-				ranges[i] = Range(std::stod(subTokens[0]), std::stod(subTokens[1]), count, log);
-				if(subTokens.size() > 2)
-					throw std::invalid_argument("");
-			}
-
+			ranges[i] = fromString(token, count);
 		}
 		catch(const std::invalid_argument& ia)
 		{

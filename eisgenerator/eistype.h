@@ -122,6 +122,7 @@ public:
 	bool isSane() const;
 	std::vector<fvalue> getRangeVector() const;
 
+	static Range fromString(std::string str, size_t count);
 	static std::vector<Range> rangesFromParamString(const std::string& paramStr, size_t count);
 };
 

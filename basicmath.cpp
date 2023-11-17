@@ -4,6 +4,7 @@
 #include <limits>
 
 #include "eistype.h"
+#include "log.h"
 
 static size_t gradIndex(size_t dataSize, size_t inputIndex)
 {
@@ -225,4 +226,79 @@ bool eis::fvalueEq(fvalue a, fvalue b, unsigned int ulp)
 {
 	fvalue epsilon = std::numeric_limits<fvalue>::epsilon()*std::fabs(a+b)*ulp;
 	return a - epsilon < b && a + epsilon > b;
+}
+
+static std::pair<std::vector<eis::DataPoint>::const_iterator, std::vector<eis::DataPoint>::const_iterator>
+getLrClosest(const eis::DataPoint& dp, std::vector<eis::DataPoint>::const_iterator start, std::vector<eis::DataPoint>::const_iterator end)
+{
+
+	std::vector<eis::DataPoint>::const_iterator left = end;
+	fvalue distLeft = std::numeric_limits<fvalue>::max();
+	std::vector<eis::DataPoint>::const_iterator right = end;
+	fvalue distRight = std::numeric_limits<fvalue>::max();
+
+	for(std::vector<eis::DataPoint>::const_iterator it = start; it != end; it++)
+	{
+		if(eis::fvalueEq(it->omega, dp.omega))
+			return {it, it};
+		fvalue dist = it->omega-dp.omega;
+		bool sign = std::signbit(dist);
+		dist = std::abs(dist);
+
+		if(sign && (left == end || dist < distLeft))
+		{
+			distLeft = dist;
+			left = it;
+		}
+		else if(!sign && (right == end || dist < distRight))
+		{
+			distRight = dist;
+			right = it;
+		}
+	}
+	return {left, right};
+}
+
+static eis::DataPoint linearInterpolatePoint(fvalue omega, const eis::DataPoint& left, const eis::DataPoint& right)
+{
+	assert(left.omega <= omega);
+	assert(right.omega >= omega);
+
+	fvalue omegaDif = right.omega - left.omega;
+	std::complex<fvalue> sloap = (right.im - left.im)/omegaDif;
+	return eis::DataPoint(left.im+sloap*(omega - left.omega), omega);
+}
+
+std::vector<eis::DataPoint> eis::fitToFrequencies(std::vector<fvalue> omegas, const std::vector<eis::DataPoint>& data)
+{
+	std::vector<eis::DataPoint> out;
+	out.reserve(omegas.size());
+	for(fvalue omega : omegas)
+		out.push_back(eis::DataPoint({0,0}, omega));
+
+	eis::Log(eis::Log::DEBUG)<<__func__<<':';
+
+	for(eis::DataPoint& dp : out)
+	{
+		auto lr = getLrClosest(dp, data.begin(), data.end());
+
+		eis::Log(eis::Log::DEBUG)<<"\tValue for "<<dp.omega;
+		if(lr.first != data.end())
+			eis::Log(eis::Log::DEBUG)<<"\tLeft "<<lr.first->omega<<','<<lr.first->im;
+		if(lr.second != data.end())
+			eis::Log(eis::Log::DEBUG)<<"\tRight "<<lr.second->omega<<','<<lr.second->im;
+
+		if(lr.first == lr.second)
+			dp.im = lr.first->im;
+		else if(lr.first != data.end() && lr.second != data.end())
+			dp = linearInterpolatePoint(dp.omega, *lr.first, *lr.second);
+		else if(lr.first != data.end() && lr.second == data.end())
+			dp.im = lr.first->im;
+		else if(lr.first == data.end() && lr.second != data.end())
+			dp.im = lr.second->im;
+		else
+			assert(false);
+	}
+
+	return out;
 }

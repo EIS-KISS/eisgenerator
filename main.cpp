@@ -1,4 +1,3 @@
-#include <eisgenerator/eistype.h>
 #include <iostream>
 #include <complex>
 #include <chrono>
@@ -59,6 +58,12 @@ static void runSweep(const Config& config, eis::Model& model)
 	{
 		eis::Log(eis::Log::INFO)<<"normalized results:";
 		eis::normalize(results);
+	}
+	else if(config.extrapolate)
+	{
+		std::vector<fvalue> exrapolateOmegas = config.extrapolateRange.getRangeVector();
+		results = eis::fitToFrequencies(exrapolateOmegas, results);
+		eis::Log(eis::Log::INFO)<<"extrapolated results:";
 	}
 	else
 	{

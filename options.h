@@ -17,7 +17,8 @@ static struct argp_option options[] =
   {"quiet",     'q', 0,      0,  "only output data" },
   {"param",     's', "[COUNT]",      0,  "parameter sweep steps" },
   {"model",      'm', "[STRING]",    0,  "set model string" },
-  {"omega",      'o', "[START-END]", 0,  "set omega range" },
+  {"omega",      'o', "[START~END]", 0,  "set omega range" },
+  {"extrapolate",  'a', "[START~END]", 0,  "extrapolate a spectra simulated on the omega range to the one given here" },
   {"omegasteps", 'c', "[COUNT]",     0,  "set omega range steps" },
   {"linear",       'l', 0,      0,  "use linear instead of logarithmic steps" },
   {"normalize", 'n', 0,      0,  "normalize values" },
@@ -62,6 +63,8 @@ struct Config
 	int mode = MODE_NORMAL;
 	size_t paramSteps = 10;
 	eis::Range omegaRange;
+	bool extrapolate = false;
+	eis::Range extrapolateRange;
 	bool normalize = false;
 	bool reduce = false;
 	bool hertz = false;
@@ -152,26 +155,23 @@ parse_opt (int key, char *arg, struct argp_state *state)
 		break;
 	case 'o':
 	{
-		std::vector<std::string> tokens = tokenize(std::string(arg), '-');
-		if(tokens.size() != 2)
-		{
-			argp_usage(state);
-			break;
-		}
 		try
 		{
-			double start = std::stod(tokens[0]);
-			double end = std::stod(tokens[1]);
-			if(start < end)
-			{
-				config->omegaRange.start = start;
-				config->omegaRange.end = end;
-			}
-			else
-			{
-				config->omegaRange.start = end;
-				config->omegaRange.end = start;
-			}
+			config->omegaRange = eis::Range::fromString(std::string(arg), config->omegaRange.count);
+		}
+		catch(const std::invalid_argument& ia)
+		{
+			argp_usage(state);
+		}
+		break;
+	}
+	case 'a':
+	{
+		try
+		{
+			config->extrapolateRange = eis::Range::fromString(std::string(arg), config->omegaRange.count);
+			config->extrapolateRange.log = config->omegaRange.log;
+			config->extrapolate = true;
 		}
 		catch(const std::invalid_argument& ia)
 		{
