@@ -2,6 +2,13 @@
 
 print_help () {
 	echo "Usage: kisscsvplot -f [filename]"
+	echo "Options:"
+	echo "	-h:		print this help"
+	echo "	-x:		Set x axis label"
+	echo "	-y:		Set y axis label"
+	echo "	-r:		plot a bode plot of re(Z)"
+	echo "	-i:		plot a bode plot of im(Z)"
+	echo "	-l:		allways use linear scale"
 }
 
 if ! command -v gnuplot &> /dev/null; then
@@ -14,7 +21,7 @@ xLabel='Z_{im}'
 yLabel='Z_{re}'
 logscale=""
 
-while getopts "?rihy:x:f:" opt; do
+while getopts "?rihy:x:f:l" opt; do
 	case "$opt" in
 	h|\?)
 		print_help
@@ -41,6 +48,9 @@ while getopts "?rihy:x:f:" opt; do
 	x)
 		xLabel=$OPTARG
 	;;
+	l)
+		logscale=""
+	;;
 	esac
 done
 
@@ -49,7 +59,19 @@ if [[ ! -f $file && $file != "-" ]]; then
 	exit 1
 fi
 
-gnuplot -p -e "\
+if [[ $file != "-" ]]; then
+	spectra="$(< $file)"
+else
+	spectra="$(< /dev/stdin)"
+fi
+
+header=$(echo "$spectra" | awk -F, 'NR==1{print $1}')
+if [[ $header != "EISF" ]]; then
+	echo "$file is not a valid EIS spectra file!"
+	exit 1
+fi
+
+echo "$spectra" | gnuplot -p -e "\
 set terminal qt enhanced font \",15\" title \"EIS Plot\"; \
 set style line 1 lw 3 lc \"blue\"; \
 set ylabel '$yLabel'; \
@@ -59,5 +81,5 @@ set tics font \"Helvetica,12\"; \
 set xlabel font \"Helvetica,15\"; \
 set ylabel font \"Helvetica,15\"; \
 set datafile separator ','; \
-plot '$file' using $mode skip 3 notitle w l;
+plot '-' using $mode skip 3 notitle w l;
 "
