@@ -18,6 +18,8 @@ namespace eis
 	void noise(std::vector<eis::DataPoint>& data, double amplitude, bool relative);
 	void removeDuplicates(std::vector<eis::DataPoint>& data);
 	bool fvalueEq(fvalue a, fvalue b, unsigned int ulp = 4);
-	std::vector<eis::DataPoint> fitToFrequencies(std::vector<fvalue> omegas, const std::vector<eis::DataPoint>& data);
+	std::vector<eis::DataPoint> fitToFrequencies(std::vector<fvalue> omegas,
+	                                             const std::vector<eis::DataPoint>& data,
+	                                             bool linearExtrapolation = false);
 }
 

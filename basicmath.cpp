@@ -2,9 +2,11 @@
 #include <algorithm>
 #include <random>
 #include <limits>
+#include <stdexcept>
 
 #include "eistype.h"
 #include "log.h"
+#include "linearregession.h"
 
 static size_t gradIndex(size_t dataSize, size_t inputIndex)
 {
@@ -259,6 +261,25 @@ getLrClosest(const eis::DataPoint& dp, std::vector<eis::DataPoint>::const_iterat
 	return {left, right};
 }
 
+static bool omegaCompeare(std::pair<fvalue, std::vector<eis::DataPoint>::const_iterator> a,
+                          std::pair<fvalue, std::vector<eis::DataPoint>::const_iterator> b)
+{
+	return a.first < b.first;
+}
+
+static std::vector<std::pair<fvalue, std::vector<eis::DataPoint>::const_iterator>>
+getSortedOmegaDistances(fvalue omega,
+                        std::vector<eis::DataPoint>::const_iterator start,
+                        std::vector<eis::DataPoint>::const_iterator end)
+{
+	std::vector<std::pair<fvalue, std::vector<eis::DataPoint>::const_iterator>> out;
+
+	for(std::vector<eis::DataPoint>::const_iterator it = start; it != end; it++)
+		out.push_back({std::abs(it->omega-omega), it});
+	std::sort(out.begin(), out.end(), omegaCompeare);
+	return out;
+}
+
 static eis::DataPoint linearInterpolatePoint(fvalue omega, const eis::DataPoint& left, const eis::DataPoint& right)
 {
 	assert(left.omega <= omega);
@@ -269,7 +290,42 @@ static eis::DataPoint linearInterpolatePoint(fvalue omega, const eis::DataPoint&
 	return eis::DataPoint(left.im+sloap*(omega - left.omega), omega);
 }
 
-std::vector<eis::DataPoint> eis::fitToFrequencies(std::vector<fvalue> omegas, const std::vector<eis::DataPoint>& data)
+static eis::DataPoint linearExtrapoloatePoint(fvalue omega, const std::vector<eis::DataPoint>& data)
+{
+	if(data.size() < 3)
+		throw std::invalid_argument("extrapolation requires at least 3 points");
+
+	std::vector<std::pair<fvalue, std::vector<eis::DataPoint>::const_iterator>> dist;
+	dist = getSortedOmegaDistances(omega, data.begin(), data.end());
+
+	std::vector<fvalue> omegas;
+	std::vector<fvalue> im;
+	std::vector<fvalue> re;
+	omegas.reserve(dist.size());
+	im.reserve(dist.size());
+	re.reserve(dist.size());
+	for(size_t i = 0; i < 3; ++i)
+	{
+		omegas.push_back(dist[i].second->omega);
+		im.push_back(dist[i].second->im.imag());
+		re.push_back(dist[i].second->im.real());
+	}
+
+	LinearRegessionCalculator realReg(omegas, re);
+	LinearRegessionCalculator imagReg(omegas, im);
+
+	eis::Log(eis::Log::DEBUG)<<"Real regression:\n\toffset: "<<realReg.offset
+		<<"\n\tsloap: "<<realReg.slope<<"\n\tstderror: "<<realReg.stdError;
+	eis::Log(eis::Log::DEBUG)<<"Imag regression:\n\toffset: "<<imagReg.offset
+		<<"\n\tsloap: "<<imagReg.slope<<"\n\tstderror: "<<imagReg.stdError;
+
+	if(realReg.stdError > 1 || imagReg.stdError > 1)
+		throw std::invalid_argument("input data must be sufficantly linear");
+
+	return eis::DataPoint({realReg.slope*omega+realReg.offset, imagReg.slope*omega+imagReg.offset}, omega);
+}
+
+std::vector<eis::DataPoint> eis::fitToFrequencies(std::vector<fvalue> omegas, const std::vector<eis::DataPoint>& data, bool linearExtrapolation)
 {
 	std::vector<eis::DataPoint> out;
 	out.reserve(omegas.size());
@@ -289,15 +345,45 @@ std::vector<eis::DataPoint> eis::fitToFrequencies(std::vector<fvalue> omegas, co
 			eis::Log(eis::Log::DEBUG)<<"\tRight "<<lr.second->omega<<','<<lr.second->im;
 
 		if(lr.first == lr.second)
+		{
 			dp.im = lr.first->im;
+		}
 		else if(lr.first != data.end() && lr.second != data.end())
+		{
 			dp = linearInterpolatePoint(dp.omega, *lr.first, *lr.second);
+		}
 		else if(lr.first != data.end() && lr.second == data.end())
-			dp.im = lr.first->im;
+		{
+			try
+			{
+				if(!linearExtrapolation)
+					dp.im = lr.first->im;
+				else
+					dp = linearExtrapoloatePoint(dp.omega, data);
+			}
+			catch (const std::invalid_argument& ex)
+			{
+				dp.im = lr.first->im;
+			}
+		}
 		else if(lr.first == data.end() && lr.second != data.end())
-			dp.im = lr.second->im;
+		{
+			try
+			{
+				if(!linearExtrapolation)
+					dp.im = lr.second->im;
+				else
+					dp = linearExtrapoloatePoint(dp.omega, data);
+			}
+			catch (const std::invalid_argument& ex)
+			{
+				dp.im = lr.second->im;
+			}
+		}
 		else
+		{
 			assert(false);
+		}
 	}
 
 	return out;

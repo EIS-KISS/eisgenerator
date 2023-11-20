@@ -27,6 +27,7 @@ set(SRC_FILES
 	translators.cpp
 	randomgen.cpp
 	compcache.cpp
+	linearregession.cpp
 )
 
 set(API_HEADERS_CPP_DIR eisgenerator/)
