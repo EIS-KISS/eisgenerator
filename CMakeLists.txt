@@ -6,6 +6,8 @@ set (CMAKE_CXX_STANDARD 20)
 
 option(PROFILE_ENABLED "instrument for gprof" OFF)
 
+find_package(Doxygen)
+
 set(SRC_FILES
 	componant/componant.cpp
 	componant/cap.cpp
@@ -136,3 +138,27 @@ target_link_libraries(${PROJECT_NAME}_export ${LIBS_TEST})
 target_include_directories(${PROJECT_NAME}_export PUBLIC eisgenerator)
 set_target_properties(${PROJECT_NAME}_export PROPERTIES COMPILE_FLAGS ${COMMON_COMPILE_FLAGS} LINK_FLAGS ${COMMON_LINK_FLAGS})
 install(TARGETS ${PROJECT_NAME}_export DESTINATION bin)
+
+if (DOXYGEN_FOUND)
+	set(DOXYGEN_IN ${CMAKE_CURRENT_SOURCE_DIR}/doc/libeisgenerator.doxygen.in)
+	set(DOXYGEN_OUT ${CMAKE_CURRENT_BINARY_DIR}/doc/libeisgenerator.doxygen)
+	configure_file(${DOXYGEN_IN} ${DOXYGEN_OUT} @ONLY)
+
+	set(MAINPAGE_IN ${CMAKE_CURRENT_SOURCE_DIR}/doc/mainpage.md.in)
+	set(MAINPAGE_OUT ${CMAKE_CURRENT_BINARY_DIR}/doc/mainpage.md)
+	configure_file(${MAINPAGE_IN} ${MAINPAGE_OUT} @ONLY)
+
+	set(MODELS_IN ${CMAKE_CURRENT_SOURCE_DIR}/doc/modelspage.md.in)
+	set(MODELS_OUT ${CMAKE_CURRENT_BINARY_DIR}/doc/modelspage.md)
+	configure_file(${MODELS_IN} ${MODELS_OUT} @ONLY)
+
+	message("Doxygen build started")
+
+	add_custom_target(doc
+		COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_OUT}
+		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+		COMMENT "Generating API documentation with Doxygen"
+		VERBATIM )
+else (DOXYGEN_FOUND)
+  message("Doxygen needs to be installed to generate the doxygen documentation")
+endif (DOXYGEN_FOUND)

@@ -304,9 +304,9 @@ static eis::DataPoint linearExtrapoloatePoint(fvalue omega, const std::vector<ei
 	omegas.reserve(dist.size());
 	im.reserve(dist.size());
 	re.reserve(dist.size());
-	for(size_t i = 0; i < 3; ++i)
+	for(size_t i = 0; i < std::min(static_cast<size_t>(6), data.size()); ++i)
 	{
-		omegas.push_back(dist[i].second->omega);
+		omegas.push_back(log10(dist[i].second->omega));
 		im.push_back(dist[i].second->im.imag());
 		re.push_back(dist[i].second->im.real());
 	}
@@ -314,15 +314,17 @@ static eis::DataPoint linearExtrapoloatePoint(fvalue omega, const std::vector<ei
 	LinearRegessionCalculator realReg(omegas, re);
 	LinearRegessionCalculator imagReg(omegas, im);
 
-	eis::Log(eis::Log::DEBUG)<<"Real regression:\n\toffset: "<<realReg.offset
+	eis::Log(eis::Log::DEBUG)<<"Real regression for "<<omega<<":\n\toffset: "<<realReg.offset
 		<<"\n\tsloap: "<<realReg.slope<<"\n\tstderror: "<<realReg.stdError;
-	eis::Log(eis::Log::DEBUG)<<"Imag regression:\n\toffset: "<<imagReg.offset
+	eis::Log(eis::Log::DEBUG)<<"Imag regression for "<<omega<<":\n\toffset: "<<imagReg.offset
 		<<"\n\tsloap: "<<imagReg.slope<<"\n\tstderror: "<<imagReg.stdError;
 
-	if(realReg.stdError > 1 || imagReg.stdError > 1)
+	if(realReg.stdError > 3 || imagReg.stdError > 3)
 		throw std::invalid_argument("input data must be sufficantly linear");
 
-	return eis::DataPoint({realReg.slope*omega+realReg.offset, imagReg.slope*omega+imagReg.offset}, omega);
+	std::complex<fvalue> expIm(realReg.slope*log10(omega)+realReg.offset, imagReg.slope*log10(omega)+imagReg.offset);
+
+	return eis::DataPoint(expIm, omega);
 }
 
 std::vector<eis::DataPoint> eis::fitToFrequencies(std::vector<fvalue> omegas, const std::vector<eis::DataPoint>& data, bool linearExtrapolation)

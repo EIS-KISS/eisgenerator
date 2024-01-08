@@ -1,0 +1,475 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="32.0457mm"
+   height="18.419704mm"
+   viewBox="0 0 32.0457 18.419704"
+   version="1.1"
+   id="svg1"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs1" />
+  <g
+     id="layer1"
+     transform="translate(-96.043745,-160.07292)">
+    <g
+       id="g1339"
+       transform="translate(10.784145,42.729616)">
+      <g
+         id="g1334">
+        <g
+           style="fill:#000000;fill-opacity:0;stroke:#000000;stroke-width:0.1524;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1"
+           id="g973">
+          <g
+             id="g958" />
+          <g
+             style="fill:#000000;fill-opacity:0;stroke:#000000;stroke-width:0.254;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1"
+             id="g959">
+            <rect
+               x="101.6"
+               y="133.604"
+               width="5.0799999"
+               height="2.0320001"
+               rx="0.000000"
+               id="rect958" />
+          </g>
+          <g
+             style="fill:#000000;fill-opacity:0;stroke:#000000;stroke-width:0.1524;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1"
+             id="g972">
+            <path
+               d="m 101.6,134.62 h -1.27"
+               id="path959" />
+            <path
+               d="m 106.68,134.62 h 1.27"
+               id="path960" />
+            <text
+               x="104.14"
+               y="131.44501"
+               textLength="1.4732"
+               font-size="1.6933px"
+               lengthAdjust="spacingAndGlyphs"
+               text-anchor="middle"
+               opacity="0"
+               id="text960">R</text>
+            <g
+               class="stroked-text"
+               id="g971">
+              <desc
+                 id="desc960">R</desc>
+              <path
+                 d="m 104.533,131.3895 -0.4233,-0.6047"
+                 id="path961" />
+              <path
+                 d="m 103.8073,131.3895 v -1.27"
+                 id="path962" />
+              <path
+                 d="m 103.8073,130.1195 h 0.4838"
+                 id="path963" />
+              <path
+                 d="m 104.2911,130.1195 0.121,0.0605"
+                 id="path964" />
+              <path
+                 d="m 104.4121,130.18 0.0605,0.0605"
+                 id="path965" />
+              <path
+                 d="m 104.4726,130.2405 0.0604,0.1209"
+                 id="path966" />
+              <path
+                 d="m 104.533,130.3614 v 0.1815"
+                 id="path967" />
+              <path
+                 d="m 104.533,130.5429 -0.0604,0.1209"
+                 id="path968" />
+              <path
+                 d="m 104.4726,130.6638 -0.0605,0.0605"
+                 id="path969" />
+              <path
+                 d="m 104.4121,130.7243 -0.121,0.0605"
+                 id="path970" />
+              <path
+                 d="m 104.2911,130.7848 h -0.4838"
+                 id="path971" />
+            </g>
+          </g>
+        </g>
+        <g
+           style="fill:#000000;fill-opacity:0;stroke:#000000;stroke-width:0.1524;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1"
+           id="g989">
+          <g
+             id="g974" />
+          <g
+             style="fill:#000000;fill-opacity:0;stroke:#000000;stroke-width:0.254;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1"
+             id="g975">
+            <rect
+               x="92.074997"
+               y="127.254"
+               width="5.0799999"
+               height="2.0320001"
+               rx="0.000000"
+               id="rect974" />
+          </g>
+          <g
+             style="fill:#000000;fill-opacity:0;stroke:#000000;stroke-width:0.1524;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1"
+             id="g988">
+            <path
+               d="m 92.075,128.27 h -1.27"
+               id="path975" />
+            <path
+               d="m 97.155,128.27 h 1.27"
+               id="path976" />
+            <text
+               x="94.614998"
+               y="125.095"
+               textLength="1.4732"
+               font-size="1.6933px"
+               lengthAdjust="spacingAndGlyphs"
+               text-anchor="middle"
+               opacity="0"
+               id="text976">R</text>
+            <g
+               class="stroked-text"
+               id="g987">
+              <desc
+                 id="desc976">R</desc>
+              <path
+                 d="m 95.008,125.0395 -0.4233,-0.6047"
+                 id="path977" />
+              <path
+                 d="m 94.2823,125.0395 v -1.27"
+                 id="path978" />
+              <path
+                 d="m 94.2823,123.7695 h 0.4838"
+                 id="path979" />
+              <path
+                 d="m 94.7661,123.7695 0.121,0.0605"
+                 id="path980" />
+              <path
+                 d="m 94.8871,123.83 0.0605,0.0605"
+                 id="path981" />
+              <path
+                 d="m 94.9476,123.8905 0.0604,0.1209"
+                 id="path982" />
+              <path
+                 d="m 95.008,124.0114 v 0.1815"
+                 id="path983" />
+              <path
+                 d="m 95.008,124.1929 -0.0604,0.1209"
+                 id="path984" />
+              <path
+                 d="m 94.9476,124.3138 -0.0605,0.0605"
+                 id="path985" />
+              <path
+                 d="m 94.8871,124.3743 -0.121,0.0605"
+                 id="path986" />
+              <path
+                 d="M 94.7661,124.4348 H 94.2823"
+                 id="path987" />
+            </g>
+          </g>
+        </g>
+        <g
+           style="fill:#000000;fill-opacity:0;stroke:#000000;stroke-width:0.1524;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1"
+           id="g1100">
+          <g
+             id="g1080" />
+          <g
+             style="fill:#000000;fill-opacity:0;stroke:#000000;stroke-width:0.508;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1"
+             id="g1081">
+            <path
+               style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:0.508;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1"
+               d="m 104.902,125.222 v -4.064"
+               id="path1080" />
+            <path
+               style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:0.508;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1"
+               d="m 103.378,125.222 v -4.064"
+               id="path1081" />
+          </g>
+          <g
+             style="fill:#000000;fill-opacity:0;stroke:#000000;stroke-width:0.1524;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1"
+             id="g1099">
+            <path
+               d="M 103.124,123.19 H 100.33"
+               id="path1082" />
+            <path
+               d="m 105.156,123.19 h 2.794"
+               id="path1083" />
+            <text
+               x="104.14"
+               y="118.745"
+               textLength="1.4732"
+               font-size="1.6933px"
+               lengthAdjust="spacingAndGlyphs"
+               text-anchor="middle"
+               opacity="0"
+               id="text1083">C</text>
+            <g
+               class="stroked-text"
+               id="g1098">
+              <desc
+                 id="desc1083">C</desc>
+              <path
+                 d="m 104.533,118.5686 -0.0604,0.0605"
+                 id="path1084" />
+              <path
+                 d="m 104.4726,118.6291 -0.1815,0.0604"
+                 id="path1085" />
+              <path
+                 d="m 104.2911,118.6895 h -0.1209"
+                 id="path1086" />
+              <path
+                 d="m 104.1702,118.6895 -0.1814,-0.0604"
+                 id="path1087" />
+              <path
+                 d="m 103.9888,118.6291 -0.121,-0.121"
+                 id="path1088" />
+              <path
+                 d="m 103.8678,118.5081 -0.0605,-0.121"
+                 id="path1089" />
+              <path
+                 d="m 103.8073,118.3871 -0.0604,-0.2419"
+                 id="path1090" />
+              <path
+                 d="m 103.7469,118.1452 v -0.1814"
+                 id="path1091" />
+              <path
+                 d="m 103.7469,117.9638 0.0604,-0.2419"
+                 id="path1092" />
+              <path
+                 d="m 103.8073,117.7219 0.0605,-0.1209"
+                 id="path1093" />
+              <path
+                 d="m 103.8678,117.601 0.121,-0.121"
+                 id="path1094" />
+              <path
+                 d="m 103.9888,117.48 0.1814,-0.0605"
+                 id="path1095" />
+              <path
+                 d="m 104.1702,117.4195 h 0.1209"
+                 id="path1096" />
+              <path
+                 d="m 104.2911,117.4195 0.1815,0.0605"
+                 id="path1097" />
+              <path
+                 d="m 104.4726,117.48 0.0604,0.0605"
+                 id="path1098" />
+            </g>
+          </g>
+        </g>
+        <g
+           style="fill:#000000;fill-opacity:0;stroke:#000000;stroke-width:0.1524;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1"
+           id="g1143">
+          <text
+             x="88.106201"
+             y="128.9958"
+             textLength="1.957"
+             font-size="1.6933px"
+             lengthAdjust="spacingAndGlyphs"
+             text-anchor="end"
+             opacity="0"
+             id="text1130">in</text>
+          <g
+             class="stroked-text"
+             id="g1142">
+            <desc
+               id="desc1130">in</desc>
+            <path
+               d="m 86.5545,128.9403 v -0.8466"
+               id="path1130" />
+            <path
+               d="m 86.5545,127.6703 -0.0604,0.0605"
+               id="path1131" />
+            <path
+               d="m 86.4941,127.7308 0.0604,0.0605"
+               id="path1132" />
+            <path
+               d="m 86.5545,127.7913 0.0605,-0.0605"
+               id="path1133" />
+            <path
+               d="m 86.615,127.7308 -0.0605,-0.0605"
+               id="path1134" />
+            <path
+               d="m 86.5545,127.6703 v 0.121"
+               id="path1135" />
+            <path
+               d="m 87.1593,128.0937 v 0.8466"
+               id="path1136" />
+            <path
+               d="m 87.1593,128.2146 0.0605,-0.0605"
+               id="path1137" />
+            <path
+               d="m 87.2198,128.1541 0.121,-0.0604"
+               id="path1138" />
+            <path
+               d="m 87.3408,128.0937 h 0.1814"
+               id="path1139" />
+            <path
+               d="m 87.5222,128.0937 0.1209,0.0604"
+               id="path1140" />
+            <path
+               d="m 87.6431,128.1541 0.0605,0.121"
+               id="path1141" />
+            <path
+               d="m 87.7036,128.2751 v 0.6652"
+               id="path1142" />
+          </g>
+          <path
+             style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:0.1524;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1"
+             d="m 89.535,128.27 -1.1113,-1.2704 h -3.0879 v 1.2704 1.2704 h 3.0879 z"
+             id="path1143" />
+        </g>
+        <g
+           style="fill:#000000;fill-opacity:0;stroke:#000000;stroke-width:0.1524;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1"
+           id="g1230">
+          <text
+             x="113.1888"
+             y="128.9958"
+             textLength="3.2269001"
+             font-size="1.6933px"
+             lengthAdjust="spacingAndGlyphs"
+             text-anchor="start"
+             opacity="0"
+             id="text1202">out</text>
+          <g
+             class="stroked-text"
+             id="g1229">
+            <desc
+               id="desc1202">out</desc>
+            <path
+               d="m 113.7728,128.9403 -0.121,-0.0604"
+               id="path1202" />
+            <path
+               d="m 113.6518,128.8799 -0.0605,-0.0605"
+               id="path1203" />
+            <path
+               d="m 113.5913,128.8194 -0.0604,-0.121"
+               id="path1204" />
+            <path
+               d="m 113.5309,128.6984 v -0.3628"
+               id="path1205" />
+            <path
+               d="m 113.5309,128.3356 0.0604,-0.121"
+               id="path1206" />
+            <path
+               d="m 113.5913,128.2146 0.0605,-0.0605"
+               id="path1207" />
+            <path
+               d="m 113.6518,128.1541 0.121,-0.0604"
+               id="path1208" />
+            <path
+               d="m 113.7728,128.0937 h 0.1814"
+               id="path1209" />
+            <path
+               d="m 113.9542,128.0937 0.1209,0.0604"
+               id="path1210" />
+            <path
+               d="m 114.0751,128.1541 0.0605,0.0605"
+               id="path1211" />
+            <path
+               d="m 114.1356,128.2146 0.0605,0.121"
+               id="path1212" />
+            <path
+               d="m 114.1961,128.3356 v 0.3628"
+               id="path1213" />
+            <path
+               d="m 114.1961,128.6984 -0.0605,0.121"
+               id="path1214" />
+            <path
+               d="m 114.1356,128.8194 -0.0605,0.0605"
+               id="path1215" />
+            <path
+               d="m 114.0751,128.8799 -0.1209,0.0604"
+               id="path1216" />
+            <path
+               d="m 113.9542,128.9403 h -0.1814"
+               id="path1217" />
+            <path
+               d="m 115.2846,128.0937 v 0.8466"
+               id="path1218" />
+            <path
+               d="m 114.7403,128.0937 v 0.6652"
+               id="path1219" />
+            <path
+               d="m 114.7403,128.7589 0.0605,0.121"
+               id="path1220" />
+            <path
+               d="m 114.8008,128.8799 0.121,0.0604"
+               id="path1221" />
+            <path
+               d="m 114.9218,128.9403 h 0.1814"
+               id="path1222" />
+            <path
+               d="m 115.1032,128.9403 0.1209,-0.0604"
+               id="path1223" />
+            <path
+               d="m 115.2241,128.8799 0.0605,-0.0605"
+               id="path1224" />
+            <path
+               d="m 115.7079,128.0937 h 0.4838"
+               id="path1225" />
+            <path
+               d="m 115.8893,127.6703 v 1.0886"
+               id="path1226" />
+            <path
+               d="m 115.8893,128.7589 0.0605,0.121"
+               id="path1227" />
+            <path
+               d="m 115.9498,128.8799 0.121,0.0604"
+               id="path1228" />
+            <path
+               d="m 116.0708,128.9403 h 0.1209"
+               id="path1229" />
+          </g>
+          <path
+             style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:0.1524;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1"
+             d="m 111.76,128.27 1.1113,1.2704 h 4.3578 v -1.2704 -1.2704 h -4.3578 z"
+             id="path1230" />
+        </g>
+        <path
+           d="m 89.535,128.27 h 1.27"
+           id="path1281"
+           style="fill:#000000;fill-opacity:0;stroke:#000000;stroke-width:0.1524;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1" />
+        <path
+           d="m 100.33,128.27 v 6.35"
+           id="path1282"
+           style="fill:#000000;fill-opacity:0;stroke:#000000;stroke-width:0.1524;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1" />
+        <path
+           d="m 107.95,128.27 v 6.35"
+           id="path1283"
+           style="fill:#000000;fill-opacity:0;stroke:#000000;stroke-width:0.1524;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1" />
+        <path
+           d="m 98.425,128.27 h 1.905"
+           id="path1284"
+           style="fill:#000000;fill-opacity:0;stroke:#000000;stroke-width:0.1524;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1" />
+        <path
+           d="m 107.95,123.19 v 5.08"
+           id="path1286"
+           style="fill:#000000;fill-opacity:0;stroke:#000000;stroke-width:0.1524;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1" />
+        <path
+           d="m 100.33,123.19 v 5.08"
+           id="path1290"
+           style="fill:#000000;fill-opacity:0;stroke:#000000;stroke-width:0.1524;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1" />
+        <path
+           d="m 107.95,128.27 h 3.81"
+           id="path1296"
+           style="fill:#000000;fill-opacity:0;stroke:#000000;stroke-width:0.1524;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1" />
+      </g>
+      <g
+         id="g1338">
+        <circle
+           cx="107.95"
+           cy="128.27"
+           r="0.45719999"
+           id="circle1327"
+           style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:0.1524;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1" />
+        <circle
+           cx="100.33"
+           cy="128.27"
+           r="0.45719999"
+           id="circle1328"
+           style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:0.1524;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1" />
+      </g>
+    </g>
+  </g>
+</svg>

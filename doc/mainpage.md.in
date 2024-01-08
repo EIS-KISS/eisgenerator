@@ -1,0 +1,46 @@
+\mainpage @PROJECT_NAME@ manual
+
+@PROJECT_NAME@ is a shared libary (lib@PROJECT_NAME@.so) and CLI application that allows one to generate EIS spectra with high performance. The target application is generateing test and example datasets for machine lerning applications.
+
+@PROJECT_NAME@'s development and target platform is GNU/Linux, but besides a c++20 compile and libstd++ it has no dependancies and should compile on nigh any platform.
+
+@PROJECT_NAME@ also has python bindings, not described here but note that useing these erases a lot of the performance benefit of using this libary
+
+for an example on how to use the libary see example tab above
+
+for a description on how the model description string used by this libary see \ref modelpage
+
+## Execution models:
+
+lib@PROJECT_NAME@ incoperates three execution models to choose from depending on your workloads requirements:
+
+### Tree execution
+
+Upon invocation of eis::Model::Model the model string is parsed into a tree of objects. In the default tree execution the model parameters and frequencies are passed down the tree with the help of the virtual function tables of the the objects in question (black arrows). The results are then passed up the tree (blue arrows), see figure below:
+
+\image html DirectExecution.svg width=800px
+
+This execution model has the advantage of very low latency at the expense of throughput. It is most optimal if few impedances are to be calcuated.
+This exection model will be chosen by default.
+
+### Compiled execution
+
+In compiled execution eis::Model::compile genreates a c++ function containing an implementation of of the equivalent circuit. This code is then compiled by gcc and loaded and cached by lib@PROJECT_NAME@. Subsiquent calls to eis::Model::compile will then use the cached object.
+Once a model has been compiled any Subsiquent use of the execute family of methods will us the compiled object instead of tree exection.
+This results in a speedup of 10x from the reduction in function call overhead and the usage of vectorization.
+
+\image html CompiledExecution.svg width=800px
+
+This execution model is the most performant option when evalution of many impedances is desired and exection is to be performed on a cpu.
+This exection model is only available on UNIX and UNIX-like platforms provideing [dlopen()](https://man7.org/linux/man-pages/man3/dlopen.3.html) and [fork()](https://www.man7.org/linux/man-pages/man2/fork.2.html).
+
+### TorchScript exection
+
+The final exection model generates a [TorchScript](https://pytorch.org/docs/stable/jit.html) for the equivalent circuit which can be compiled using [torch::jit::compile](https://pytorch.org/cppdocs/api/function_namespacetorch_1_1jit_1a8660dc13a6b82336aadac667e6dccba1.html) into a graph of torch/rocBLAS/cuBLAS gpu kernels for gpu exection. This provides the highesst possble performance. Due to the high latency associated with executing gpu kernels this methods should only be expected to outperform compiled execution if 10^8 or more datapoints are required and only performs well when a large batch of datapoints is required at a time. This version is also highly advantagous when calculateing impedance spectra as part of a larger system requireing gpu execution as in this case expensive device->host->device copies are avoided. Though torch autograd this version also provides analytic derivatives makeing it usefull where integration into machine-lerning backward passes is required. Due to defficanies in the windows port of Torch this version massively underperforms on Microsoft Windows and another platform should be used.
+
+\image html TorchExecution.svg width=800px
+
+-----------------------------------------------------------
+
+@PROJECT_NAME@ is licenced to you under the Gnu Lesser General Public License Version 3.0
+
