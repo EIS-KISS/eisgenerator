@@ -62,7 +62,7 @@ static void runSweep(const Config& config, eis::Model& model)
 	else if(config.extrapolate)
 	{
 		std::vector<fvalue> exrapolateOmegas = config.extrapolateRange.getRangeVector();
-		results = eis::fitToFrequencies(exrapolateOmegas, results);
+		results = eis::fitToFrequencies(exrapolateOmegas, results, true);
 		eis::Log(eis::Log::INFO)<<"extrapolated results:";
 	}
 	else
