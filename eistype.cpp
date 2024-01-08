@@ -114,6 +114,13 @@ bool eis::Range::isSane() const
 	return true;
 }
 
+
+std::ostream &operator<<(std::ostream &s, Range const& range)
+{
+	s<<range.getString();
+	return s;
+}
+
 //Compute simmuliarity on a bode plot
 fvalue eis::eisDistance(const std::vector<eis::DataPoint>& a, const std::vector<eis::DataPoint>& b)
 {
@@ -399,4 +406,16 @@ EisSpectra EisSpectra::loadFromDisk(const std::filesystem::path& path)
 	{
 		throw file_error(path.string() + std::string(": ") + err.what());
 	}
+}
+
+std::ostream &operator<<(std::ostream &s, EisSpectra const& spectra)
+{
+	spectra.saveToStream(s);
+	return s;
+}
+
+std::ostream &operator<<(std::ostream &s, DataPoint const& dp)
+{
+	s<<dp.im;
+	return s;
 }
