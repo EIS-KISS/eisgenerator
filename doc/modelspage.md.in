@@ -1,8 +1,8 @@
 \page modelpage Model Format
 
-The model format of @PROJECT_NAME@ encodes any sieres/ parralell combination of implemented impedances
+The model format of @PROJECT_NAME@ encodes any series/ parallel combination of implemented impedances
 
-Curretly @PROJECT_NAME@ supports the following elements which eatch have a number of parameters:
+Currently @PROJECT_NAME@ supports the following elements which each have a number of parameters:
 * c: cap
 	* one parameter: capacitance {C}
 * r: resistor
@@ -10,43 +10,43 @@ Curretly @PROJECT_NAME@ supports the following elements which eatch have a numbe
 * l: inductor
 	* one parameter: inductance {L}
 * w: warburg element (infinite), one parameters {A}
-	* one parameter: Warburg coefficant {A}
+	* one parameter: Warburg coefficient {A}
 * p: constant phase element
 	* two parameters: {Q, alpha}
-* t: finite approximation of a transmition line
+* t: finite approximation of a transition line
 	* three parameters: capacitance, resistance, approximation order {C, R, n}
 
 ## Combinations
 
-Combinations of these elements are achived by writeing them against eatch other for a parralell combination, or with a '-' in between for serial combinatsions:
+Combinations of these elements are achieved by writing them against each other for a parallel combination, or with a '-' in between for serial combinations:
 
 "r-c" is thus a serial combination of a resistor and a capacitance:
 | r-c |
 | :---- |
 | \image html r-c.svg width=300px |
 
-While "cr" is a parralell combination of a resistor and a capacitance:
+While "cr" is a parallel combination of a resistor and a capacitance:
 | rc |
 | :---- |
 | \image html rc.svg width=300px |
 
-While "r-cr" is a parralell combination of a resistor and a capacitance in series with another resistance, not that the implicit parralell operator has operator precedence:
+While "r-cr" is a parallel combination of a resistor and a capacitance in series with another resistance, not that the implicit parallel operator has operator precedence:
 | r-cr |
 | :---- |
 | \image html r-rc.svg width=300px |
 
-Brakets ( and ) are also support and modify the order of operations as one would expect "(r-c)r" is a series combination of a resistor and a capacitance in parralell with another resistance:
+Brackets ( and ) are also support and modify the order of operations as one would expect "(r-c)r" is a series combination of a resistor and a capacitance in parallel with another resistance:
 | (r-c)r |
 | :---- |
 | \image html _r-c_r.svg width=300px |
 
 ## Parameters
 
-To pass circut element parameters to @PROJECT_NAME@ a format embedded into the strings is perfered. Parameters are passed by adding them in braces behind the element thus "r{100}-c{3e-6}r{1e4}" is a 100 Ohm resistor in series with a 3 Microfarad capacitance that is in parralell with  a 3 kOhm resistance.
+To pass circuit element parameters to @PROJECT_NAME@ a format embedded into the strings is preferred. Parameters are passed by adding them in braces behind the element thus "r{100}-c{3e-6}r{1e4}" is a 100 Ohm resistor in series with a 3 Microfarad capacitance that is in parallel with  a 3 kOhm resistance.
 
-When a element takes multiple parameters, those are seperated by a ',' like so: r{5e4}-p{1e-5, 0.8}
+When a element takes multiple parameters, those are separated by a ',' like so: r{5e4}-p{1e-5, 0.8}
 
-Ranges are also supported, here ~ is used as a seperator between the start and the end of a range, thus r{1~1e3} is a resistor with a value in a linear range between 1 and 1000 Ohms. By adding a trailing 'L' the range can be marked as distrobuted logathithmicly in base 10, thus  r{1~1e3L} is sutch a logarithmic range.
+Ranges are also supported, here ~ is used as a separator between the start and the end of a range, thus r{1~1e3} is a resistor with a value in a linear range between 1 and 1000 Ohms. By adding a trailing 'L' the range can be marked as distributed logarithmic in base 10, thus  r{1~1e3L} is such a logarithmic range.
 
 Ranges are used to make @PROJECT_NAME@ generate spectra for all combinations of parameters in the range(s) of the circuit elements.
 

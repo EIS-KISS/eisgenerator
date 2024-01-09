@@ -1,5 +1,6 @@
+//SPDX-License-Identifier:         LGPL-3.0-or-later
 //
-// eisgenerator - a shared libary and application to generate EIS spectra
+// eisgenerator - a shared library and application to generate EIS spectra
 // Copyright (C) 2022-2024 Carl Philipp Klemm <carl@uvos.xyz>
 //
 // This file is part of eisgenerator.

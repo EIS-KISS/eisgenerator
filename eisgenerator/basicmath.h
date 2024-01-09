@@ -1,4 +1,5 @@
-/* * eisgenerator - a shared libary and application to generate EIS spectra
+//SPDX-License-Identifier:         LGPL-3.0-or-later
+/* * eisgenerator - a shared library and application to generate EIS spectra
  * Copyright (C) 2022-2024 Carl Philipp Klemm <carl@uvos.xyz>
  *
  * This file is part of eisgenerator.
@@ -24,35 +25,35 @@
 namespace eis
 {
 	/**
-	Various math functions perfomed on eisgenerator types
+	Various math functions performed on eisgenerator types
 	* @defgroup MATH Math
 	* @{
 	*/
 
 	/**
-	* @brief Calculates the element wise absolute gradiant at the given point of the data given
+	* @brief Calculates the element wise absolute gradient at the given point of the data given
 	*
-	* @param data the data to calculate the gradiant on
-	* @param index the position in the data to calculate the gradiant at
-	* @return the element wise absolute gradiant abs(re(grad(a)))+abs(im(grad(a)))i
+	* @param data the data to calculate the gradient on
+	* @param index the position in the data to calculate the gradient at
+	* @return the element wise absolute gradient abs(re(grad(a)))+abs(im(grad(a)))i
 	*/
 	std::complex<fvalue> absGrad(const std::vector<eis::DataPoint>& data, size_t index);
 
 	/**
 	* @brief Calculates derivative at the given point of the data given
 	*
-	* @param data the data to calculate the gradiant on
-	* @param index the position in the data to calculate the gradiant at
+	* @param data the data to calculate the gradient on
+	* @param index the position in the data to calculate the gradient at
 	* @return the derivative
 	*/
 	fvalue grad(const std::vector<fvalue>& data, const std::vector<fvalue>& omega, size_t index);
 
 	/**
-	* @brief Calculates the gradiant at the given point of the data given
+	* @brief Calculates the gradient at the given point of the data given
 	*
-	* @param data the data to calculate the gradiant on
-	* @param index the position in the data to calculate the gradiant at
-	* @return the gradiant
+	* @param data the data to calculate the gradient on
+	* @param index the position in the data to calculate the gradient at
+	* @return the gradient
 	*/
 	std::complex<fvalue> grad(const std::vector<eis::DataPoint>& data, size_t index);
 
@@ -98,10 +99,10 @@ namespace eis
 	std::vector<eis::DataPoint> rescale(const std::vector<eis::DataPoint>& data, size_t outputSize);
 
 	/**
-	* @brief Calculates the pearson correlation between the imaginary and the real part of the data
+	* @brief Calculates the Pearson correlation between the imaginary and the real part of the data
 	*
-	* @param data data caluclate the pearson correlation on
-	* @return the pearson correlation coefficent
+	* @param data data to calculate the Pearson correlation on
+	* @return the Pearson correlation coefficient
 	*/
 	fvalue pearsonCorrelation(const std::vector<eis::DataPoint>& data);
 
@@ -110,12 +111,12 @@ namespace eis
 	*
 	* @param data the data to calculate on
 	* @param centroid the centroid to use, if nullptr is passed here, the mean of the data will be used as the centroid
-	* @return the pearson correlation coefficent
+	* @return the Pearson correlation coefficient
 	*/
 	fvalue nyquistAreaVariance(const std::vector<eis::DataPoint>& data, eis::DataPoint* centroid = nullptr);
 
 	/**
-	* @brief Finds the maximum distance between subsiquent points in the data in the nyquist plane
+	* @brief Finds the maximum distance between subsequent points in the data in the nyquist plane
 	*
 	* @param data the data to use
 	* @return the largest distance
@@ -133,7 +134,7 @@ namespace eis
 
 	/**
 	* @brief Removes duplicate data points form the data
-	* duplicates are detected by checking the value of omega for samenes using fvalueEq with the default ulp
+	* duplicates are detected by checking the value of omega for sameness using fvalueEq with the default ulp
 	*
 	* @param data the data to remove duplicates from
 	*/
@@ -144,21 +145,21 @@ namespace eis
 	*
 	* Equality is considered given when the values are within ulp epsilons at the magnitude of the sum of operands.
 	*
-	* @param a the first value to compeare
-	* @param b the second value to compeare
+	* @param a the first value to compare
+	* @param b the second value to compare
 	* @return true if equal, false if unequal
 	*/
 	bool fvalueEq(fvalue a, fvalue b, unsigned int ulp = 4);
 
 	/**
-	* @brief this function resamples, extrapolates and intrapolates to fit the data given to the frequencies also given
+	* @brief this function resamples, extrapolates and interpolates to fit the data given to the frequencies also given
 	*
-	* Data is resampled to the target size, iterpolation for datapoints is performed using linear interpolation
+	* Data is resampled to the target size, interpolation for data points is performed using linear interpolation
 	* extrapolation is performed using linear or base 10 logarithmic extrapolation.
 	*
 	* @param omegas the frequencies to resample the data to
 	* @param data the data to resample
-	* @param linearExtrapolation true if linear extrapolation is to be perfomed, otherwise base 10 logarithmic extrapolation is used
+	* @param linearExtrapolation true if linear extrapolation is to be performed, otherwise base 10 logarithmic extrapolation is used
 	* @return the resampled data
 	*/
 	std::vector<eis::DataPoint> fitToFrequencies(std::vector<fvalue> omegas,

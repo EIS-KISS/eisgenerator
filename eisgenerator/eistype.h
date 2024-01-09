@@ -1,4 +1,5 @@
-/* * eisgenerator - a shared libary and application to generate EIS spectra
+//SPDX-License-Identifier:         LGPL-3.0-or-later
+/* * eisgenerator - a shared library and application to generate EIS spectra
  * Copyright (C) 2022-2024 Carl Philipp Klemm <carl@uvos.xyz>
  *
  * This file is part of eisgenerator.
@@ -40,7 +41,7 @@ namespace eis
 */
 
 /**
-* @brief Basic singluar EIS data point
+* @brief Basic singular EIS data point
 */
 class DataPoint
 {
@@ -110,13 +111,13 @@ class Range
 public:
 	fvalue start; /**< Start of the range*/
 	fvalue end; /**< End of the range*/
-	size_t count = 0; /**< Numer of elements in the range*/
+	size_t count = 0; /**< Number of elements in the range*/
 	size_t step = 0; /**< Currently active step*/
 	bool log = false; /**< True if the elements in the range are to be spaced in log10 increments*/
 
 	/**
-	* @brief calculats the distance between elements in the range
-	* will calcuate the log10 of the distance if the range is logarithmic
+	* @brief calculates the distance between elements in the range
+	* will calculate the log10 of the distance if the range is logarithmic
 	*
 	* @return the distance between steps of this range
 	*/
@@ -128,7 +129,7 @@ public:
 	}
 
 	/**
-	* @brief calucates the value of the current step
+	* @brief calculates the value of the current step
 	*
 	* @return the value of the current step
 	*/
@@ -138,7 +139,7 @@ public:
 	}
 
 	/**
-	* @brief calucates the mean of the start and the end values
+	* @brief calculates the mean of the start and the end values
 	*
 	* @return the mean of the start and the end values
 	*/
@@ -148,7 +149,7 @@ public:
 	}
 
 	/**
-	* @brief calucates the value at the given index
+	* @brief calculates the value at the given index
 	*
 	* @return the value at the given index
 	*/
@@ -191,7 +192,7 @@ public:
 	void print(int level) const;
 
 	/**
-	* @brief gets a machine parsable string encodeing this range
+	* @brief gets a machine parseable string encoding this range
 	*
 	* @return the string
 	*/
@@ -199,21 +200,21 @@ public:
 
 	/**
 	* @brief checks if the values of this range are sane
-	* this checks for some common errors like haveing a end < beign
+	* this checks for some common errors like having a end < being
 	*
 	* @return true if sane, false if not
 	*/
 	bool isSane() const;
 
 	/**
-	* @brief this function consturcts a vector that contains all elements of this range
+	* @brief this function constructs a vector that contains all elements of this range
 	*
-	* @return the vector with the elments of this range
+	* @return the vector with the elements of this range
 	*/
 	std::vector<fvalue> getRangeVector() const;
 
 	/**
-	* @brief this function creates a range from the parsable string
+	* @brief this function creates a range from the parseable string
 	*
 	* @throw std::invalid_argument when the string syntax is incorrect
 	* @return the range that was parsed from the string
@@ -221,7 +222,7 @@ public:
 	[[nodiscard]] static Range fromString(std::string str, size_t count);
 
 	/**
-	* @brief this function creates a vector ranges from the parsable parameter array string
+	* @brief this function creates a vector ranges from the parseable parameter array string
 	*
 	* @throw std::invalid_argument when the string syntax is incorrect
 	* @return the vector of ranges that was parsed from the string
@@ -273,8 +274,8 @@ public:
 	* @brief Constructs a EisSpectra
 	*
 	* @param data vector of the data points of the spectra
-	* @param model model descritpion string for this spectra
-	* @param header a freform text that will be inclded in any save of this spectra
+	* @param model model description string for this spectra
+	* @param header a free-form text that will be included in any save of this spectra
 	* @param labels an optional vector of giving the values of the inputs of the model to get this spectra
 	* @param labelNames an optional vector of names describing every input of the model
 	*/
@@ -284,11 +285,11 @@ public:
 
 	/**
 	* @brief Constructs a EisSpectra
-	* this function differes from the above only in the datatype of the label
+	* this function differs from the above only in the datatype of the label
 	*
 	* @param data vector of the data points of the spectra
-	* @param model model descritpion string for this spectra
-	* @param header a freform text that will be inclded in any save of this spectra
+	* @param model model description string for this spectra
+	* @param header a free-form text that will be included in any save of this spectra
 	* @param labels an optional vector of giving the values of the inputs of the model to get this spectra
 	* @param labelNames an optional vector of names describing every input of the model
 	*/
@@ -297,11 +298,11 @@ public:
 
 	/**
 	* @brief Constructs a EisSpectra
-	* this function differes from the above only in the datatype of the label
+	* this function differs from the above only in the datatype of the label
 	*
 	* @param data vector of the data points of the spectra
-	* @param model model descritpion string for this spectra
-	* @param header a freform text that will be inclded in any save of this spectra
+	* @param model model description string for this spectra
+	* @param header a free-from text that will be included in any save of this spectra
 	* @param labels an optional vector of giving the values of the inputs of the model to get this spectra
 	* @param labelNames an optional vector of names describing every input of the model
 	*/
@@ -310,12 +311,12 @@ public:
 
 	/**
 	* @brief Constructs a EisSpectra
-	* this function differes from the above only in the datatype of the label
+	* this function differs from the above only in the datatype of the label
 	*
 	* @param data vector of the data points of the spectra
-	* @param model model descritpion string for this spectra
-	* @param header a freeform text that will be inclded in any save of this spectra
-	* @param label a value corrisponding to all inputs of the model
+	* @param model model description string for this spectra
+	* @param header a free-form text that will be included in any save of this spectra
+	* @param label a value corresponding to all inputs of the model
 	* @param maxLabel the number of inputs of the model
 	*/
 	EisSpectra(const std::vector<DataPoint>& data, const std::string& model, const std::string& header,
@@ -409,15 +410,15 @@ public:
 	/**
 	* @brief Saves the spectra to disk
 	*
-	* @param path a path to the file on disk where the spectra shal be saved
-	* @return true on sucess, false on failure
+	* @param path a path to the file on disk where the spectra shall be saved
+	* @return true on success, false on failure
 	*/
 	bool saveToDisk(const std::filesystem::path& path) const;
 
 	/**
 	 * @brief Saves the spectra in the given stream
 	 *
-	 * @param stream a std::ostream into which the specta will be saved
+	 * @param stream a std::ostream into which the spectra will be saved
 	 */
 	void saveToStream(std::ostream& stream) const;
 };
@@ -450,7 +451,7 @@ fvalue eisDistance(const std::vector<eis::DataPoint>& a, const std::vector<eis::
 
 
 /**
-* @brief Returns the mean distance of the points in a to the linearly interporlated nyquist curve of b
+* @brief Returns the mean distance of the points in a to the linearly interpolated nyquist curve of b
 *
 * This implementation is quite slow
 *

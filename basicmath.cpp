@@ -1,5 +1,6 @@
+//SPDX-License-Identifier:         LGPL-3.0-or-later
 //
-// eisgenerator - a shared libary and application to generate EIS spectra
+// eisgenerator - a shared library and application to generate EIS spectra
 // Copyright (C) 2022-2024 Carl Philipp Klemm <carl@uvos.xyz>
 //
 // This file is part of eisgenerator.
@@ -340,7 +341,7 @@ static eis::DataPoint linearExtrapoloatePoint(fvalue omega, const std::vector<ei
 		<<"\n\tsloap: "<<imagReg.slope<<"\n\tstderror: "<<imagReg.stdError;
 
 	if(realReg.stdError > 3 || imagReg.stdError > 3)
-		throw std::invalid_argument("input data must be sufficantly linear");
+		throw std::invalid_argument("input data must be sufficiently linear");
 
 	std::complex<fvalue> expIm(realReg.slope*log10(omega)+realReg.offset, imagReg.slope*log10(omega)+imagReg.offset);
 

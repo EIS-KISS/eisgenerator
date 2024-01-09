@@ -1,7 +1,9 @@
+[comment]: \page README Readme
+
 # eisgenerator
 
-eisgenerator is a shared libary (libeisgenerator.so) and CLI application that allows one to generate [EIS](https://de.wikipedia.org/wiki/Impedanzspektroskopie) spectra with high performance.
-The target application is genrating test and example datasets for machine lerning applications.
+eisgenerator is a shared library (libeisgenerator.so) and CLI application that allows one to generate [EIS](https://de.wikipedia.org/wiki/Impedanzspektroskopie) spectra with high performance.
+The target application is generating test and example datasets for machine learning applications.
 
 eisgenerator's development and target platform is UNIX, but it should compile on nigh any platform
 
@@ -29,7 +31,7 @@ In a console do:
 
 ### Cross-compile for windows on UNIX
 
-* Have mingw cross-compile toolchaing installed
+* Have mingw cross-compile toolchain installed
 * git clone https://git-ce.rwth-aachen.de/carl_philipp.klemm/eisgenerator.git
 * cd eisgenerator
 * mkdir build
@@ -46,7 +48,7 @@ eisgenerator_export --model="r{1e3}-r{100}c{1e-6}" --omega=1-1e6 --omegasteps=10
 
 flags:
 
---model: model string, format is simmular to RHD RelaxIS except that the implicit operator is parallel instead of serial, ie. "rc" is a resistor and condenser in parallel while "r-c" is the same in series and that parameters can be passed by adding {number} after the parameter, if an element requires more than one parameter they are specified by adding several comma seperated values in between the brackets like so: {420, 56}
+--model: model string, format is similar to RHD RelaxIS except that the implicit operator is parallel instead of serial, IE. "rc" is a resistor and condenser in parallel while "r-c" is the same in series and that parameters can be passed by adding {number} after the parameter, if an element requires more than one parameter they are specified by adding several comma separated values in between the brackets like so: {420, 56}
 
 * Supported Elements
 	* c: cap
@@ -56,13 +58,13 @@ flags:
 	* l: inductor
 		* one parameter: inductance {L}
 	* w: warburg element (infinite), one parameters {A}
-		* one parameter: Warburg coefficant {A}
+		* one parameter: Warburg coefficient {A}
 	* p: constant phase element
 		* two parameters: {Q, alpha}
-	* t: finite approximation of a transmition line
+	* t: finite approximation of a transition line
 		* three parameters: capacitance, resistance, approximation order {C, R, n}
 
---omega: range of freqency values (in rad/s) to sweep
+--omega: range of frequency values (in rad/s) to sweep
 
 --omegasteps: amount of steps to take in the range specified by --omega
 
@@ -78,4 +80,4 @@ Generates Nyquist plot of model specified, allows the usage of the same flags as
 
 ## Python bindings
 
-python bindings can be build seperately from: [eisgeneratorpy](https://git-ce.rwth-aachen.de/carl_philipp.klemm/eisgeneraorpy)
+python bindings can be build separately from: [eisgeneratorpy](https://git-ce.rwth-aachen.de/carl_philipp.klemm/eisgeneraorpy)

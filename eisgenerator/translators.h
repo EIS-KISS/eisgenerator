@@ -1,4 +1,5 @@
-/* * eisgenerator - a shared libary and application to generate EIS spectra
+//SPDX-License-Identifier:         LGPL-3.0-or-later
+/* * eisgenerator - a shared library and application to generate EIS spectra
  * Copyright (C) 2022-2024 Carl Philipp Klemm <carl@uvos.xyz>
  *
  * This file is part of eisgenerator.
@@ -55,7 +56,7 @@ std::string relaxisToEis(const std::string& in, const std::vector<double>& param
 std::string eisToRelaxis(const std::string& in);
 
 /**
-* @brief Translates a Boukamp Circut Description Code (CDC) string into the format used by this library
+* @brief Translates a Boukamp Circuit Description Code (CDC) string into the format used by this library
 *
 * @throws parse_errror
 * @param in the CDC string
@@ -64,7 +65,7 @@ std::string eisToRelaxis(const std::string& in);
 std::string cdcToEis(std::string in);
 
 /**
-* @brief Translates a string for this library a Boukamp Circut Description Code (CDC)
+* @brief Translates a string for this library a Boukamp Circuit Description Code (CDC)
 *
 * Note that any parameters embedded into the eisgenerator model string will be striped and
 * not included in the CDC.
@@ -79,8 +80,8 @@ std::string eisToCdc(const std::string& in);
 * @brief Translates a model description string as used by the MADAP library into the format used by this library
 
 * @param in a model description string as used by the MADAP library
-* @param parameters optinally a string containing the parameters of the model in MADAP parameter format
-* @return the eisgenerator model string optinally including embedded parameters
+* @param parameters optionally a string containing the parameters of the model in MADAP parameter format
+* @return the eisgenerator model string optionally including embedded parameters
 */
 std::string madapToEis(const std::string& in, const std::string& parameters = "");
 
