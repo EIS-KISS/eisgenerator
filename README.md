@@ -81,3 +81,7 @@ Generates Nyquist plot of model specified, allows the usage of the same flags as
 ## Python bindings
 
 python bindings can be build separately from: [eisgeneratorpy](https://git-ce.rwth-aachen.de/carl_philipp.klemm/eisgeneraorpy)
+
+### Linking
+
+it is best to link to this library with the help of [pkg-config](https://www.freedesktop.org/wiki/Software/pkg-config/) as this provides platform a agnostic to query for paths and flags. Almost certenly, pkg-config is already integrated into your buildsystem.
