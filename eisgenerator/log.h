@@ -25,16 +25,22 @@
 namespace eis
 {
 
+/**
+* Various math functions performed on eisgenerator types
+* @defgroup LOG Log
+* @{
+*/
+
 class Log 
 {
 public:
 	
 	enum Level
 	{
-		DEBUG,
-		INFO,
-		WARN,
-		ERROR
+		DEBUG, /**< Messages useful for debugging */
+		INFO,  /**< Messages of intrest to the user incl. progress */
+		WARN,  /**< Non fatal errors or problems affecting performance or numeric precision  */
+		ERROR  /**< Fatal errors  */
 	};
 
 private:
@@ -46,11 +52,23 @@ private:
 	
 public:
 
-	static bool headers;
-	static Level level;
+	static bool headers; /**< If true output will be prefixed with a header detailing the origin of the message */
+	static Level level;  /**< Minimum Level required for output to be printed */
 
 	Log() {}
-	Log(Level type, bool endlineI = true);
+	/**
+	* @brief Constructor
+	*
+	* This Constructor is to be used like a global stream. Thus if logging is desired
+	* the user of this api shal use Log(DEBUG)<<"This is a debugging meesage";
+	* Using this constructor to create a lvalue has some negative side effects such
+	* as: Possibly holding a global lock for the lifetime of the object and potenttaly
+	* unintuative newline behavior.
+	*
+	* @param type The Level to use for this message.
+	* @param endline If true an UNIX newline '\n' will be emmited when the oject is destroyed
+	*/
+	Log(Level type, bool endline = true);
 	~Log();
 	
 	template<class T> Log &operator<<(const T &msg) 
@@ -63,5 +81,7 @@ public:
 		return *this;
 	}
 };
+
+/** @} */
 
 }

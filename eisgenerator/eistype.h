@@ -92,9 +92,9 @@ public:
 		return *this;
 	}
 	/**
-	* @brief calculates the absolute value of the complex impedance
+	* @brief Calculates the absolute value of the complex impedance.
 	*
-	* @return absolute value of the complex impedance
+	* @return The absolute value of the complex impedance.
 	*/
 	fvalue complexVectorLength() const
 	{
@@ -116,10 +116,11 @@ public:
 	bool log = false; /**< True if the elements in the range are to be spaced in log10 increments*/
 
 	/**
-	* @brief calculates the distance between elements in the range
-	* will calculate the log10 of the distance if the range is logarithmic
+	* @brief Calculates the distance between elements in the range.
 	*
-	* @return the distance between steps of this range
+	* Will calculate the log10 of the distance if the range is logarithmic.
+	*
+	* @return The linear or log distance between steps of this range.
 	*/
 	fvalue stepSize() const
 	{
@@ -129,9 +130,9 @@ public:
 	}
 
 	/**
-	* @brief calculates the value of the current step
+	* @brief Calculates the value of the current step.
 	*
-	* @return the value of the current step
+	* @return The value of the current step.
 	*/
 	fvalue stepValue() const
 	{
@@ -139,9 +140,9 @@ public:
 	}
 
 	/**
-	* @brief calculates the mean of the start and the end values
+	* @brief Calculates the mean of the start and the end values.
 	*
-	* @return the mean of the start and the end values
+	* @return The mean of the start and the end values.
 	*/
 	fvalue center() const
 	{
@@ -149,9 +150,9 @@ public:
 	}
 
 	/**
-	* @brief calculates the value at the given index
+	* @brief Calculates the value at the given index.
 	*
-	* @return the value at the given index
+	* @return The value at the given index.
 	*/
 	fvalue at(size_t index) const
 	{
@@ -185,47 +186,48 @@ public:
 	Range() = default;
 
 	/**
-	* @brief prints the range to stdout via eis::Log
+	* @brief Prints the range to stdout via eis::Log.
 	*
-	* @param level the eis::Log::Level to print at
+	* @param level The eis::Log::Level to print at.
 	*/
 	void print(int level) const;
 
 	/**
-	* @brief gets a machine parseable string encoding this range
+	* @brief Gets a machine parseable string encoding this range.
 	*
-	* @return the string
+	* @return The string.
 	*/
 	std::string getString() const;
 
 	/**
-	* @brief checks if the values of this range are sane
-	* this checks for some common errors like having a end < being
+	* @brief Checks if the values of this range are sane/
 	*
-	* @return true if sane, false if not
+	* This checks for some common errors like having a end < being.
+	*
+	* @return true if sane, false if not.
 	*/
 	bool isSane() const;
 
 	/**
-	* @brief this function constructs a vector that contains all elements of this range
+	* @brief This function constructs a vector that contains all elements of this range.
 	*
-	* @return the vector with the elements of this range
+	* @return The vector with the elements of this range.
 	*/
 	std::vector<fvalue> getRangeVector() const;
 
 	/**
-	* @brief this function creates a range from the parseable string
+	* @brief This function creates a range from the parseable string.
 	*
-	* @throw std::invalid_argument when the string syntax is incorrect
-	* @return the range that was parsed from the string
+	* @throw std::invalid_argument when the string syntax is incorrect.
+	* @return The range that was parsed from the string.
 	*/
 	[[nodiscard]] static Range fromString(std::string str, size_t count);
 
 	/**
-	* @brief this function creates a vector ranges from the parseable parameter array string
+	* @brief This function creates a vector ranges from the parseable parameter array string.
 	*
 	* @throw std::invalid_argument when the string syntax is incorrect
-	* @return the vector of ranges that was parsed from the string
+	* @return The vector of ranges that was parsed from the string.
 	*/
 	[[nodiscard]] static std::vector<Range> rangesFromParamString(const std::string& paramStr, size_t count);
 };
@@ -271,193 +273,204 @@ public:
 
 public:
 	/**
-	* @brief Constructs a EisSpectra
+	* @brief Constructs an EisSpectra.
 	*
-	* @param data vector of the data points of the spectra
-	* @param model model description string for this spectra
-	* @param header a free-form text that will be included in any save of this spectra
-	* @param labels an optional vector of giving the values of the inputs of the model to get this spectra
-	* @param labelNames an optional vector of names describing every input of the model
+	* @param data Vector of the data points of the spectra.
+	* @param model Model description string for this spectra.
+	* @param header A free-form text that will be included in any save of this spectra.
+	* @param labels An optional vector of giving the values of the inputs of the model to get this spectra.
+	* @param labelNames An optional vector of names describing every input of the model.
 	*/
 	EisSpectra(const std::vector<DataPoint>& data, const std::string& model, const std::string& header,
 			   std::vector<double> labels = std::vector<double>(),
 			   std::vector<std::string> labelNames = std::vector<std::string>());
 
 	/**
-	* @brief Constructs a EisSpectra
-	* this function differs from the above only in the datatype of the label
+	* @brief Constructs an EisSpectra.
 	*
-	* @param data vector of the data points of the spectra
-	* @param model model description string for this spectra
-	* @param header a free-form text that will be included in any save of this spectra
-	* @param labels an optional vector of giving the values of the inputs of the model to get this spectra
-	* @param labelNames an optional vector of names describing every input of the model
+	* This function differs from the above only in the datatype of the label.
+	*
+	* @param data Vector of the data points of the spectra.
+	* @param model Model description string for this spectra.
+	* @param header A free-form text that will be included in any save of this spectra.
+	* @param labels An optional vector of giving the values of the inputs of the model to get this spectra.
+	* @param labelNames An optional vector of names describing every input of the model.
 	*/
 	EisSpectra(const std::vector<DataPoint>& data, const std::string& model, const std::string& header,
 			   std::vector<float> labels, std::vector<std::string> labelNames = std::vector<std::string>());
 
 	/**
-	* @brief Constructs a EisSpectra
-	* this function differs from the above only in the datatype of the label
+	* @brief Constructs an EisSpectra.
 	*
-	* @param data vector of the data points of the spectra
-	* @param model model description string for this spectra
-	* @param header a free-from text that will be included in any save of this spectra
-	* @param labels an optional vector of giving the values of the inputs of the model to get this spectra
-	* @param labelNames an optional vector of names describing every input of the model
+	* This function differs from the above only in the datatype of the label.
+	*
+	* @param data Vector of the data points of the spectra.
+	* @param model Model description string for this spectra.
+	* @param header A free-from text that will be included in any save of this spectra.
+	* @param labels An optional vector of giving the values of the inputs of the model to get this spectra.
+	* @param labelNames An optional vector of names describing every input of the model.
 	*/
 	EisSpectra(const std::vector<DataPoint>& data, const std::string& model, const std::string& header,
 			   std::vector<size_t> labels, std::vector<std::string> labelNames = std::vector<std::string>());
 
 	/**
-	* @brief Constructs a EisSpectra
-	* this function differs from the above only in the datatype of the label
+	* @brief Constructs an EisSpectra.
 	*
-	* @param data vector of the data points of the spectra
-	* @param model model description string for this spectra
-	* @param header a free-form text that will be included in any save of this spectra
-	* @param label a value corresponding to all inputs of the model
-	* @param maxLabel the number of inputs of the model
+	* This function differs from the above only in the datatype of the label.
+	*
+	* @param data Vector of the data points of the spectra.
+	* @param model Model description string for this spectra.
+	* @param header A free-form text that will be included in any save of this spectra.
+	* @param label A value corresponding to all inputs of the model.
+	* @param maxLabel The number of inputs of the model.
 	*/
 	EisSpectra(const std::vector<DataPoint>& data, const std::string& model, const std::string& header,
 			   size_t label, size_t maxLabel, std::vector<std::string> labelNames = std::vector<std::string>());
 
 	/**
-	* @brief Constructs a EisSpectra by loading a EIS file from disk
+	* @brief Constructs a EisSpectra by loading an EIS file from disk.
 	*
 	* @throw eis::file_error if there is an error loading the file
-	* @param path the path to the file
+	* @param path The path to the file.
 	*/
 	EisSpectra(const std::filesystem::path& path){*this = loadFromDisk(path);}
 
 	EisSpectra(){}
 
 	/**
-	* @brief Constructs a EisSpectra by loading a EIS file from disk
+	* @brief Constructs a EisSpectra by loading a EIS file from disk.
+	*
+	* This function has the attribute [[nodiscard]]
 	*
 	* @throw eis::file_error if there is an error loading the file
-	* @param path the path to the file
-	* @return the EisSpectra
+	* @param path The path to the file.
+	* @return The EisSpectra parsed from the file.
 	*/
 	[[nodiscard]] static EisSpectra loadFromDisk(const std::filesystem::path& path);
 
 	/**
-	* @brief Constructs a EisSpectra by loading a EIS file from a stream
+	* @brief Constructs a EisSpectra by loading a EIS file from a stream.
+	*
+	* This function has the attribute [[nodiscard]]
 	*
 	* @throw eis::file_error if there is an error loading the file
-	* @param stream the stream that contains the EIS file
-	* @return the EisSpectra
+	* @param stream The stream that contains the EIS file.
+	* @return The EisSpectra parsed from the stream.
 	*/
 	[[nodiscard]] static EisSpectra loadFromStream(std::istream& stream);
 
 	/**
-	* @brief Constructs a EisSpectra by loading a EIS file from a stream
+	* @brief Sets all input values up to a maximum given by maxLabel to the value given by label.
 	*
-	* @param stream the stream that contains the EIS file
-	* @return the EisSpectra
+	* @param label The value to apply to all inputs.
+	* @param maxLabel The maximum number of values to set.
 	*/
 	void setLabel(size_t label, size_t maxLabel);
 
 	/**
-	* @brief Gets the input value of this model, where it is a single value
+	* @brief Gets the input value of this model, where it is a single value.
 	*
-	* @return the input value
+	* @return The input value,
 	*/
 	size_t getLabel();
 
 	/**
-	* @brief Sets the input values of this model
+	* @brief Sets the input values of this model.
 	*
-	* @param label the input values
+	* @param label The input values.
 	*/
 	void setSzLabels(std::vector<size_t> label);
 
 	/**
-	* @brief Sets the input values of this model
+	* @brief Sets the input values of this model.
 	*
-	* @param label the input values
+	* @param label The input values.
 	*/
 	void setLabels(const std::vector<double>& labelsIn);
 
 	/**
-	* @brief Sets the input values of this model
+	* @brief Sets the input values of this model.
 	*
-	* @param label the input values
+	* @param label The input values.
 	*/
 	void setLabels(const std::vector<float>& labelsIn);
 
 	/**
-	* @brief Sets the input values of this model
+	* @brief Sets the input values of this model.
 	*
-	* @param label the input values
+	* @param label The input values.
 	*/
 	std::vector<size_t> getSzLabels() const;
 
 	/**
-	* @brief Returns true if there are multiple inputs, false otherwise
+	* @brief Returns true if there are multiple inputs, false otherwise.
 	*
-	* @return true if there are multiple inputs, false otherwise
+	* @return true if there are multiple inputs, false otherwise.
 	*/
 	bool isMulticlass();
 
 	/**
-	* @brief Returns the inputs as a vector
+	* @brief Returns the inputs as a vector.
 	*
-	* @return the inputs as a vector
+	* @return The inputs as a vector.
 	*/
 	std::vector<fvalue> getFvalueLabels();
 
 	/**
-	* @brief Saves the spectra to disk
+	* @brief Saves the spectra to disk.
 	*
-	* @param path a path to the file on disk where the spectra shall be saved
-	* @return true on success, false on failure
+	* @param path A path to the file on disk where the spectra shall be saved.
+	* @return true on success, false on failure.
 	*/
 	bool saveToDisk(const std::filesystem::path& path) const;
 
 	/**
-	 * @brief Saves the spectra in the given stream
+	 * @brief Saves the spectra in the given stream.
 	 *
-	 * @param stream a std::ostream into which the spectra will be saved
+	 * @param stream A std::ostream into which the spectra will be saved.
 	 */
 	void saveToStream(std::ostream& stream) const;
 };
 
 /**
- * @brief deprecated function use eis::EisSpectra::saveToDisk instead
+ * @brief Deprecated function use eis::EisSpectra::saveToDisk instead.
  */
 [[deprecated]] bool saveToDisk(const EisSpectra& data, const std::filesystem::path& path);
 
 /**
- * @brief deprecated function use eis::EisSpectra::loadFromDisk instead
+ * @brief Deprecated function use eis::EisSpectra::loadFromDisk instead.
  */
 [[deprecated]] [[nodiscard]] EisSpectra loadFromDisk(const std::filesystem::path& path);
 
 /**
-* @brief Returns the a vector of DataPoints as a pair of valarrays
+* @brief Returns the a vector of DataPoints as a pair of valarrays.
 *
-* @return a pair of valarrays first the real part and second the imaginary part
+* @return A pair of valarrays first the real part and second the imaginary part.
 */
 std::pair<std::valarray<fvalue>, std::valarray<fvalue>> eisToValarrays(const std::vector<eis::DataPoint>& b);
 
 /**
-* @brief Returns the mean l2 element wise distance of he given spectra
+* @brief Returns the mean l2 element wise distance of he given spectra.
 *
-* @param a the first set of points
-* @param b the second set of points, must be the same length as a
-* @return the mean l2 distance
+* This function will be moved to the math API in the future.
+*
+* @param a The first set of points.
+* @param b The second set of points, must be the same length as a.
+* @return The mean l2 distance.
 */
 fvalue eisDistance(const std::vector<eis::DataPoint>& a, const std::vector<eis::DataPoint>& b);
 
 
 /**
-* @brief Returns the mean distance of the points in a to the linearly interpolated nyquist curve of b
+* @brief Returns the mean distance of the points in a to the linearly interpolated nyquist curve of b.
 *
-* This implementation is quite slow
+* This function will be moved to the math API in the future.
 *
-* @param a the first set of points
-* @param b the second set of points
-* @return the mean nyquist distance
+* This implementation is quite slow.
+*
+* @param a The first set of points.
+* @param b The second set of points.
+* @return The mean nyquist distance.
 */
 fvalue eisNyquistDistance(const std::vector<eis::DataPoint>& a, const std::vector<eis::DataPoint>& b);
 

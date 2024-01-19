@@ -1,5 +1,3 @@
-[comment]: \page README Readme
-
 # eisgenerator
 
 eisgenerator is a shared library (libeisgenerator.so) and CLI application that allows one to generate [EIS](https://de.wikipedia.org/wiki/Impedanzspektroskopie) spectra with high performance.

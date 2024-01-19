@@ -25,6 +25,7 @@ lib@PROJECT_NAME@ incorporates three execution models to choose from depending o
 Upon invocation of eis::Model::Model the model string is parsed into a tree of objects. In the default tree execution the model parameters and frequencies are passed down the tree with the help of the virtual function tables of the the objects in question (black arrows). The results are then passed up the tree (blue arrows), see figure below:
 
 \image html DirectExecution.svg width=80%
+\image latex DirectExecution.pdf width=\textwidth/2
 
 This execution model has the advantage of very low latency at the expense of throughput. It is most optimal if few impedances are to be calculated.
 This execution model will be chosen by default.
@@ -32,20 +33,22 @@ This execution model is always chosen by the single data point eis::Model::execu
 
 ### Compiled execution
 
-In compiled execution eis::Model::compile generates a c++ function containing an implementation of of the equivalent circuit. This code is then compiled by GCC and loaded and cached by lib@PROJECT_NAME@. Subsequent calls to eis::Model::compile will then use the cached object.
-Once a model has been compiled any subsequent use of the execute family of methods will us the compiled object instead of tree execution.
+In compiled execution eis::Model::compile generates a c++ function containing an implementation of the equivalent circuit. This code is then compiled by GCC and loaded and cached by lib@PROJECT_NAME@. Subsequent calls to eis::Model::compile will then use the cached object.
+Once a model has been compiled any, subsequent use of the execute family of methods will use the compiled object instead of tree execution.
 This results in a speedup of greater than 10x from the reduction in virtual function call overhead and the usage of auto-vectorization.
 
 \image html CompiledExecution.svg width=80%
+\image latex CompiledExecution.pdf width=\textwidth/2
 
 This execution model is the most performant option when evaluation of many impedances is desired and execution is to be performed on a CPU.
 This execution model is only available on UNIX and UNIX-like platforms providing [dlopen()](https://man7.org/linux/man-pages/man3/dlopen.3.html) and [fork()](https://www.man7.org/linux/man-pages/man2/fork.2.html).
 
 ### TorchScript execution
 
-The final execution model generates a [TorchScript](https://pytorch.org/docs/stable/jit.html) for the equivalent circuit which can be compiled using [torch::jit::compile](https://pytorch.org/cppdocs/api/function_namespacetorch_1_1jit_1a8660dc13a6b82336aadac667e6dccba1.html) into a graph of torch/rocBLAS/cuBLAS GPU kernels for GPU execution. This provides the highest possible performance. Due to the high latency associated with executing GPU kernels this methods should only be expected to outperform compiled execution if 10^8 or more data points are required and only performs well when a large batch of data points is required at a time. This version is also highly advantageous when calculating impedance spectra as part of a larger system requiring GPU execution as in this case expensive device->host->device copies are avoided. Though torch autograd this version also provides atomatic derivatives making it useful where integration into machine-learning backward passes is required. Due to deficiencies in the windows port of Torch this version massively underperforms on Microsoft Windows and another platform should be used.
+The final execution model generates a [TorchScript](https://pytorch.org/docs/stable/jit.html) for the equivalent circuit which can be compiled using [torch::jit::compile](https://pytorch.org/cppdocs/api/function_namespacetorch_1_1jit_1a8660dc13a6b82336aadac667e6dccba1.html) into a graph of torch/rocBLAS/cuBLAS GPU kernels for GPU execution. This provides the highest possible performance. Due to the high latency associated with executing GPU kernels this method should only be expected to outperform compiled execution if a total of 10^8 or more data points are required and only performs well when a large batch of these data points is required at a time. This version is also highly advantageous when calculating impedance spectra as part of a larger system requiring GPU execution as in this case expensive device->host->device copies are avoided. Though torch autograd this version also provides atomatic derivatives making it useful where integration into machine-learning backward passes is required. Due to deficiencies in the windows port of Torch this version massively underperforms on Microsoft Windows and another platform should be used. Due to MiOpen not being available on Microsoft Windows this method is unable to perform GPU execution on this platform on AMD hardware, the CPU fallback used in this case is slower than tree execution.
 
 \image html TorchExecution.svg width=80%
+\image latex TorchExecution.pdf width=\textwidth/2
 
 -----------------------------------------------------------
 

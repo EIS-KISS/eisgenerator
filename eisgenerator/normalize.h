@@ -30,35 +30,36 @@ namespace eis
 {
 
 /**
-Functions for normalization of spectra data
+* Functions for normalization of spectra data
 * @defgroup NORM Normalization
 * @{
 */
 
 /**
-* @brief Normalizes the data to [0,1]
+* @brief Normalizes the data to [0,1].
 *
-* @param data the data to normalize
+* @param data The data to normalize.
 */
 void normalize(std::vector<eis::DataPoint>& data);
 
 /**
-* @brief Reduces the data by removing "uninteresting"  regions
-* Uninteresting regions are determined by taking the first and second derivative and removing the areas where these change very little
+* @brief Reduces the data by removing "uninteresting"  regions.
 *
-* @param data the data to reduce
-* @return the reduced data
+* Uninteresting regions are determined by taking the first and second derivative and removing the areas where these change very little.
+*
+* @param data The data to reduce.
+* @return The reduced data.
 */
 std::vector<eis::DataPoint> reduceRegion(const std::vector<eis::DataPoint>& data, fvalue gradThreshFactor = 0.01, bool useSecondDeiv = false);
 
 /**
-* @brief Removes INF and NAN from the dataset by interpolating from neighboring points
+* @brief Removes INF and NAN from the dataset by interpolating from neighboring points.
 *
-* This function is not available when this library is compiled with fast math enabled
+* The universe implodes when function is used while this library is compiled with -ffast-math enabled.
 *
-* As a side effect, this function caps spikes to +-INF to +-10 maximally
+* As a side effect, this function caps spikes to +-INF to +-10 maximally.
 *
-* @param data the data to remove INF and NAN from
+* @param data The data to remove INF and NAN from.
 */
 void eraseSingularites(std::vector<eis::DataPoint>& data);
 

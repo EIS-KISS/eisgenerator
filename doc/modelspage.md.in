@@ -1,6 +1,6 @@
 \page modelpage Model Format
 
-The model format of @PROJECT_NAME@ encodes any series/ parallel combination of implemented impedances
+The model format of @PROJECT_NAME@ encodes any series/ parallel combination of implemented impedances.
 
 Currently @PROJECT_NAME@ supports the following elements which each have a number of parameters:
 * c: cap
@@ -9,12 +9,14 @@ Currently @PROJECT_NAME@ supports the following elements which each have a numbe
 	* one parameter: resistance {R}
 * l: inductor
 	* one parameter: inductance {L}
-* w: warburg element (infinite), one parameters {A}
+* w: warburg element (infinite)
 	* one parameter: Warburg coefficient {A}
 * p: constant phase element
 	* two parameters: {Q, alpha}
 * t: finite approximation of a transition line
 	* three parameters: capacitance, resistance, approximation order {C, R, n}
+
+Element identifiers are case insensitive.
 
 ## Combinations
 
@@ -23,28 +25,32 @@ Combinations of these elements are achieved by writing them against each other f
 "r-c" is thus a serial combination of a resistor and a capacitance:
 | r-c |
 | :---- |
-| \image html r-c.svg width=300px |
+| \image html r-c.svg width=300px; |
+| \image latex r-c.pdf width=\textwidth/2 |
 
 While "cr" is a parallel combination of a resistor and a capacitance:
 | rc |
 | :---- |
-| \image html rc.svg width=300px |
+| \image html rc.svg width=300px  |
+| \image latex rc.pdf width=\textwidth/2|
 
 While "r-cr" is a parallel combination of a resistor and a capacitance in series with another resistance, not that the implicit parallel operator has operator precedence:
 | r-cr |
 | :---- |
 | \image html r-rc.svg width=300px |
+| \image latex r-rc.pdf width=\textwidth/2|
 
-Brackets ( and ) are also support and modify the order of operations as one would expect "(r-c)r" is a series combination of a resistor and a capacitance in parallel with another resistance:
+Brackets '(' and ')' are also supported and modify the order of operations as one would expect. Thus "(r-c)r" is a series combination of a resistor and a capacitance in parallel with another resistance:
 | (r-c)r |
 | :---- |
 | \image html _r-c_r.svg width=300px |
+| \image latex _r-c_r.pdf width=\textwidth/2|
 
 ## Parameters
 
-To pass circuit element parameters to @PROJECT_NAME@ a format embedded into the strings is preferred. Parameters are passed by adding them in braces behind the element thus "r{100}-c{3e-6}r{1e4}" is a 100 Ohm resistor in series with a 3 Microfarad capacitance that is in parallel with  a 3 kOhm resistance.
+To pass circuit element parameters to @PROJECT_NAME@ a format embedded into the strings is preferred. Parameters are passed by adding them in braces behind the element thus "r{100}-c{3e-6}r{1e4}" is a 100 Ohm resistor in series with a 3 microfarad capacitance that is in parallel with  a 3 kOhm resistance.
 
-When a element takes multiple parameters, those are separated by a ',' like so: r{5e4}-p{1e-5, 0.8}
+When an element takes multiple parameters, those are separated by a ',' like so: r{5e4}p{1e-5, 0.8}
 
 Ranges are also supported, here ~ is used as a separator between the start and the end of a range, thus r{1~1e3} is a resistor with a value in a linear range between 1 and 1000 Ohms. By adding a trailing 'L' the range can be marked as distributed logarithmic in base 10, thus  r{1~1e3L} is such a logarithmic range.
 

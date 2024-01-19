@@ -25,123 +25,124 @@
 namespace eis
 {
 	/**
-	Various math functions performed on eisgenerator types
+	* Various math functions performed on eisgenerator types
 	* @defgroup MATH Math
 	* @{
 	*/
 
 	/**
-	* @brief Calculates the element wise absolute gradient at the given point of the data given
+	* @brief Calculates the element wise absolute gradient at the given point of the data given.
 	*
-	* @param data the data to calculate the gradient on
-	* @param index the position in the data to calculate the gradient at
-	* @return the element wise absolute gradient abs(re(grad(a)))+abs(im(grad(a)))i
+	* @param data The data to calculate the gradient on.
+	* @param index The position in the data to calculate the gradient at.
+	* @return The element wise absolute gradient abs(re(grad(a)))+abs(im(grad(a)))i.
 	*/
 	std::complex<fvalue> absGrad(const std::vector<eis::DataPoint>& data, size_t index);
 
 	/**
-	* @brief Calculates derivative at the given point of the data given
+	* @brief Calculates derivative at the given point of the data given.
 	*
-	* @param data the data to calculate the gradient on
-	* @param index the position in the data to calculate the gradient at
-	* @return the derivative
+	* @param data The data to calculate the gradient on.
+	* @param index The position in the data to calculate the gradient at.
+	* @return The derivative.
 	*/
 	fvalue grad(const std::vector<fvalue>& data, const std::vector<fvalue>& omega, size_t index);
 
 	/**
-	* @brief Calculates the gradient at the given point of the data given
+	* @brief Calculates the gradient at the given point of the data given.
 	*
-	* @param data the data to calculate the gradient on
-	* @param index the position in the data to calculate the gradient at
-	* @return the gradient
+	* @param data The data to calculate the gradient on.
+	* @param index The position in the data to calculate the gradient at.
+	* @return The gradient.
 	*/
 	std::complex<fvalue> grad(const std::vector<eis::DataPoint>& data, size_t index);
 
 	/**
-	* @brief Calculates the mean of the given data
+	* @brief Calculates the mean of the given data.
 	*
-	* @param data the data to calculate the mean of
-	* @return the mean
+	* @param data The data to calculate the mean of.
+	* @return The mean
 	*/
 	fvalue mean(const std::vector<fvalue>& data);
 
 	/**
-	* @brief Calculates the mean of the given data
+	* @brief Calculates the mean of the given data.
 	*
-	* @param data the data to calculate the mean of
-	* @return the mean
+	* @param data The data to calculate the mean of.
+	* @return The mean
 	*/
 	std::complex<fvalue> mean(const std::vector<eis::DataPoint>& data);
 
 	/**
-	* @brief Calculates the median of the given data
+	* @brief Calculates the median of the given data.
 	*
-	* @param data the data to calculate the median of
-	* @return the median
+	* @param data The data to calculate the median of.
+	* @return The median.
 	*/
 	fvalue median(std::vector<fvalue> data);
 
 	/**
-	* @brief Calculates the median of the given data
+	* @brief Calculates the median of the given data.
 	*
-	* @param data the data to calculate the median of
-	* @return the median
+	* @param data The data to calculate the median of.
+	* @return The median.
 	*/
 	std::complex<fvalue> median(const std::vector<eis::DataPoint>& data);
 
 	/**
-	* @brief Resamples the data to the given amount of points
+	* @brief Resamples the data to the given amount of points.
 	*
-	* @param data data to resample
-	* @param outputSize size to resample to
-	* @return the resampled data
+	* @param data Data to resample.
+	* @param outputSize Size to resample to.
+	* @return The resampled data.
 	*/
 	std::vector<eis::DataPoint> rescale(const std::vector<eis::DataPoint>& data, size_t outputSize);
 
 	/**
-	* @brief Calculates the Pearson correlation between the imaginary and the real part of the data
+	* @brief Calculates the Pearson correlation between the imaginary and the real part of the data.
 	*
-	* @param data data to calculate the Pearson correlation on
-	* @return the Pearson correlation coefficient
+	* @param data Data to calculate the Pearson correlation on.
+	* @return the Pearson correlation coefficient.
 	*/
 	fvalue pearsonCorrelation(const std::vector<eis::DataPoint>& data);
 
 	/**
-	* @brief Calculates the variance of the distance of the data from a centroid in the nyquist plane
+	* @brief Calculates the variance of the distance of the data from a centroid in the nyquist plane.
 	*
-	* @param data the data to calculate on
-	* @param centroid the centroid to use, if nullptr is passed here, the mean of the data will be used as the centroid
-	* @return the Pearson correlation coefficient
+	* @param data The data to calculate on.
+	* @param centroid The centroid to use, if nullptr is passed here, the mean of the data will be used as the centroid.
+	* @return The Pearson correlation coefficient.
 	*/
 	fvalue nyquistAreaVariance(const std::vector<eis::DataPoint>& data, eis::DataPoint* centroid = nullptr);
 
 	/**
-	* @brief Finds the maximum distance between subsequent points in the data in the nyquist plane
+	* @brief Finds the maximum distance between subsequent points in the data in the nyquist plane.
 	*
-	* @param data the data to use
-	* @return the largest distance
+	* @param data The data to use.
+	* @return The largest distance.
 	*/
 	fvalue maximumNyquistJump(const std::vector<eis::DataPoint>& data);
 
 	/**
-	* @brief Adds white noise to the data
+	* @brief Adds white noise to the data.
 	*
-	* @param data the data to add noise to
-	* @param amplitude the amplitude of the noise
-	* @param relative if true the amplitude will be taken as relative to the magnitude of the data, otherwise it will be taken as an absolute value
+	* @param data The data to add noise to.
+	* @param amplitude The amplitude of the noise.
+	* @param relative If true, the amplitude will be taken as relative to the magnitude of the data, otherwise it will be taken as an absolute value.
 	*/
 	void noise(std::vector<eis::DataPoint>& data, double amplitude, bool relative);
 
 	/**
-	* @brief Removes duplicate data points form the data
-	* duplicates are detected by checking the value of omega for sameness using fvalueEq with the default ulp
+	* @brief Removes duplicate data points form the data.
+	*
+	* Duplicates are detected by checking the value of omega for sameness using fvalueEq with the default ulp.
 	*
 	* @param data the data to remove duplicates from
 	*/
 	void removeDuplicates(std::vector<eis::DataPoint>& data);
 
 	/**
-	* @brief Checks two fvalues for equality
+	* @brief Checks two fvalues for equality.
 	*
 	* Equality is considered given when the values are within ulp epsilons at the magnitude of the sum of operands.
 	*
@@ -152,15 +153,15 @@ namespace eis
 	bool fvalueEq(fvalue a, fvalue b, unsigned int ulp = 4);
 
 	/**
-	* @brief this function resamples, extrapolates and interpolates to fit the data given to the frequencies also given
+	* @brief This function resamples, extrapolates and interpolates to fit the data given to the frequencies also given.
 	*
 	* Data is resampled to the target size, interpolation for data points is performed using linear interpolation
 	* extrapolation is performed using linear or base 10 logarithmic extrapolation.
 	*
-	* @param omegas the frequencies to resample the data to
-	* @param data the data to resample
-	* @param linearExtrapolation true if linear extrapolation is to be performed, otherwise base 10 logarithmic extrapolation is used
-	* @return the resampled data
+	* @param omegas The frequencies to resample the data to.
+	* @param data The data to resample.
+	* @param linearExtrapolation true if linear extrapolation is to be performed, otherwise base 10 logarithmic extrapolation is used.
+	* @return The resampled data.
 	*/
 	std::vector<eis::DataPoint> fitToFrequencies(std::vector<fvalue> omegas,
 	                                             const std::vector<eis::DataPoint>& data,
