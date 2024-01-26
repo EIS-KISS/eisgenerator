@@ -161,7 +161,7 @@ public:
 	*
 	* @return The uid.
 	*/
-	size_t getUuid();
+	size_t getUuid() const;
 
 	/**
 	* @brief Returns a vector of pointers to the circuit elements in this model.
@@ -267,7 +267,7 @@ public:
 	*
 	* @return The function name in the code for this model.
 	*/
-	std::string getCompiledFunctionName();
+	std::string getCompiledFunctionName() const;
 
 	/**
 	* @brief Gets the function name in the code returned by getTorchScript and getCode for this model.

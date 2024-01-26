@@ -565,7 +565,7 @@ std::vector<size_t> Model::getRecommendedParamIndices(eis::Range omegaRange, dou
 	return indices;
 }
 
-size_t Model::getUuid()
+size_t Model::getUuid() const
 {
 	return std::hash<std::string>{}(getModelStr());
 }
@@ -658,14 +658,14 @@ std::string Model::getTorchScript()
 
 	std::stringstream out;
 	out<<"def "<<getCompiledFunctionName()<<"(parameters: torch.Tensor, omegas: torch.Tensor) -> torch.Tensor:\n";
-	out<<"    assert parameters.size(0) is "<<parameters.size()<<"\n\n";
+	out<<"    assert parameters.size(0) == "<<parameters.size()<<"\n\n";
 	for(size_t i = 0; i < parameters.size(); ++i)
 		out<<"    "<<parameters[i]<<" = parameters["<<i<<"]\n";
 	out<<"\n    return "<<formular<<"+0*omegas\n";
 	return out.str();
 }
 
-std::string Model::getCompiledFunctionName()
+std::string Model::getCompiledFunctionName() const
 {
 	return "model_"+std::to_string(getUuid());
 }
