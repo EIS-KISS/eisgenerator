@@ -76,10 +76,12 @@ eisgenerator_plot --model="r{1e3}-r{100}c{1e-6}" --omega=1-1e6 --log --omegastep
 
 Generates Nyquist plot of model specified, allows the usage of the same flags as eisgenerator_export
 
-## Python bindings
-
-python bindings can be build separately from: [eisgeneratorpy](https://git-ce.rwth-aachen.de/carl_philipp.klemm/eisgeneraorpy)
-
 ### Linking
 
 it is best to link to this library with the help of [pkg-config](https://www.freedesktop.org/wiki/Software/pkg-config/) as this provides platform a agnostic to query for paths and flags. Almost certenly, pkg-config is already integrated into your buildsystem.
+
+## Python bindings
+
+python bindings can be build separately from: [eisgeneratorpy](https://github.com/IMbackK/eisgeneratorpy)
+
+

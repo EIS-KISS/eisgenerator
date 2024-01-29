@@ -1,6 +1,6 @@
 \mainpage @PROJECT_NAME@ manual
 
-**@PROJECT_NAME@** is a C++ shared library (lib@PROJECT_NAME@.so) and CLI application that allows one to generate EIS spectra with high performance. The target application is generating test and example datasets for machine learning applications. @PROJECT_NAME@'s development and target platform is GNU/Linux, but besides a c++20 compiler and libstd++ it has no dependencies and should compile on nigh any platform. @PROJECT_NAME@ also has python bindings, not described here, but note that using these erases a lot of the performance benefit of using this library. For information on how to build this library please look at the \ref README
+**@PROJECT_NAME@** is a C++ shared library (lib@PROJECT_NAME@.so) and CLI application that allows one to generate EIS spectra with high performance. The target application is generating test and example datasets for machine learning applications. @PROJECT_NAME@'s development and target platform is GNU/Linux, but besides a c++20 compiler and libstd++ it has no dependencies and should compile on nigh any platform. @PROJECT_NAME@ also has python bindings, described [here](https://github.com/IMbackK/eisgeneratorpy), but note that using these erases a lot of the performance benefit of using this library. For information on how to build this library please look at the \ref README
 
 for an example on how to use the library see example tab above, for API documentation start here:
 * eis::Model
