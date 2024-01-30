@@ -1,8 +1,8 @@
 \mainpage @PROJECT_NAME@ manual
 
-**@PROJECT_NAME@** is a C++ shared library (lib@PROJECT_NAME@.so) and CLI application that allows one to generate EIS spectra with high performance. The target application is generating test and example datasets for machine learning applications. @PROJECT_NAME@'s development and target platform is GNU/Linux, but besides a c++20 compiler and libstd++ it has no dependencies and should compile on nigh any platform. @PROJECT_NAME@ also has python bindings, described [here](https://github.com/IMbackK/eisgeneratorpy), but note that using these erases a lot of the performance benefit of using this library. For information on how to build this library please look at the \ref README
+**@PROJECT_NAME@** is a C++ shared library (lib@PROJECT_NAME@.so) and CLI application that allows one to generate EIS spectra with high performance. The target application is generating test and example datasets for machine learning applications. @PROJECT_NAME@'s development and target platform is GNU/Linux, but besides a c++20 compiler and libstd++ it has no dependencies and should compile on nigh any platform. @PROJECT_NAME@ also has python bindings, described [here](https://github.com/IMbackK/eisgeneratorpy), but note that using these erases a lot of the performance benefit of using this library. For information on how to build this library please look at the \ref README.
 
-for an example on how to use the library see example tab above, for API documentation start here:
+For an example on how to use this library see the example tab above, for API documentation start here:
 * eis::Model
 	* Main object used to evaluate equivalent circuits
 * \ref TYPES
@@ -14,7 +14,7 @@ for an example on how to use the library see example tab above, for API document
 * \ref TRANS
 	* Functions to translate @PROJECT_NAME@ model strings to and from other formats
 
-for a description on how the model description string used by this library see \ref modelpage
+For a description on how the model description string used by this library see \ref modelpage.
 
 ## Execution models:
 
@@ -45,7 +45,7 @@ This execution model is only available on UNIX and UNIX-like platforms providing
 
 ### TorchScript execution
 
-The final execution model generates a [TorchScript](https://pytorch.org/docs/stable/jit.html) for the equivalent circuit which can be compiled using [torch::jit::compile](https://pytorch.org/cppdocs/api/function_namespacetorch_1_1jit_1a8660dc13a6b82336aadac667e6dccba1.html) into a graph of torch/rocBLAS/cuBLAS GPU kernels for GPU execution. This provides the highest possible performance. Due to the high latency associated with executing GPU kernels this method should only be expected to outperform compiled execution if a total of 10^8 or more data points are required and only performs well when a large batch of these data points is required at a time. This version is also highly advantageous when calculating impedance spectra as part of a larger system requiring GPU execution as in this case expensive device->host->device copies are avoided. Though torch autograd this version also provides atomatic derivatives making it useful where integration into machine-learning backward passes is required. Due to deficiencies in the windows port of Torch this version massively underperforms on Microsoft Windows and another platform should be used. Due to MiOpen not being available on Microsoft Windows this method is unable to perform GPU execution on this platform on AMD hardware, the CPU fallback used in this case is slower than tree execution.
+The final execution model generates a [TorchScript](https://pytorch.org/docs/stable/jit.html) for the equivalent circuit which can be compiled using [torch::jit::compile](https://pytorch.org/cppdocs/api/function_namespacetorch_1_1jit_1a8660dc13a6b82336aadac667e6dccba1.html) into a graph of torch/rocBLAS/cuBLAS GPU kernels for GPU execution. This provides the highest possible performance. Due to the high latency associated with executing GPU kernels this method should only be expected to outperform compiled execution if a total of 10^8 or more data points are required and only performs well when a large batch of these data points is required at a time. This version is also highly advantageous when calculating impedance spectra as part of a larger system requiring GPU execution as in this case expensive device->host->device copies are avoided. Through Torch AutoGrad this version also provides automatic derivatives, making it useful where integration into machine-learning backward passes is required. Due to deficiencies in the windows port of Torch this version massively underperforms on Microsoft Windows and another platform should be used. Due to MiOpen not being available on Microsoft Windows this method is unable to perform GPU execution on this platform on AMD hardware, the CPU fallback used in this case is slower than tree execution.
 
 \image html TorchExecution.svg width=80%
 \image latex TorchExecution.pdf width=\textwidth/2

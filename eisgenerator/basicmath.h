@@ -111,7 +111,7 @@ namespace eis
 	*
 	* @param data The data to calculate on.
 	* @param centroid The centroid to use, if nullptr is passed here, the mean of the data will be used as the centroid.
-	* @return The Pearson correlation coefficient.
+	* @return The variance.
 	*/
 	fvalue nyquistAreaVariance(const std::vector<eis::DataPoint>& data, eis::DataPoint* centroid = nullptr);
 
@@ -133,7 +133,7 @@ namespace eis
 	void noise(std::vector<eis::DataPoint>& data, double amplitude, bool relative);
 
 	/**
-	* @brief Removes duplicate data points form the data.
+	* @brief Removes duplicate data points from the data.
 	*
 	* Duplicates are detected by checking the value of omega for sameness using fvalueEq with the default ulp.
 	*
@@ -155,7 +155,7 @@ namespace eis
 	/**
 	* @brief This function resamples, extrapolates and interpolates to fit the data given to the frequencies also given.
 	*
-	* Data is resampled to the target size, interpolation for data points is performed using linear interpolation
+	* Data is resampled to the target size, interpolation for data points is performed using linear interpolation,
 	* extrapolation is performed using linear or base 10 logarithmic extrapolation.
 	*
 	* @param omegas The frequencies to resample the data to.

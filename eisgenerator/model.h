@@ -35,13 +35,13 @@ namespace eis
 struct CompiledObject;
 
 /**
-* Eis modeling
+* Eis modeling.
 * @defgroup MODELING Modeling
 * @{
 */
 
 /**
-* @brief The main class of eisgenerator representing a equivalent circuit model.
+* @brief The main class of eisgenerator representing an equivalent circuit model.
 */
 class Model
 {
@@ -256,9 +256,9 @@ public:
 	/**
 	* @brief Compiles this model into TorchScript
 	*
-	* Can be compiled to GPU kernel executeing bytecode by torch::jit::compile.
+	* Can be compiled to GPU kernel bytecode by torch::jit::compile.
 	*
-	* @return Yhe TorchScript code or an empty string if compilation was unsuccessful.
+	* @return The TorchScript code or an empty string if compilation was unsuccessful.
 	*/
 	std::string getTorchScript();
 
@@ -270,9 +270,10 @@ public:
 	std::string getCompiledFunctionName() const;
 
 	/**
-	* @brief Gets the function name in the code returned by getTorchScript and getCode for this model.
+	* @brief Gets a set of indecies that together create a iso-difference set of spectra.
 	*
-	* @return The function name in the code for this model.
+	* @param distance the target distance between subisquent spectra relative to eis::eisDistance.
+	* @return A vector of indecies corresponding to the iso-difference spectras.
 	*/
 	std::vector<size_t> getRecommendedParamIndices(eis::Range omegaRange, double distance, bool threaded = false);
 };

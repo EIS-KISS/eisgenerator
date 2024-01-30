@@ -3,7 +3,7 @@
 eisgenerator is a shared library (libeisgenerator.so) and CLI application that allows one to generate [EIS](https://de.wikipedia.org/wiki/Impedanzspektroskopie) spectra with high performance.
 The target application is generating test and example datasets for machine learning applications.
 
-eisgenerator's development and target platform is UNIX, but it should compile on nigh any platform
+eisgenerator's development and target platform is UNIX, but it should compile on nigh on any platform
 
 ## Compile/Install
 
@@ -29,14 +29,13 @@ In a console do:
 
 ### Cross-compile for windows on UNIX
 
-* Have mingw cross-compile toolchain installed
+* Have the mingw cross-compile toolchain installed
 * git clone https://git-ce.rwth-aachen.de/carl_philipp.klemm/eisgenerator.git
 * cd eisgenerator
 * mkdir build
 * cd build
 * cmake -DCMAKE_TOOLCHAIN_FILE=./crossW64.cmake ..
 * make
-* sudo make install
 
 ## Basic usage of CLI application
 
@@ -49,13 +48,13 @@ flags:
 --model: model string, format is similar to RHD RelaxIS except that the implicit operator is parallel instead of serial, IE. "rc" is a resistor and condenser in parallel while "r-c" is the same in series and that parameters can be passed by adding {number} after the parameter, if an element requires more than one parameter they are specified by adding several comma separated values in between the brackets like so: {420, 56}
 
 * Supported Elements
-	* c: cap
+	* c: capacitor
 		* one parameter: capacitance {C}
 	* r: resistor
 		* one parameter: resistance {R}
 	* l: inductor
 		* one parameter: inductance {L}
-	* w: warburg element (infinite), one parameters {A}
+	* w: warburg element (infinite)
 		* one parameter: Warburg coefficient {A}
 	* p: constant phase element
 		* two parameters: {Q, alpha}
@@ -78,7 +77,7 @@ Generates Nyquist plot of model specified, allows the usage of the same flags as
 
 ### Linking
 
-it is best to link to this library with the help of [pkg-config](https://www.freedesktop.org/wiki/Software/pkg-config/) as this provides platform a agnostic to query for paths and flags. Almost certenly, pkg-config is already integrated into your buildsystem.
+it is best to link to this library with the help of [pkg-config](https://www.freedesktop.org/wiki/Software/pkg-config/) as this provides platform a agnostic to query for paths and flags. Almost certainly, pkg-config is already integrated into your buildsystem.
 
 ## Python bindings
 

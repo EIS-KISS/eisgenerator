@@ -26,7 +26,7 @@ namespace eis
 {
 
 /**
-* Various math functions performed on eisgenerator types
+* The logging functions used by eisgenerator
 * @defgroup LOG Log
 * @{
 */
