@@ -61,11 +61,11 @@ if(WIN32)
 	file(GLOB_RECURSE ARGP_SRC ${PROJECT_SOURCE_DIR}/argp/*.*)
 	set(SRC_FILES ${SRC_FILES} ${ARGP_SRC})
 	include_directories(./argp)
-	include_directories(./dlfcn-win32/src/)
+	include_directories(./dlfcn-win32)
 
 	set(SRC_FILES ${SRC_FILES}
 		compile-win.cpp
-		./dlfcn-win32/src/dlfcn.c
+		./dlfcn-win32/dlfcn.c
 	)
 
 	set(COMMON_LINK_FLAGS "-flto -dl")
@@ -164,5 +164,5 @@ if (DOXYGEN_FOUND)
 		COMMENT "Generating API documentation with Doxygen"
 		VERBATIM )
 else (DOXYGEN_FOUND)
-  message("Doxygen needs to be installed to generate the doxygen documentation")
+	message("Doxygen needs to be installed to generate the doxygen documentation")
 endif (DOXYGEN_FOUND)
