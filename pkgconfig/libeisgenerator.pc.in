@@ -1,4 +1,5 @@
 includedir=@CMAKE_INSTALL_PREFIX@/include
+libdir=@CMAKE_INSTALL_PREFIX@/lib
 
 Name: libeisgenerator
 Description: EIS spectra generator
