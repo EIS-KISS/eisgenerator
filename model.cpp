@@ -108,7 +108,16 @@ Componant *Model::processBracket(std::string& str, size_t paramSweepCount, bool 
 					case '}':
 						Log(Log::WARN)<<getModelStr()<<" stray "<<nodeStr[i]<<" in model string";
 						break;
-					case '0' ... '9':
+					case '0':
+					case '1':
+					case '2':
+					case '3':
+					case '4':
+					case '5':
+					case '6':
+					case '7':
+					case '8':
+					case '9':
 					{
 						size_t j = nodeStr[i]-48;
 						if(_bracketComponants.size() > j)
