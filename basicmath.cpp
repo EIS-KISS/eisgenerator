@@ -411,3 +411,10 @@ std::vector<eis::DataPoint> eis::fitToFrequencies(std::vector<fvalue> omegas, co
 
 	return out;
 }
+
+void difference(std::vector<eis::DataPoint>& a, const std::vector<eis::DataPoint>& b)
+{
+	assert(a.size() == b.size());
+	for(size_t i = 0; i < a.size(); ++i)
+		a[i] = a[i] - b[i];
+}

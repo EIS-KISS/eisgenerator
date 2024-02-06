@@ -89,6 +89,17 @@ namespace eis
 	*/
 	std::complex<fvalue> median(const std::vector<eis::DataPoint>& data);
 
+
+	/**
+	* @brief Calculates the difference between two spectra.
+	*
+	* this function calculates an element wise a = a-b and ingores omega
+	*
+	* @param a The first operand, where b is subtracted
+	* @param b The second operand that is subtracted from the first, must be the same size as a
+	*/
+	void difference(std::vector<eis::DataPoint>& a, const std::vector<eis::DataPoint>& b);
+
 	/**
 	* @brief Resamples the data to the given amount of points.
 	*
