@@ -52,7 +52,7 @@ private:
 	static size_t paramSkipIndex(const std::string& str, size_t index);
 	static void addComponantToFlat(Componant* componant, std::vector<Componant*>* flatComponants);
 
-	static void sweepThreadFn(std::vector<std::vector<DataPoint>>* data, Model* model, size_t start, size_t stop, const Range& omega);
+	static void sweepThreadFn(std::vector<std::vector<DataPoint>>* data, Model* model, size_t start, size_t stop, const std::vector<fvalue>& omega);
 
 	size_t getActiveParameterCount();
 
@@ -117,6 +117,26 @@ public:
 	* @return A vector of DataPoint structs containing the impedance at every frequency in the sweep.
 	*/
 	std::vector<DataPoint> executeSweep(const std::vector<fvalue>& omega, size_t index = 0);
+
+	/**
+	 * @brief Executes a frequency and parameter sweep at the given parameter indecies
+	 *
+	 * @param omega The range along which to execute the frequency sweep.
+	 * @param indecies the parameter indecies to include in the sweep
+	 * @param parallel if this is set to true, the parameter sweep is executed in parallel
+	 * @return A vector of vectors of DataPoint structs containing the impedance at every frequency sweep and parameter index.
+	 */
+	std::vector<std::vector<DataPoint>> executeSweeps(const Range& omega, const std::vector<size_t>& indecies, bool parallel = false);
+
+	/**
+	 * @brief Executes a frequency and parameter sweep at the given parameter indecies
+	 *
+	 * @param omega A vector of frequencies in rad/s to calculate the impedance at.
+	 * @param indecies the parameter indecies to include in the sweep
+	 * @param parallel if this is set to true, the parameter sweep is executed in parallel
+	 * @return A vector of vectors of DataPoint structs containing the impedance at every frequency sweep and parameter index.
+	 */
+	std::vector<std::vector<DataPoint>> executeSweeps(const std::vector<fvalue>& omega, const std::vector<size_t>& indecies, bool parallel = false);
 
 	/**
 	* @brief Executes a frequency sweep with the given omega values for each parameter combination in the applied parameter sweep.

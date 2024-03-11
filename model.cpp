@@ -372,7 +372,37 @@ std::vector<DataPoint> Model::executeSweep(const std::vector<fvalue>& omega, siz
 	return results;
 }
 
-void Model::sweepThreadFn(std::vector<std::vector<DataPoint>>* data, Model* model, size_t start, size_t stop, const Range& omega)
+std::vector<std::vector<DataPoint>> Model::executeSweeps(const Range& omega, const std::vector<size_t>& indecies, bool parallel)
+{
+	return executeSweeps(omega.getRangeVector(), indecies, parallel);
+}
+
+std::vector<std::vector<DataPoint>> Model::executeSweeps(const std::vector<fvalue>& omega, const std::vector<size_t>& indecies, bool parallel)
+{
+	unsigned int threadsCount = parallel ? std::thread::hardware_concurrency() : 1;
+
+	if(indecies.size() < threadsCount*10)
+		threadsCount = 1;
+
+	size_t countPerThread = indecies.size()/threadsCount;
+	std::vector<std::thread> threads(threadsCount);
+	std::vector<Model> models(threadsCount, *this);
+
+	std::vector<std::vector<DataPoint>> data(indecies.size());
+
+	for(size_t i = 0; i < threadsCount; ++i)
+	{
+		size_t start = i*countPerThread;
+		size_t stop = i < threadsCount-1 ? (i+1)*countPerThread : indecies.size();
+		threads[i] = std::thread(sweepThreadFn, &data, &models[i], start, stop, omega);
+	}
+	for(size_t i = 0; i < threadsCount; ++i)
+		threads[i].join();
+
+	return data;
+}
+
+void Model::sweepThreadFn(std::vector<std::vector<DataPoint>>* data, Model* model, size_t start, size_t stop, const std::vector<fvalue>& omega)
 {
 	for(size_t i = start; i < stop; ++i)
 	{
@@ -396,7 +426,7 @@ std::vector<std::vector<DataPoint>> Model::executeAllSweeps(const Range& omega)
 	{
 		size_t start = i*countPerThread;
 		size_t stop = i < threadsCount-1 ? (i+1)*countPerThread : count;
-		threads[i] = std::thread(sweepThreadFn, &data, &models[i], start, stop, std::ref(omega));
+		threads[i] = std::thread(sweepThreadFn, &data, &models[i], start, stop, omega.getRangeVector());
 	}
 	for(size_t i = 0; i < threadsCount; ++i)
 		threads[i].join();

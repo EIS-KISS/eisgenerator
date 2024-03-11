@@ -44,6 +44,20 @@ EisSpectra eis::loadFromDisk(const std::filesystem::path& path)
 	return EisSpectra(path);
 }
 
+std::pair<std::valarray<fvalue>, std::valarray<fvalue>> eis::eisToValarrays(const std::vector<eis::DataPoint>& data)
+{
+	std::valarray<fvalue> real(data.size());
+	std::valarray<fvalue> imag(data.size());
+
+	for(size_t i = 0; i < data.size(); ++i)
+	{
+		real[i] = data[i].im.real();
+		imag[i] = data[i].im.imag();
+	}
+
+	return {real, imag};
+}
+
 void eis::Range::print(int level) const
 {
 	Log(static_cast<Log::Level>(level))<<"Range "<<start<<'-'<<end<<' '<<count<<" steps"<<(log ? " Log" : "");

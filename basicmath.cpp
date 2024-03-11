@@ -248,7 +248,7 @@ void eis::removeDuplicates(std::vector<eis::DataPoint>& data)
 bool eis::fvalueEq(fvalue a, fvalue b, unsigned int ulp)
 {
 	fvalue epsilon = std::numeric_limits<fvalue>::epsilon()*std::fabs(a+b)*ulp;
-	return a - epsilon < b && a + epsilon > b;
+	return a - epsilon <= b && a + epsilon >= b;
 }
 
 static std::pair<std::vector<eis::DataPoint>::const_iterator, std::vector<eis::DataPoint>::const_iterator>
@@ -412,7 +412,7 @@ std::vector<eis::DataPoint> eis::fitToFrequencies(std::vector<fvalue> omegas, co
 	return out;
 }
 
-void difference(std::vector<eis::DataPoint>& a, const std::vector<eis::DataPoint>& b)
+void eis::difference(std::vector<eis::DataPoint>& a, const std::vector<eis::DataPoint>& b)
 {
 	assert(a.size() == b.size());
 	for(size_t i = 0; i < a.size(); ++i)

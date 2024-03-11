@@ -445,9 +445,10 @@ public:
 /**
 * @brief Returns the a vector of DataPoints as a pair of valarrays.
 *
+* @param data the data to transform to valarrays
 * @return A pair of valarrays, first the real part and second the imaginary part.
 */
-std::pair<std::valarray<fvalue>, std::valarray<fvalue>> eisToValarrays(const std::vector<eis::DataPoint>& b);
+std::pair<std::valarray<fvalue>, std::valarray<fvalue>> eisToValarrays(const std::vector<eis::DataPoint>& data);
 
 /**
 * @brief Returns the mean l2 element wise distance of the given spectra.
