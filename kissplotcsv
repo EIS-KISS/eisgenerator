@@ -28,6 +28,7 @@ print_help () {
 	echo "	-r:		plot a bode plot of re(Z)"
 	echo "	-i:		plot a bode plot of im(Z)"
 	echo "	-l:		allways use linear scale"
+	echo "	-n:		dont reverse x scale in nyquist plot"
 }
 
 if ! command -v gnuplot &> /dev/null; then
@@ -36,11 +37,12 @@ if ! command -v gnuplot &> /dev/null; then
 fi
 
 mode="2:3"
-xLabel='Z_{im}'
-yLabel='Z_{re}'
+xLabel='Z_{re}'
+yLabel='-Z_{im}'
 logscale=""
+reverse="set yrange reverse;"
 
-while getopts "?rihy:x:f:l" opt; do
+while getopts "?rihy:x:f:ln" opt; do
 	case "$opt" in
 	h|\?)
 		print_help
@@ -54,12 +56,14 @@ while getopts "?rihy:x:f:l" opt; do
 		xLabel='Omega'
 		yLabel='Z_{re}'
 		logscale="set logscale x;"
+		reverse=""
 		;;
 	i)
 		mode="1:3"
 		xLabel='Omega'
 		yLabel='Z_{im}'
 		logscale="set logscale x;"
+		reverse=""
 	;;
 	y)
 		yLabel=$OPTARG
@@ -69,6 +73,10 @@ while getopts "?rihy:x:f:l" opt; do
 	;;
 	l)
 		logscale=""
+	;;
+	n)
+		reverse=""
+		yLabel="Z_{im}"
 	;;
 	esac
 done
@@ -95,6 +103,7 @@ set terminal qt enhanced font \",15\" title \"EIS Plot\"; \
 set style line 1 lw 3 lc \"blue\"; \
 set ylabel '$yLabel'; \
 set xlabel '$xLabel'; \
+$reverse \
 $logscale \
 set tics font \"Helvetica,12\"; \
 set xlabel font \"Helvetica,15\"; \
