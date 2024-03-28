@@ -292,6 +292,11 @@ public:
 	/**
 	* @brief Gets a set of indecies that together create a iso-difference set of spectra.
 	*
+	* Note: this function generates a signifcant fraction of the number of spectra in the models range
+	* use getRequiredStepsForSweeps for an estimate of the complexity. It is strongly recommended to call compile()
+	* before using this function.
+	*
+	* @param threaded if this is set to true eisgenerator will spawn nproc number of threads to service this request.
 	* @param distance the target distance between subisquent spectra relative to eis::eisDistance.
 	* @return A vector of indecies corresponding to the iso-difference spectras.
 	*/
