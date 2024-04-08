@@ -29,6 +29,7 @@ print_help () {
 	echo "	-i:		plot a bode plot of im(Z)"
 	echo "	-l:		allways use linear scale"
 	echo "	-n:		dont reverse x scale in nyquist plot"
+	echo "	-o:		if this is set instead of an interactive terminal images will be output to this directory"
 }
 
 if ! command -v gnuplot &> /dev/null; then
@@ -41,8 +42,9 @@ xLabel='Z_{re}'
 yLabel='Z_{im}'
 logscale=""
 reverse="set yrange reverse;"
+plotterminal="set terminal qt enhanced font \",15\" title \"EIS Plot\";"
 
-while getopts "?rihy:x:f:ln" opt; do
+while getopts "?rihy:x:f:lno:" opt; do
 	case "$opt" in
 	h|\?)
 		print_help
@@ -78,6 +80,18 @@ while getopts "?rihy:x:f:ln" opt; do
 		reverse=""
 		yLabel="Z_{im}"
 	;;
+	o)
+		if [[ ! -f $file && $file != "-" ]]; then
+			echo "the -f option must be given before -o"
+			exit 1
+		fi
+		outfilename="$OPTARG/$(basename $file).png"
+		if [[ $file == "-" ]]; then
+			outfilename="$OPTARG/stdin.png"
+		fi
+		plotterminal="set term png size 1024,1024; set output \"$outfilename\";"
+		mkdir $OPTARG 2> /dev/null || true
+	;;
 	esac
 done
 
@@ -99,15 +113,15 @@ if [[ $header != "EISF" ]]; then
 fi
 
 echo "$spectra" | gnuplot -p -e "\
-set terminal qt enhanced font \",15\" title \"EIS Plot\"; \
+$plotterminal \
 set style line 1 lw 3 lc \"blue\"; \
 set ylabel '$yLabel'; \
 set xlabel '$xLabel'; \
 $reverse \
 $logscale \
-set tics font \"Helvetica,12\"; \
-set xlabel font \"Helvetica,15\"; \
-set ylabel font \"Helvetica,15\"; \
+set tics font \"Sans,12\"; \
+set xlabel font \"Sans,15\"; \
+set ylabel font \"Sans,15\"; \
 set datafile separator ','; \
 plot '-' using $mode skip 3 notitle w l;
 "
