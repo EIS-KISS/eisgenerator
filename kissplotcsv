@@ -38,7 +38,7 @@ fi
 
 mode="2:3"
 xLabel='Z_{re}'
-yLabel='-Z_{im}'
+yLabel='Z_{im}'
 logscale=""
 reverse="set yrange reverse;"
 
