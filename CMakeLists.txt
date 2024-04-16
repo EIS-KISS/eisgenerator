@@ -108,7 +108,6 @@ else()
 	set(EISGEN_LINK_FLAG ${PROJECT_NAME})
 endif(WIN32)
 
-
 configure_file(pkgconfig/libeisgenerator.pc.in pkgconfig/libeisgenerator.pc @ONLY)
 
 install(TARGETS ${PROJECT_NAME} DESTINATION lib)

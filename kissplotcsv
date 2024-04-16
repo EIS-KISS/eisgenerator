@@ -91,6 +91,7 @@ while getopts "?rihy:x:f:lno:" opt; do
 		fi
 		plotterminal="set term png size 1024,1024; set output \"$outfilename\";"
 		mkdir $OPTARG 2> /dev/null || true
+		echo "Will save image to $outfilename"
 	;;
 	esac
 done

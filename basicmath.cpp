@@ -150,8 +150,16 @@ std::vector<eis::DataPoint> eis::rescale(const std::vector<eis::DataPoint>& data
 		fvalue sourcePosF = (data.size()-1)*position;
 		size_t sourcePos = (data.size()-1)*position;
 		fvalue frac = sourcePosF - sourcePos;
-		output[i].im = data[sourcePos].im*(1-frac) + data[sourcePos+1].im*frac;
-		output[i].omega = data[sourcePos].omega*(1-frac) + data[sourcePos+1].omega*frac;
+		if(sourcePos >= data.size()-1)
+		{
+			output[i].im = data[data.size()-1].im;
+			output[i].omega = data[data.size()-1].omega;
+		}
+		else
+		{
+			output[i].im = data[sourcePos].im*(1-frac) + data[sourcePos+1].im*frac;
+			output[i].omega = data[sourcePos].omega*(1-frac) + data[sourcePos+1].omega*frac;
+		}
 	}
 	return output;
 }
@@ -417,4 +425,52 @@ void eis::difference(std::vector<eis::DataPoint>& a, const std::vector<eis::Data
 	assert(a.size() == b.size());
 	for(size_t i = 0; i < a.size(); ++i)
 		a[i] = a[i] - b[i];
+}
+
+
+//Compute simmuliarity on a bode plot
+fvalue eis::eisDistance(const std::vector<eis::DataPoint>& a, const std::vector<eis::DataPoint>& b)
+{
+	assert(a.size() == b.size());
+
+	double accum = 0;
+	for(size_t i = 0; i < a.size(); ++i)
+	{
+		double diffRe = std::pow(b[i].im.real() - a[i].im.real(), 2);
+		double diffIm = std::pow(b[i].im.imag() - a[i].im.imag(), 2);
+		accum += diffRe+diffIm;
+	}
+	return sqrt(accum/a.size());
+}
+
+//Compute simmuliarity on a nyquist plot
+fvalue eis::eisNyquistDistance(const std::vector<eis::DataPoint>& a, const std::vector<eis::DataPoint>& b)
+{
+	assert(a.size() > 2 && b.size() > 3);
+	double accum = 0;
+	for(size_t i = 0; i < a.size(); ++i)
+	{
+		std::vector<std::pair<double, const eis::DataPoint*>> distances;
+		for(size_t j = 0; j < b.size(); ++j)
+		{
+			double diffRe = std::pow(b[j].im.real() - a[i].im.real(), 2);
+			double diffIm = std::pow(b[j].im.imag() - a[i].im.imag(), 2);
+			std::pair<double, const eis::DataPoint*> dp;
+			dp.first = sqrt(diffRe+diffIm);
+			dp.second = &b[j];
+			distances.push_back(dp);
+		}
+		std::sort(distances.begin(), distances.end(),
+				  [](const std::pair<double, const eis::DataPoint*>& a, const std::pair<double, const eis::DataPoint*>& b) -> bool
+				  {return a.first < b.first;});
+
+		eis::DataPoint base = (*distances[0].second)-(*distances[1].second);
+		base = base/base.complexVectorLength();
+		eis::DataPoint diff = (*distances[0].second)-a[i];
+		diff = diff/diff.complexVectorLength();
+		fvalue dprod = base.im.real()*diff.im.real() + base.im.imag()*diff.im.imag();
+		fvalue dist = diff.complexVectorLength()*(1-dprod);
+		accum += std::pow(dist, 2);
+	}
+	return std::sqrt(accum/a.size());
 }

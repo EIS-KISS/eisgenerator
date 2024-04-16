@@ -178,6 +178,31 @@ namespace eis
 	                                             const std::vector<eis::DataPoint>& data,
 	                                             bool linearExtrapolation = false);
 
+	/**
+	* @brief Returns the mean l2 element wise distance of the given spectra.
+	*
+	* This function will be moved to the math API in the future.
+	*
+	* @param a The first set of points.
+	* @param b The second set of points, must contain the same number of elements as a
+	* @return The mean l2 distance.
+	*/
+	fvalue eisDistance(const std::vector<eis::DataPoint>& a, const std::vector<eis::DataPoint>& b);
+
+
+	/**
+	* @brief Returns the mean distance of the points in a to the linearly interpolated nyquist curve of b.
+	*
+	* This function will be moved to the math API in the future.
+	*
+	* This implementation is quite slow.
+	*
+	* @param a The first set of points.
+	* @param b The second set of points.
+	* @return The mean nyquist distance.
+	*/
+	fvalue eisNyquistDistance(const std::vector<eis::DataPoint>& a, const std::vector<eis::DataPoint>& b);
+
 	/** @} */
 }
 
