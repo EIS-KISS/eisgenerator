@@ -49,7 +49,7 @@ std::complex<fvalue> eis::absGrad(const std::vector<eis::DataPoint>& data, size_
 								std::abs((data[index+1].im.imag()-data[index-1].im.imag())/(data[index+1].omega-data[index-1].omega)));
 }
 
-void mulitplyAdd(std::vector<eis::DataPoint>& data, fvalue mult, fvalue add)
+void eis::mulitplyAdd(std::vector<eis::DataPoint>& data, fvalue mult, fvalue add)
 {
 	for(eis::DataPoint& point : data)
 		point.im = point.im*mult + add;
