@@ -576,6 +576,14 @@ std::vector<size_t> Model::getRecommendedParamIndices(eis::Range omegaRange, dou
 			continue;
 		}
 
+		fvalue nonConstantess = std::abs(pearsonCorrelation(data));
+		if(nonConstantess < 0.1)
+		{
+			eis::Log(eis::Log::DEBUG)<<"skipping output for step "<<i
+			<<" as data is too constant: "<<nonConstantess;
+			continue;
+		}
+
 		std::vector<std::vector<eis::DataPoint>>::iterator search;
 		if(threaded)
 		{

@@ -30,6 +30,8 @@ namespace eis
 	* @{
 	*/
 
+	void mulitplyAdd(std::vector<eis::DataPoint>& data, fvalue mult, fvalue add);
+
 	/**
 	* @brief Calculates the element wise absolute gradient at the given point of the data given.
 	*
@@ -116,6 +118,8 @@ namespace eis
 	* @return the Pearson correlation coefficient.
 	*/
 	fvalue pearsonCorrelation(const std::vector<eis::DataPoint>& data);
+
+	fvalue nonConstantScore(const std::vector<eis::DataPoint>& data);
 
 	/**
 	* @brief Calculates the variance of the distance of the data from a centroid in the nyquist plane.

@@ -49,6 +49,12 @@ std::complex<fvalue> eis::absGrad(const std::vector<eis::DataPoint>& data, size_
 								std::abs((data[index+1].im.imag()-data[index-1].im.imag())/(data[index+1].omega-data[index-1].omega)));
 }
 
+void mulitplyAdd(std::vector<eis::DataPoint>& data, fvalue mult, fvalue add)
+{
+	for(eis::DataPoint& point : data)
+		point.im = point.im*mult + add;
+}
+
 fvalue eis::grad(const std::vector<fvalue>& data, const std::vector<fvalue>& omega, size_t index)
 {
 	assert(data.size() == omega.size());
@@ -195,6 +201,28 @@ fvalue eis::pearsonCorrelation(const std::vector<eis::DataPoint>& data)
 	}
 
 	return sumDeltaReDeltaIm/(sqrt(sumDeltaReSq)*sqrt(sumDeltaImSq));
+}
+
+
+fvalue eis::nonConstantScore(const std::vector<eis::DataPoint>& data)
+{
+	std::complex<fvalue> meanValue = mean(data);
+
+	fvalue reDeviationMax = std::numeric_limits<fvalue>::min();
+	fvalue imDeviationMax = std::numeric_limits<fvalue>::min();
+
+	for(const eis::DataPoint& point : data)
+	{
+		fvalue reDeviation = 1-(std::abs(point.im.real())/std::abs(meanValue.real()));
+		fvalue imDeviation = 1-(std::abs(point.im.imag())/std::abs(meanValue.imag()));
+
+		if(reDeviationMax < reDeviation)
+			reDeviationMax = reDeviation;
+		if(imDeviationMax < imDeviation)
+			imDeviationMax = imDeviation;
+	}
+
+	return std::min(reDeviationMax, imDeviationMax);
 }
 
 fvalue eis::nyquistAreaVariance(const std::vector<eis::DataPoint>& data, eis::DataPoint* centroid)
