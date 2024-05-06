@@ -167,15 +167,10 @@ bool Componant::isValidComponantChar(char componantCh)
 	switch(componantCh)
 	{
 		case Cap::staticGetComponantChar():
-			return true;
 		case Resistor::staticGetComponantChar():
-			return true;
 		case Inductor::staticGetComponantChar():
-			return true;
 		case Cpe::staticGetComponantChar():
-			return true;
 		case Warburg::staticGetComponantChar():
-			return true;
 		case FiniteTransmitionline::staticGetComponantChar():
 			return true;
 		default:

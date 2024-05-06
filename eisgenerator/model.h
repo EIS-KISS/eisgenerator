@@ -215,6 +215,13 @@ public:
 	std::vector<Range> getDefaultParameters();
 
 	/**
+	* @brief Gets the names of all the parameters in this model
+	*
+	* @return The names of all the parameters in this model.
+	*/
+	std::vector<std::string> getParameterNames();
+
+	/**
 	* @brief Gets the total number of parameters used by all the circuit elements in this model.
 	*
 	* @return The total number of parameters.

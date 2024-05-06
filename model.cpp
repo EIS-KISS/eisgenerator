@@ -239,6 +239,21 @@ std::vector<Range> Model::getDefaultParameters()
 	return out;
 }
 
+std::vector<std::string> Model::getParameterNames()
+{
+	std::vector<Componant*> flatComponants = getFlatComponants();
+
+	std::vector<std::string> out;
+	out.reserve(getParameterCount());
+	for(Componant* componant : flatComponants)
+	{
+		for(size_t i = 0; i < componant->paramCount(); ++i)
+			out.push_back(componant->getUniqueName() + "_" + std::to_string(i));
+	}
+
+	return out;
+}
+
 DataPoint Model::execute(fvalue omega, size_t index)
 {
 	if(_model)
