@@ -1,0 +1,19 @@
+#!/bin/bash -e
+
+PORJECT_NAME=@PROJECT_NAME@
+ONNXNAME="@ONNX_NAME@"
+VERSION="@CMAKE_PROJECT_VERSION_MAJOR@.@CMAKE_PROJECT_VERSION_MINOR@.@CMAKE_PROJECT_VERSION_PATCH@"
+BINARYDIR="@CMAKE_CURRENT_BINARY_DIR@"
+SRCDIR="@CMAKE_CURRENT_SOURCE_DIR@"
+RELDIRECTORY="$BINARYDIR/packaged/$VERSION/release"
+
+rm $BINARYDIR/packaged/$PORJECT_NAME-$VERSION.zip || true
+cd $BINARYDIR
+install -d $RELDIRECTORY
+cp libeisgenerator.dll $RELDIRECTORY
+cp libeisgenerator.dll.a $RELDIRECTORY
+cp libeisgenerator_static.a $RELDIRECTORY
+cp eisgenerator_export.exe $RELDIRECTORY
+cp eisgenerator_test.exe $RELDIRECTORY
+cd $RELDIRECTORY/..
+zip -r $BINARYDIR/packaged/$PORJECT_NAME-$VERSION.zip release

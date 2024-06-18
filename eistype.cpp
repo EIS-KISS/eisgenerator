@@ -394,6 +394,13 @@ EisSpectra EisSpectra::loadFromDisk(const std::filesystem::path& path)
 	}
 }
 
+static VersionFixed version = {VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH};
+
+const VersionFixed& getVersion()
+{
+	return version;
+}
+
 std::ostream &operator<<(std::ostream &s, EisSpectra const& spectra)
 {
 	spectra.saveToStream(s);

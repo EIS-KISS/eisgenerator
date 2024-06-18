@@ -6,6 +6,13 @@ set (CMAKE_CXX_STANDARD 20)
 
 option(PROFILE_ENABLED "instrument for gprof" OFF)
 
+set(CMAKE_PROJECT_VERSION_MAJOR 2)
+set(CMAKE_PROJECT_VERSION_MINOR 0)
+set(CMAKE_PROJECT_VERSION_PATCH 0)
+add_compile_definitions(VERSION_MAJOR=${CMAKE_PROJECT_VERSION_MAJOR})
+add_compile_definitions(VERSION_MINOR=${CMAKE_PROJECT_VERSION_MINOR})
+add_compile_definitions(VERSION_PATCH=${CMAKE_PROJECT_VERSION_PATCH})
+
 find_package(Doxygen)
 
 set(SRC_FILES
@@ -69,6 +76,16 @@ if(WIN32)
 	)
 
 	set(COMMON_LINK_FLAGS "-flto -dl")
+
+	if(NOT CMAKE_HOST_SYSTEM_NAME MATCHES "Windows")
+		configure_file(${CMAKE_CURRENT_SOURCE_DIR}/package-win.sh ${CMAKE_CURRENT_BINARY_DIR}/package.sh @ONLY)
+		add_custom_target(package
+			COMMAND ${CMAKE_CURRENT_BINARY_DIR}/package.sh
+			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+			COMMENT "Createing release archive"
+			VERBATIM)
+	endif()
+
 else()
 	message("Building on UNIX")
 

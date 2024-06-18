@@ -20,13 +20,13 @@
 
 #pragma once
 #include <string>
-#include <vector>
 #include <argp.h>
-#include "model.h"
 #include "log.h"
-#include "strops.h"
 
-const char *argp_program_version = "eisgenerator-1.0";
+#define xstr(s) str(s)
+#define str(s) #s
+
+const char *argp_program_version = "eisgenerator-" xstr(VERSION_MAJOR) "." xstr(VERSION_MINOR) "." xstr(VERSION_PATCH);
 const char *argp_program_bug_address = "<carl@uvos.xyz>";
 static char doc[] = "Application that generates EIS spectra from model strings";
 static char args_doc[] = "";

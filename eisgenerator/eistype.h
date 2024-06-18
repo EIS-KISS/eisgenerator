@@ -452,6 +452,16 @@ std::pair<std::valarray<fvalue>, std::valarray<fvalue>> eisToValarrays(const std
 
 /** @} */
 
+
+struct VersionFixed
+{
+	int major;
+	int minor;
+	int patch;
+};
+
+const VersionFixed& getVersion();
+
 }
 
 std::ostream &operator<<(std::ostream &s, eis::DataPoint const& dp);
@@ -459,4 +469,5 @@ std::ostream &operator<<(std::ostream &s, eis::DataPoint const& dp);
 std::ostream &operator<<(std::ostream &s, eis::Range const& range);
 
 std::ostream &operator<<(std::ostream &s, eis::EisSpectra const& spectra);
+
 
