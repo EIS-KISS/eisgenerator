@@ -18,5 +18,7 @@ cp eisgenerator_export.exe $RELDIRECTORY
 cp eisgenerator_test.exe $RELDIRECTORY
 cp $SRCDIR/gpl-3.0.txt $SRCDIR/lgpl-3.0.txt $RELDIRECTORY
 cp $SRCDIR/README.md $RELDIRECTORY
+mkdir $RELDIRECTORY/include || true
+cp -r $SRCDIR/eisgenerator $RELDIRECTORY/include
 cd $RELDIRECTORY/..
 zip -r $BINARYDIR/packaged/$ZIPNAME.zip release
