@@ -21,7 +21,6 @@
 
 #include "compile.h"
 
-#include <filesystem>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
