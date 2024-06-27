@@ -32,6 +32,7 @@ set(SRC_FILES
 	normalize.cpp
 	basicmath.cpp
 	eistype.cpp
+	spectra.cpp
 	strops.cpp
 	translators.cpp
 	randomgen.cpp

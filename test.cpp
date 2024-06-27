@@ -342,7 +342,7 @@ static bool modelConsistancy()
 static bool uneededBrackets()
 {
 	std::string tst("(c-(rc)-(r-c(r)))");
-	eisRemoveUnneededBrackets(tst);
+	eis::eisRemoveUnneededBrackets(tst);
 	std::string expected("c-rc-(r-cr)");
 	if(tst == expected)
 	{

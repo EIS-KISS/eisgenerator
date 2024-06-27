@@ -25,6 +25,9 @@
 
 #include "log.h"
 
+namespace eis
+{
+
 char getOpposingBracketChar(const char ch)
 {
 	switch(ch)
@@ -213,4 +216,6 @@ std::string stripWhitespace(const std::string& in)
 		out.push_back(ch);
 	}
 	return out;
+}
+
 }
