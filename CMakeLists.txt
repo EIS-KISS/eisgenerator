@@ -55,6 +55,7 @@ set(API_HEADERS_CPP
 	${API_HEADERS_CPP_DIR}/log.h
 	${API_HEADERS_CPP_DIR}/basicmath.h
 	${API_HEADERS_CPP_DIR}/eistype.h
+	${API_HEADERS_CPP_DIR}/spectra.h
 	${API_HEADERS_CPP_DIR}/normalize.h
 	${API_HEADERS_CPP_DIR}/translators.h
 )
