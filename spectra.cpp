@@ -184,7 +184,7 @@ EisSpectra EisSpectra::loadFromStream(std::istream& stream)
 			throw file_error("could not load file version from file");
 		fileVersion.major = std::stoi(versionTokens[0]);
 		fileVersion.minor = std::stoi(versionTokens[1]);
-		fileVersion.patch = std::stoi(versionTokens[3]);
+		fileVersion.patch = std::stoi(versionTokens[2]);
 		if(fileVersion.major > F_VERSION_MAJOR || fileVersion.minor > F_VERSION_MINOR)
 			throw file_error("saved by a newer version of EISGenerator, can not open");
 	}
