@@ -215,6 +215,11 @@ EisSpectra EisSpectra::loadFromStream(std::istream& stream)
 		{
 			std::getline(stream, line);
 			out.labelNames = tokenizeBinaryIgnore(line, ',', '"', '\\');
+			for(std::string& label : out.labelNames)
+			{
+				label = stripWhitespace(label);
+				stripQuotes(label);
+			}
 			continue;
 		}
 		else if(line.starts_with("labels"))
