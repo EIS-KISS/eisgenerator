@@ -118,7 +118,7 @@ void EisSpectra::saveToStream(std::ostream& stream) const
 	stream<<F_MAGIC<<", "<<std::to_string(F_VERSION_MAJOR)<<'.'
 		<<std::to_string(F_VERSION_MINOR)<<'.'<<std::to_string(F_VERSION_PATCH)<<'\n';
 
-	stream<<'"'<<model<<'"'<<'\n'<<(headerDescription.empty() ? "None" : headerDescription)<<'\n'<<(header.empty() ? "None" : header);
+	stream<<'"'<<(model.empty() ? "None" : model)<<'"'<<'\n'<<(headerDescription.empty() ? "None" : headerDescription)<<'\n'<<(header.empty() ? "None" : header);
 
 	if(!labels.empty())
 	{
@@ -192,7 +192,7 @@ EisSpectra EisSpectra::loadFromStream(std::istream& stream)
 	if(fileVersion.minor == F_VERSION_MINOR)
 	{
 		std::getline(stream, line);
-		out.model = line;
+		out.model = line == "None" ? "" : line;
 		std::getline(stream, line);
 		out.headerDescription = line == "None" ? "" : line;
 		std::getline(stream, line);
