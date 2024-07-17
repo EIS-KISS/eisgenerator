@@ -125,7 +125,8 @@ Componant *Model::processBracket(std::string& str, size_t paramSweepCount, bool 
 						break;
 					}
 					default:
-						break;
+						Log(Log::DEBUG)<<"Invalid char "<<nodeStr[i]<<" in model string";
+						return nullptr;
 				}
 			}
 		}
