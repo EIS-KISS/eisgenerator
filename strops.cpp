@@ -162,7 +162,9 @@ size_t deepestBraket(const std::string& str, std::string bracketChars, size_t* l
 
 void stripQuotes(std::string& in)
 {
-	in.erase(std::remove_if(in.begin(), in.end()+1, [](unsigned char ch){return ch == '"' || ch == '\'';}));
+	in.erase(std::remove_if(in.begin(), in.end(), [](unsigned char ch){return ch == '"' || ch == '\'';}), in.end());
+	if(in[in.size()-1] == '"' || in[in.size()-1] == '\'')
+		in.pop_back();
 }
 
 size_t eisRemoveUnneededBrackets(std::string& in, long int bracketStart)

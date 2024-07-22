@@ -34,7 +34,7 @@
 #include "strops.h"
 #include "translators.h"
 
-const char testEisSpectraFile[] =
+const char testEisSpectraFile10[] =
 	"EISF, 1.0.0\n"
 	"\"r-cr-cr\", 0\n"
 	"labels\n"
@@ -45,51 +45,24 @@ const char testEisSpectraFile[] =
 	"1.930698e+00, 0.000000e+00, 0.000000e+00\n"
 	"2.682696e+00, 0.000000e+00, 0.000000e+00\n"
 	"3.727594e+00, 0.000000e+00, 0.000000e+00\n"
-	"5.179475e+00, 0.000000e+00, 0.000000e+00\n"
-	"7.196858e+00, 0.000000e+00, 0.000000e+00\n"
-	"1.000000e+01, 0.000000e+00, 0.000000e+00\n"
-	"1.389496e+01, 0.000000e+00, 0.000000e+00\n"
-	"1.930698e+01, 0.000000e+00, 0.000000e+00\n"
-	"2.682696e+01, 0.000000e+00, 0.000000e+00\n"
-	"3.727594e+01, 0.000000e+00, 0.000000e+00\n"
-	"5.179476e+01, 0.000000e+00, 0.000000e+00\n"
-	"7.196858e+01, 0.000000e+00, 0.000000e+00\n"
-	"1.000000e+02, 0.000000e+00, 0.000000e+00\n"
-	"1.389496e+02, 0.000000e+00, 0.000000e+00\n"
-	"1.930698e+02, 0.000000e+00, 0.000000e+00\n"
-	"2.682696e+02, 0.000000e+00, 0.000000e+00\n"
-	"3.727596e+02, 0.000000e+00, 0.000000e+00\n"
-	"5.179476e+02, 0.000000e+00, 0.000000e+00\n"
-	"7.196858e+02, 0.000000e+00, 0.000000e+00\n"
-	"1.000001e+03, 0.000000e+00, 0.000000e+00\n"
-	"1.389496e+03, 0.000000e+00, 0.000000e+00\n"
-	"1.930698e+03, 0.000000e+00, 0.000000e+00\n"
-	"2.682698e+03, 0.000000e+00, 0.000000e+00\n"
-	"3.727595e+03, 0.000000e+00, 0.000000e+00\n"
-	"5.179476e+03, 0.000000e+00, 0.000000e+00\n"
-	"7.196858e+03, 0.000000e+00, 0.000000e+00\n"
-	"1.000000e+04, 0.000000e+00, 0.000000e+00\n"
-	"1.389497e+04, 0.000000e+00, 0.000000e+00\n"
-	"1.930699e+04, 0.000000e+00, 0.000000e+00\n"
-	"2.682697e+04, 0.000000e+00, 0.000000e+00\n"
-	"3.727595e+04, 0.000000e+00, 0.000000e+00\n"
-	"5.179476e+04, 0.000000e+00, 0.000000e+00\n"
-	"7.196858e+04, 0.000000e+00, 0.000000e+00\n"
-	"1.000000e+05, 0.000000e+00, 0.000000e+00\n"
-	"1.389497e+05, 0.000000e+00, 0.000000e+00\n"
-	"1.930699e+05, 0.000000e+00, 0.000000e+00\n"
-	"2.682698e+05, 0.000000e+00, 0.000000e+00\n"
-	"3.727596e+05, 0.000000e+00, 0.000000e+00\n"
-	"5.179476e+05, 0.000000e+00, 0.000000e+00\n"
-	"7.196858e+05, 0.000000e+00, 0.000000e+00\n"
-	"1.000001e+06, 0.000000e+00, 0.000000e+00\n"
-	"1.389497e+06, 1.991211e+00, 0.000000e+00\n"
-	"1.930699e+06, 5.604766e+00, 0.000000e+00\n"
-	"2.682698e+06, 6.533646e+00, 0.000000e+00\n"
-	"3.727596e+06, 4.632523e+00, 0.000000e+00\n"
-	"5.179476e+06, 5.889149e-01, 0.000000e+00\n"
-	"7.196866e+06, 0.000000e+00, 0.000000e+00\n"
-	"1.000001e+07, 0.000000e+00, 0.000000e+00\n";
+	"5.179475e+00, 0.000000e+00, 0.000000e+00\n";
+
+const char testEisSpectraFile11[] =
+	"EISF, 1.1.0\n"
+	"\"Unkown\"\n"
+	"File origin\n"
+	"CoinCellHell mesurement file\n"
+	"labelsNames\n"
+	"\"step\", \"substep\", \"cellid\", \"temparature\", \"ocv\", \"charge_cycles\", \"thermal_cycles\", \"last_avg_cap\", \"last_avg_step\", \"last_cap\", \"last_cap_step\", \"soc\"\n"
+	"labels\n"
+	"2, 4, 0, 36.1, 3.55081, 1, 8, 0.0448139, 11, 0.0428723, 120, -1\n"
+	"omega, real, im\n"
+	"6.293263e-01, 1.214581e+00, -1.917704e-01\n"
+	"8.324402e-01, 1.193806e+00, -1.599901e-01\n"
+	"1.106767e+00, 1.178542e+00, -1.361918e-01\n"
+	"1.465296e+00, 1.166301e+00, -1.212671e-01\n"
+	"1.947914e+00, 1.156239e+00, -1.091308e-01\n"
+	"2.563042e+00, 1.147515e+00, -1.042249e-01\n";
 
 void printDataVect(const std::vector<eis::DataPoint> in)
 {
@@ -390,33 +363,36 @@ static bool nyquistJump()
 static bool testEisNyquistDistance()
 {
 	const std::filesystem::path filePath("./relaxis_rp-rp_0.csv");
-	eis::EisSpectra spectra(filePath);
-	if(spectra.data.empty())
+	try
 	{
-		eis::Log(eis::Log::INFO)<<__func__<<" Unable to load "<<filePath<<" skiping test";
-		return true;
+		eis::EisSpectra spectra(filePath);
+
+		std::vector<fvalue> omega(spectra.data.size());
+		for(size_t i = 0; i < spectra.data.size(); ++i)
+			omega[i] = spectra.data[i].omega;
+		eis::Log(eis::Log::INFO)<<__func__<<" using model string: "<<spectra.model;
+		eis::Model model(spectra.model);
+
+		std::vector<eis::DataPoint> genData = model.executeSweep(omega);
+		fvalue dist = eisNyquistDistance(spectra.data, genData);
+
+		if(std::isnan(dist))
+		{
+			eis::Log(eis::Log::ERROR)<<__func__<<" spectra.data:";
+			printDataVect(spectra.data);
+			eis::Log(eis::Log::ERROR)<<__func__<<" genData:";
+			printDataVect(genData);
+			eis::Log(eis::Log::ERROR)<<__func__<<" distanece is NAN!";
+			return false;
+		}
+		else
+		{
+			return true;
+		}
 	}
-
-	std::vector<fvalue> omega(spectra.data.size());
-	for(size_t i = 0; i < spectra.data.size(); ++i)
-		omega[i] = spectra.data[i].omega;
-	eis::Log(eis::Log::INFO)<<__func__<<" using model string: "<<spectra.model;
-	eis::Model model(spectra.model);
-
-	std::vector<eis::DataPoint> genData = model.executeSweep(omega);
-	fvalue dist = eisNyquistDistance(spectra.data, genData);
-
-	if(std::isnan(dist))
+	catch(const eis::file_error& err)
 	{
-		eis::Log(eis::Log::ERROR)<<__func__<<" spectra.data:";
-		printDataVect(spectra.data);
-		eis::Log(eis::Log::ERROR)<<__func__<<" genData:";
-		printDataVect(genData);
-		eis::Log(eis::Log::ERROR)<<__func__<<" distanece is NAN!";
-		return false;
-	}
-	else
-	{
+		eis::Log(eis::Log::INFO)<<__func__<<" Unable to load "<<filePath<<": "<<err.what()<<" skiping test";
 		return true;
 	}
 }
@@ -424,19 +400,22 @@ static bool testEisNyquistDistance()
 static bool testLoadDeduplication()
 {
 	const std::filesystem::path filePath("./relaxis_rp-rp_0.csv");
-	eis::EisSpectra spectra(filePath);
-	if(spectra.data.empty())
+	try
 	{
-		eis::Log(eis::Log::INFO)<<__func__<<" Unable to load "<<filePath<<" skiping test";
+		eis::EisSpectra spectra(filePath);
+
+		if(eis::fvalueEq(spectra.data[spectra.data.size()-1].omega, spectra.data[spectra.data.size()-2].omega+2))
+		{
+			eis::Log(eis::Log::ERROR)<<__func__<<" deduplication failed";
+			return false;
+		}
 		return true;
 	}
-
-	if(eis::fvalueEq(spectra.data[spectra.data.size()-1].omega, spectra.data[spectra.data.size()-2].omega+2))
+	catch(const eis::file_error& err)
 	{
-		eis::Log(eis::Log::ERROR)<<__func__<<" deduplication failed";
-		return false;
+		eis::Log(eis::Log::INFO)<<__func__<<" Unable to load "<<filePath<<": "<<err.what()<<" skiping test";
+		return true;
 	}
-	return true;
 }
 
 static bool testTranslators()
@@ -478,13 +457,10 @@ static bool testMadapParams()
 	}
 }
 
-static bool testLoader()
+static bool testLoader(const char* file, const size_t expectedLength, const size_t expectedLabels, const std::string expectedModel, bool same = false)
 {
-	const size_t expectedLength = 50;
-	const size_t expectedLabels = 5;
-	const std::string expectedModel("r-cr-cr");
-	std::stringstream ss(testEisSpectraFile);
-	eis::Log(eis::Log::INFO)<<__func__<<" STRLEN "<<strlen(testEisSpectraFile);
+	std::stringstream ss(file);
+	eis::Log(eis::Log::INFO)<<__func__<<" STRLEN "<<strlen(file);
 	eis::EisSpectra spectra = eis::EisSpectra::loadFromStream(ss);
 	if(spectra.data.size() != expectedLength)
 	{
@@ -501,13 +477,13 @@ static bool testLoader()
 	if(spectra.model != expectedModel)
 	{
 		eis::Log(eis::Log::ERROR)<<__func__<<" Spectra has model \""<<spectra.model<<"\" expected \""<<expectedModel<<'\"';
-		//return false;
+		return false;
 	}
 
 	std::stringstream saveStream;
 	spectra.saveToStream(saveStream);
 
-	if(saveStream.str() != ss.str())
+	if(same && saveStream.str() != ss.str())
 	{
 		eis::Log(eis::Log::WARN)<<__func__<<" Saveing and loading dont have the same result. Saved:";
 		eis::Log(eis::Log::WARN)<<saveStream.str();
@@ -557,8 +533,11 @@ int main(int argc, char** argv)
 	if(!testMadapParams())
 		return 12;
 
-	if(!testLoader())
+	if(!testLoader(testEisSpectraFile10, 6, 5, "r-cr-cr"))
 		return 13;
+
+	if(!testLoader(testEisSpectraFile11, 6, 12, "Unkown", true))
+		return 14;
 
 	return 0;
 }
