@@ -173,7 +173,7 @@ EisSpectra EisSpectra::loadFromStream(std::istream& stream)
 	std::vector<std::string> tokens = tokenizeBinaryIgnore(line, ',', '"', '\\');
 	VersionFixed fileVersion;
 
-	if(tokens.size() < 2 || tokens[0] != F_MAGIC)
+	if(tokens.size() != 2 || tokens[0] != F_MAGIC)
 	{
 		throw file_error("not a valid EISGenerator file or stream");
 	}
@@ -192,10 +192,13 @@ EisSpectra EisSpectra::loadFromStream(std::istream& stream)
 	if(fileVersion.minor == F_VERSION_MINOR)
 	{
 		std::getline(stream, line);
+		stripQuotes(line);
 		out.model = line == "None" ? "" : line;
 		std::getline(stream, line);
+		stripQuotes(line);
 		out.headerDescription = line == "None" ? "" : line;
 		std::getline(stream, line);
+		stripQuotes(line);
 		out.header = line == "None" ? "" : line;
 	}
 	else
@@ -207,6 +210,9 @@ EisSpectra EisSpectra::loadFromStream(std::istream& stream)
 		line.erase(line.begin(), line.begin()+tokens.size());
 		out.header = line;
 	}
+
+	out.model.erase(std::remove(out.model.begin(), out.model.end(), '\0'), out.model.end());
+	out.model.erase(std::remove(out.header.begin(), out.header.end(), '\0'), out.header.end());
 
 	while(stream.good())
 	{
