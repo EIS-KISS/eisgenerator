@@ -212,7 +212,7 @@ EisSpectra EisSpectra::loadFromStream(std::istream& stream)
 	}
 
 	out.model.erase(std::remove(out.model.begin(), out.model.end(), '\0'), out.model.end());
-	out.model.erase(std::remove(out.header.begin(), out.header.end(), '\0'), out.header.end());
+	out.header.erase(std::remove(out.header.begin(), out.header.end(), '\0'), out.header.end());
 
 	while(stream.good())
 	{
