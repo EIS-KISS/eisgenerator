@@ -23,12 +23,12 @@ set(SRC_FILES
 	componant/constantphase.cpp
 	componant/warburg.cpp
 	componant/paralellseriel.cpp
-	componant/finitetr.cpp
+	componant/tro.cpp
+	componant/trc.cpp
 	model.cpp
 	log.cpp
 	normalize.cpp
 	basicmath.cpp
-	log.cpp
 	normalize.cpp
 	basicmath.cpp
 	eistype.cpp
@@ -49,7 +49,8 @@ set(API_HEADERS_CPP
 	${API_HEADERS_CPP_DIR}/componant/constantphase.h
 	${API_HEADERS_CPP_DIR}/componant/warburg.h
 	${API_HEADERS_CPP_DIR}/componant/inductor.h
-	${API_HEADERS_CPP_DIR}/componant/finitetr.h
+	${API_HEADERS_CPP_DIR}/componant/tro.h
+	${API_HEADERS_CPP_DIR}/componant/trc.h
 	${API_HEADERS_CPP_DIR}/componant/paralellseriel.h
 	${API_HEADERS_CPP_DIR}/model.h
 	${API_HEADERS_CPP_DIR}/log.h

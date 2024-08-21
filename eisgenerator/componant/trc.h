@@ -24,28 +24,21 @@
 namespace eis
 {
 
-class FiniteTransmitionline: public Componant
+class TransmissionLineClosed: public Componant
 {
-	fvalue _C;
-	fvalue _R;
-	unsigned int _n;
-
-	Componant* subComponant = nullptr;
-
-	static Componant* createTransmitionLine(fvalue c, fvalue r, unsigned int n);
-	void updateValues();
-	void setDefaultParam(size_t count, bool defaultToRange);
 
 public:
-	FiniteTransmitionline(fvalue c, fvalue r, unsigned int n);
-	FiniteTransmitionline(std::string paramStr, size_t count = 10, bool defaultToRange = false);
-	FiniteTransmitionline(const FiniteTransmitionline& in);
+	TransmissionLineClosed(fvalue r, fvalue q, fvalue a, fvalue l);
+	TransmissionLineClosed(std::string paramStr, size_t count = 10, bool defaultToRange = false);
+	TransmissionLineClosed(const TransmissionLineClosed& in);
 	virtual std::complex<fvalue> execute(fvalue omega) override;
 	virtual size_t paramCount() const override;
 	virtual std::vector<eis::Range> getDefaultParameters(bool range = true) const override;
-	virtual ~FiniteTransmitionline();
+	virtual ~TransmissionLineClosed();
 	virtual char getComponantChar() const override;
-	virtual std::string componantName() const override {return "FiniteTransmitionline";}
+	virtual std::string getCode(std::vector<std::string>& parameters) override;
+	virtual std::string getTorchScript(std::vector<std::string>& parameters) override;
+	virtual std::string componantName() const override {return "TransmissionLineClosed";}
 	static constexpr char staticGetComponantChar(){return 't';}
 };
 

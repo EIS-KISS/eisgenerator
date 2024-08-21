@@ -403,11 +403,23 @@ int main(int argc, char** argv)
 		}
 		else if(config.mode == MODE_CODE)
 		{
-			std::cout<<model.getCode();
+			std::string code = model.getCode();
+			if(code.empty())
+			{
+				std::cerr<<"Can not get code for this model\n";
+				return 2;
+			}
+			std::cout<<code;
 		}
 		else if(config.mode == MODE_TORCH_SCRIPT)
 		{
-			std::cout<<model.getTorchScript();
+			std::string code = model.getTorchScript();
+			if(code.empty())
+			{
+				std::cerr<<"Can not get a torch script for this model\n";
+				return 2;
+			}
+			std::cout<<code;
 		}
 		else
 		{

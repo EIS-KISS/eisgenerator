@@ -76,7 +76,7 @@ std::vector<eis::DataPoint> getSine()
 	for(size_t i = 0; i < 20; ++i)
 	{
 		eis::DataPoint point;
-		point.im = std::complex<fvalue>((sin(i/10.0)/static_cast<double>((i+16)/16))*10, (sin(i/10.0)/static_cast<double>((i+16)/16))*10);
+		point.im = std::complex<fvalue>((sin(i/10.0)/static_cast<double>((i+16.0)/16.0))*10, (sin(i/10.0)/static_cast<double>((i+16.0)/16.0))*10);
 		point.omega = i;
 		data.push_back(point);
 	}
@@ -492,6 +492,21 @@ static bool testLoader(const char* file, const size_t expectedLength, const size
 	return true;
 }
 
+bool testCompiledConsistancy(const std::string& modelstr)
+{
+	const fvalue omega = 1e5;
+	eis::Model model(modelstr, 100, false);
+	std::complex<fvalue> a = model.execute(omega).im;
+	model.compile();
+	std::complex<fvalue> b = model.execute(omega).im;
+	if(!eis::fvalueEq(a.imag(), b.imag()) || !eis::fvalueEq(a.real(), b.real()))
+	{
+		eis::Log(eis::Log::ERROR)<<__func__<<" Compiled model "<<modelstr<<" returns "<<b<<" but uncompiled model returns "<<a;
+		return false;
+	}
+	return true;
+}
+
 int main(int argc, char** argv)
 {
 	eis::Log::headers = true;
@@ -533,11 +548,29 @@ int main(int argc, char** argv)
 	if(!testMadapParams())
 		return 12;
 
-	if(!testLoader(testEisSpectraFile10, 6, 5, "r-cr-cr"))
+	if(!testCompiledConsistancy("r{100}"))
 		return 13;
 
-	if(!testLoader(testEisSpectraFile11, 6, 12, "Unkown", true))
+	if(!testCompiledConsistancy("c{1e-5}"))
 		return 14;
+
+	if(!testCompiledConsistancy("l{1e-5}"))
+		return 15;
+
+	if(!testCompiledConsistancy("p{1e-5, 0.5}"))
+		return 16;
+
+	if(!testCompiledConsistancy("w{1000}"))
+		return 17;
+
+	if(!testCompiledConsistancy("o{50, 1e-6, 0.5, 0.5}"))
+		return 18;
+
+	if(!testCompiledConsistancy("t{50, 1e-6, 0.5, 0.5}"))
+		return 19;
+
+	if(!testCompiledConsistancy("r{50}-r{1000}p{1e-5, 0.9}"))
+		return 20;
 
 	return 0;
 }

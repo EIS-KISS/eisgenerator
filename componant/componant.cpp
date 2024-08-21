@@ -25,10 +25,12 @@
 #include "componant/resistor.h"
 #include "componant/cap.h"
 #include "componant/constantphase.h"
+#include "componant/trc.h"
 #include "componant/warburg.h"
 #include "log.h"
 #include "componant/inductor.h"
-#include "componant/finitetr.h"
+#include "componant/tro.h"
+#include "componant/trc.h"
 #include "randomgen.h"
 
 using namespace eis;
@@ -127,8 +129,10 @@ Componant* Componant::copy(Componant* componant)
 			return new Cpe(*dynamic_cast<Cpe*>(componant));
 		case Warburg::staticGetComponantChar():
 			return new Warburg(*dynamic_cast<Warburg*>(componant));
-		case FiniteTransmitionline::staticGetComponantChar():
-			return new FiniteTransmitionline(*dynamic_cast<FiniteTransmitionline*>(componant));
+		case TransmissionLineOpen::staticGetComponantChar():
+			return new TransmissionLineOpen(*dynamic_cast<TransmissionLineOpen*>(componant));
+		case TransmissionLineClosed::staticGetComponantChar():
+			return new TransmissionLineClosed(*dynamic_cast<TransmissionLineClosed*>(componant));
 		case Parallel::staticGetComponantChar():
 			return new Parallel(*dynamic_cast<Parallel*>(componant));
 		case Serial::staticGetComponantChar():
@@ -155,8 +159,10 @@ Componant* Componant::createNewComponant(char componant, std::string paramStr, s
 			return new Cpe(paramStr, count, defaultToRange);
 		case Warburg::staticGetComponantChar():
 			return new Warburg(paramStr, count, defaultToRange);
-		case FiniteTransmitionline::staticGetComponantChar():
-			return new FiniteTransmitionline(paramStr, count, defaultToRange);
+		case TransmissionLineOpen::staticGetComponantChar():
+			return new TransmissionLineOpen(paramStr, count, defaultToRange);
+		case TransmissionLineClosed::staticGetComponantChar():
+			return new TransmissionLineClosed(paramStr, count, defaultToRange);
 		default:
 			return nullptr;
 	}
@@ -171,7 +177,8 @@ bool Componant::isValidComponantChar(char componantCh)
 		case Inductor::staticGetComponantChar():
 		case Cpe::staticGetComponantChar():
 		case Warburg::staticGetComponantChar():
-		case FiniteTransmitionline::staticGetComponantChar():
+		case TransmissionLineOpen::staticGetComponantChar():
+		case TransmissionLineClosed::staticGetComponantChar():
 			return true;
 		default:
 			return false;
