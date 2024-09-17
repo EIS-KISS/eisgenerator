@@ -37,7 +37,7 @@ public:
 	virtual ~TransmissionLineOpen();
 	virtual char getComponantChar() const override;
 	virtual std::string getCode(std::vector<std::string>& parameters) override;
-	virtual std::string getTorchScript(std::vector<std::string>& parameters) override;
+	//virtual std::string getTorchScript(std::vector<std::string>& parameters) override;
 	virtual std::string componantName() const override {return "TransmissionLineOpen";}
 	static constexpr char staticGetComponantChar(){return 'o';}
 };
