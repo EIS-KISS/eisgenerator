@@ -58,8 +58,10 @@ flags:
 		* one parameter: Warburg coefficient {A}
 	* p: constant phase element
 		* two parameters: {Q, alpha}
-	* t: finite approximation of a transition line
-		* three parameters: capacitance, resistance, approximation order {C, R, n}
+	* t: closed transmititon line
+		* four parameters: {R, Q, a, l}
+	* o: open (reflecting) transmititon line
+		* four parameters: {R, Q, a, l}
 
 --omega: range of frequency values (in rad/s) to sweep
 
