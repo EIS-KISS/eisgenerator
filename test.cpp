@@ -497,6 +497,7 @@ bool testCompiledConsistancy(const std::string& modelstr)
 	const fvalue omega = 1e5;
 	eis::Model model(modelstr, 100, false);
 	std::complex<fvalue> a = model.execute(omega).im;
+	eis::Log(eis::Log::INFO)<<__func__<<" compileing "<<modelstr;
 	model.compile();
 	std::complex<fvalue> b = model.execute(omega).im;
 	if(!eis::fvalueEq(a.imag(), b.imag()) || !eis::fvalueEq(a.real(), b.real()))
@@ -504,6 +505,20 @@ bool testCompiledConsistancy(const std::string& modelstr)
 		eis::Log(eis::Log::ERROR)<<__func__<<" Compiled model "<<modelstr<<" returns "<<b<<" but uncompiled model returns "<<a;
 		return false;
 	}
+	return true;
+}
+
+bool testRemoveSeriesResistance()
+{
+	std::string model = "r-c-r-cr-rc(c-r-c)-r{1203}-r{11293}c-lrc";
+	eis::Model::removeSeriesResitance(model);
+	std::string expectedResult = "c-cr-rc(c-r-c)-r{11293}c-lrc";
+	if(model != expectedResult)
+	{
+		eis::Log(eis::Log::ERROR)<<__func__<<"Expected "<<expectedResult<<" got "<<model;
+		return false;
+	}
+
 	return true;
 }
 
@@ -571,6 +586,9 @@ int main(int argc, char** argv)
 
 	if(!testCompiledConsistancy("r{50}-r{1000}p{1e-5, 0.9}"))
 		return 20;
+
+	if(!testRemoveSeriesResistance())
+		return 21;
 
 	return 0;
 }

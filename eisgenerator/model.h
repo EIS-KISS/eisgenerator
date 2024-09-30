@@ -308,6 +308,14 @@ public:
 	* @return A vector of indecies corresponding to the iso-difference spectras.
 	*/
 	std::vector<size_t> getRecommendedParamIndices(eis::Range omegaRange, double distance, bool threaded = false);
+
+
+	/**
+	* @brief Removes the series reistance from a model string (if any)
+	*
+	* @param model the model string from wich to remove the seires resitance
+	*/
+	static void removeSeriesResitance(std::string& model);
 };
 
 /**

@@ -26,15 +26,14 @@
 #include <sstream>
 #include <string>
 #include <vector>
-#include <array>
 #include <thread>
-#include <fstream>
 #include <algorithm>
 #include <execution>
 #include <dlfcn.h>
 #include <functional>
 
 #include "componant/componant.h"
+#include "componant/resistor.h"
 #include "eistype.h"
 #include "strops.h"
 #include "componant/paralellseriel.h"
@@ -731,4 +730,35 @@ std::string Model::getTorchScript()
 std::string Model::getCompiledFunctionName() const
 {
 	return "model_"+std::to_string(getUuid());
+}
+
+void Model::removeSeriesResitance(std::string& model)
+{
+	for(size_t i = 0; i < model.size(); ++i)
+	{
+		if(model[i] == Resistor::staticGetComponantChar())
+		{
+			if((i == 0 || model[i-1] == '-') && (i == model.size()-1 || model[i+1] == '-' || model[i+1] == '{'))
+			{
+				if(i != model.size()-1 && model[i+1] == '{')
+				{
+					size_t close = opposingBraket(model, i+1, getOpposingBracketChar(model[i+1]));
+					if(close == model.size()-1 || model[close+1] == '-')
+					{
+						eraseModelElement(model, i);
+						i = 0;
+					}
+				}
+				else
+				{
+					eraseModelElement(model, i);
+					i = 0;
+				}
+			}
+		}
+		else if(model[i] == '(')
+		{
+			i = opposingBraket(model, i, getOpposingBracketChar(model[i]));
+		}
+	}
 }

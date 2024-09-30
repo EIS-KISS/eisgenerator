@@ -103,7 +103,7 @@ else()
 	set(COMMON_LINK_FLAGS "-flto -ltbb -pthread")
 endif(WIN32)
 
-set(COMMON_COMPILE_FLAGS "-Wall -O2 -march=native -g")
+set(COMMON_COMPILE_FLAGS "-Wall -O3 -march=native -g")
 
 if(PROFILE_ENABLED)
 	message("Profileing enabled")

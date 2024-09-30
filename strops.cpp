@@ -207,6 +207,40 @@ size_t eisRemoveUnneededBrackets(std::string& in, long int bracketStart)
 	return in.size()-1;
 }
 
+void eraseModelElement(std::string& in, size_t index)
+{
+	size_t start = index;
+	size_t end = index+1;
+	while(start > 0)
+	{
+		if(in[start-1] != '-')
+			break;
+		--start;
+	}
+
+	while(end < in.size())
+	{
+		switch(in[end])
+		{
+			case '{':
+				end = opposingBraket(in, end, getOpposingBracketChar(in[end]))+1;
+				continue;
+			case '-':
+				++end;
+				continue;
+			default:
+				break;
+		}
+		break;
+	}
+
+	if(end < in.size() && in[start] == '-')
+		++start;
+
+
+	in.erase(in.begin()+start, in.begin()+end);
+}
+
 std::string stripWhitespace(const std::string& in)
 {
 	std::string out;

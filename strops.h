@@ -44,4 +44,6 @@ void stripQuotes(std::string& in);
 
 size_t eisRemoveUnneededBrackets(std::string& in, long int bracketStart = -1);
 
+void eraseModelElement(std::string& in, size_t index);
+
 }

@@ -428,7 +428,6 @@ int main(int argc, char** argv)
 			else
 				runSweep(config, model);
 		}
-
 	}
 	catch(const std::invalid_argument& ia)
 	{
