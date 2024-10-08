@@ -24,7 +24,8 @@
 #include <cmath>
 #include <complex>
 #include <limits>
-#include "eistype.h"
+#include <kisstype/type.h>
+
 #include "log.h"
 #include "basicmath.h"
 

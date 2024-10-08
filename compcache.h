@@ -21,8 +21,8 @@
 #include <vector>
 #include <map>
 #include <complex>
-
-#include "eistype.h"
+#include <kisstype/type.h>
+#include <filesystem>
 
 namespace eis
 {

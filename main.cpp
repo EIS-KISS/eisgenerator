@@ -25,6 +25,7 @@
 #include <cmath>
 #include <cassert>
 #include <filesystem>
+#include <kisstype/spectra.h>
 
 #include "basicmath.h"
 #include "model.h"
@@ -94,7 +95,7 @@ static void runSweep(const Config& config, eis::Model& model)
 	if(config.noise > 0)
 		eis::noise(results, config.noise, false);
 
-	eis::EisSpectra spectra(results, model.getModelStrWithParam(), "exported by eisgenerator_export");
+	eis::Spectra spectra(results, model.getModelStrWithParam(), "exported by eisgenerator_export");
 
 	spectra.saveToStream(std::cout);
 
@@ -103,7 +104,7 @@ static void runSweep(const Config& config, eis::Model& model)
 	if(!config.saveFileName.empty())
 	{
 		eis::Log(eis::Log::INFO)<<"Saveing to "<<config.saveFileName;
-		eis::EisSpectra(results, model.getModelStrWithParam(0), "").saveToDisk(config.saveFileName);
+		eis::Spectra(results, model.getModelStrWithParam(0), "").saveToDisk(config.saveFileName);
 	}
 }
 
@@ -171,7 +172,7 @@ static void runParamSweep(const Config& config, eis::Model& model)
 				}
 			}
 
-			eis::EisSpectra(data, model.getModelStrWithParam(i), "").saveToDisk(config.saveFileName+"/"+std::to_string(i)+".csv");
+			eis::Spectra(data, model.getModelStrWithParam(i), "").saveToDisk(config.saveFileName+"/"+std::to_string(i)+".csv");
 		}
 		eis::Log(eis::Log::INFO, false)<<'.';
 	}

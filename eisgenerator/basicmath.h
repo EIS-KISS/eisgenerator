@@ -20,7 +20,7 @@
 
 #pragma once
 #include <vector>
-#include "eistype.h"
+#include <kisstype/type.h>
 
 namespace eis
 {

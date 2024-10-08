@@ -25,8 +25,9 @@
 #include <chrono>
 #include <sstream>
 #include <cstring>
+#include <kisstype/type.h>
+#include <kisstype/spectra.h>
 
-#include "eistype.h"
 #include "model.h"
 #include "log.h"
 #include "normalize.h"
@@ -365,7 +366,7 @@ static bool testEisNyquistDistance()
 	const std::filesystem::path filePath("./relaxis_rp-rp_0.csv");
 	try
 	{
-		eis::EisSpectra spectra(filePath);
+		eis::Spectra spectra(filePath);
 
 		std::vector<fvalue> omega(spectra.data.size());
 		for(size_t i = 0; i < spectra.data.size(); ++i)
@@ -402,7 +403,7 @@ static bool testLoadDeduplication()
 	const std::filesystem::path filePath("./relaxis_rp-rp_0.csv");
 	try
 	{
-		eis::EisSpectra spectra(filePath);
+		eis::Spectra spectra(filePath);
 
 		if(eis::fvalueEq(spectra.data[spectra.data.size()-1].omega, spectra.data[spectra.data.size()-2].omega+2))
 		{
@@ -461,7 +462,7 @@ static bool testLoader(const char* file, const size_t expectedLength, const size
 {
 	std::stringstream ss(file);
 	eis::Log(eis::Log::INFO)<<__func__<<" STRLEN "<<strlen(file);
-	eis::EisSpectra spectra = eis::EisSpectra::loadFromStream(ss);
+	eis::Spectra spectra = eis::Spectra::loadFromStream(ss);
 	if(spectra.data.size() != expectedLength)
 	{
 		eis::Log(eis::Log::ERROR)<<__func__<<" Spectra has length "<<spectra.data.size()<<" expected "<<expectedLength;

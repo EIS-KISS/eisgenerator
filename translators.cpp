@@ -26,9 +26,9 @@
 #include <map>
 #include <algorithm>
 #include <sstream>
+#include <kisstype/type.h>
 
 #include "strops.h"
-#include "eistype.h"
 #include "log.h"
 #include "componant/componant.h"
 

@@ -21,7 +21,7 @@
 #pragma once
 
 #include <vector>
-#include "eisgenerator/eistype.h"
+#include <kisstype/type.h>
 
 class LinearRegessionCalculator
 {

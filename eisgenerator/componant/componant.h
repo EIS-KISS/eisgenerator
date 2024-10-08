@@ -23,8 +23,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
-
-#include "../eistype.h"
+#include <kisstype/type.h>
 
 namespace eis
 {

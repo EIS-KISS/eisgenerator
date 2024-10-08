@@ -34,7 +34,6 @@
 
 #include "componant/componant.h"
 #include "componant/resistor.h"
-#include "eistype.h"
 #include "strops.h"
 #include "componant/paralellseriel.h"
 #include "log.h"

@@ -25,8 +25,8 @@
 #include <string>
 #include <vector>
 #include <functional>
+#include <kisstype/type.h>
 
-#include "eistype.h"
 #include "componant/componant.h"
 
 namespace eis

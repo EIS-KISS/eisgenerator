@@ -25,7 +25,6 @@
 #include <limits>
 #include <stdexcept>
 
-#include "eistype.h"
 #include "log.h"
 #include "linearregession.h"
 

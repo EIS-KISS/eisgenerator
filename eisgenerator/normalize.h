@@ -21,10 +21,9 @@
 #pragma once
 #include <vector>
 #include <string>
+#include <kisstype/type.h>
 
-#include "eistype.h"
 #include "model.h"
-
 
 namespace eis
 {
