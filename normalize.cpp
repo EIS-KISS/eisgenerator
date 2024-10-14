@@ -135,7 +135,7 @@ std::vector<eis::DataPoint> eis::reduceRegion(const std::vector<eis::DataPoint>&
 	eis::Log(eis::Log::DEBUG)<<"reduced range "<<start<<'-'<<end;
 
 	data.erase(data.begin(), data.begin()+start);
-	data.erase(data.begin()+end+1, data.end());
+	data.erase(data.begin()+end+1-start, data.end());
 
 	return data;
 }
