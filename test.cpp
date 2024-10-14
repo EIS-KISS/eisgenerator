@@ -523,6 +523,28 @@ bool testRemoveSeriesResistance()
 	return true;
 }
 
+bool testResize()
+{
+	try
+	{
+		eis::Spectra spectra = eis::Spectra::loadFromDisk("../rescaleTest.csv");
+		std::vector<eis::DataPoint> data = eis::rescale(spectra.data, 50);
+		eis::removeDuplicates(data);
+		if(data.size() != 50)
+		{
+			eis::Log(eis::Log::ERROR)<<__func__<<"Resized data is of incorrect size";
+			return false;
+		}
+	}
+	catch(eis::file_error& err)
+	{
+		eis::Log(eis::Log::ERROR)<<__func__<<" could not load ../rescaleTest.csv skipping test";
+		return true;
+	}
+
+	return true;
+}
+
 int main(int argc, char** argv)
 {
 	eis::Log::headers = true;
@@ -590,6 +612,9 @@ int main(int argc, char** argv)
 
 	if(!testRemoveSeriesResistance())
 		return 21;
+
+	if(!testResize())
+		return 22;
 
 	return 0;
 }
