@@ -26,7 +26,14 @@
 namespace eis
 {
 
-class Parallel: public Componant
+class ParallelSerial: public Componant
+{
+public:
+	virtual std::vector<fvalue> contributionRatio(fvalue omega) = 0;
+	std::vector<bool> contributes(fvalue omega, fvalue threshold = 0.01);
+};
+
+class Parallel: public ParallelSerial
 {
 public:
 	std::vector<Componant*> componants;
@@ -43,9 +50,10 @@ public:
 	virtual bool compileable() override;
 	virtual std::string getCode(std::vector<std::string>& parameters) override;
 	virtual std::string getTorchScript(std::vector<std::string>& parameters) override;
+	virtual std::vector<fvalue> contributionRatio(fvalue omega) override;
 };
 
-class Serial: public Componant
+class Serial: public ParallelSerial
 {
 public:
 	std::vector<Componant*> componants;
@@ -62,6 +70,7 @@ public:
 	virtual bool compileable() override;
 	virtual std::string getCode(std::vector<std::string>& parameters) override;
 	virtual std::string getTorchScript(std::vector<std::string>& parameters) override;
+	virtual std::vector<fvalue> contributionRatio(fvalue omega) override;
 };
 
 }

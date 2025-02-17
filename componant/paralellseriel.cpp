@@ -20,8 +20,18 @@
 
 #include "componant/paralellseriel.h"
 #include "componant/componant.h"
+#include "type.h"
 
 using namespace eis;
+
+std::vector<bool> ParallelSerial::contributes(fvalue omega, fvalue threshold)
+{
+	std::vector<fvalue> ratios = contributionRatio(omega);
+	std::vector<bool> out(ratios.size());
+	for(size_t i = 0; i < ratios.size(); ++i)
+		out[i] = ratios[i] > threshold;
+	return out;
+}
 
 Parallel::Parallel(std::vector<Componant*> componantsIn): componants(componantsIn)
 {
@@ -105,6 +115,17 @@ std::string Parallel::getTorchScript(std::vector<std::string>& parameters)
 	out.pop_back();
 	out.pop_back();
 	out.push_back(')');
+	return out;
+}
+
+std::vector<fvalue> Parallel::contributionRatio(fvalue omega)
+{
+	std::vector<fvalue> out(componants.size());
+	for(size_t i = 0; i < componants.size(); ++i)
+		out[i] = std::abs(componants[i]->execute(omega));
+	fvalue max = *std::min_element(out.begin(), out.end());
+	for(fvalue& val : out)
+		val = max / val;
 	return out;
 }
 
@@ -193,5 +214,16 @@ std::string Serial::getTorchScript(std::vector<std::string>& parameters)
 	out.pop_back();
 	out.pop_back();
 	out.push_back(')');
+	return out;
+}
+
+std::vector<fvalue> Serial::contributionRatio(fvalue omega)
+{
+	std::vector<fvalue> out(componants.size());
+	for(size_t i = 0; i < componants.size(); ++i)
+		out[i] = std::abs(componants[i]->execute(omega));
+	fvalue max = *std::max_element(out.begin(), out.end());
+	for(fvalue& val : out)
+		val = val / max;
 	return out;
 }

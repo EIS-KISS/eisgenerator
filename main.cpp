@@ -308,8 +308,7 @@ static void findRanges(const Config& config, eis::Model& model)
 
 static void outputRanges(const Config& config, eis::Model& model)
 {
-	std::vector<size_t> indices;
-	getRangeValuesForModel(config, model, &indices);
+	std::vector<size_t> indices = model.getRecommendedParamIndices(config.omegaRange, config.rangeDistance, config.threaded);
 
 	if(indices.empty())
 	{

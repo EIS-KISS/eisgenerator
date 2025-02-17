@@ -590,14 +590,6 @@ std::vector<size_t> Model::getRecommendedParamIndices(eis::Range omegaRange, dou
 			continue;
 		}
 
-		fvalue nonConstantess = std::abs(pearsonCorrelation(data));
-		if(nonConstantess < 0.1)
-		{
-			eis::Log(eis::Log::DEBUG)<<"skipping output for step "<<i
-			<<" as data is too constant: "<<nonConstantess;
-			continue;
-		}
-
 		std::vector<std::vector<eis::DataPoint>>::iterator search;
 		if(threaded)
 		{
@@ -622,8 +614,23 @@ std::vector<size_t> Model::getRecommendedParamIndices(eis::Range omegaRange, dou
 			std::cout<<std::flush;
 		}
 	}
+
+	std::vector<size_t> out;
+	out.reserve(indices.size());
+	for(size_t candidate : indices)
+	{
+		resolveSteps(candidate);
+		if(!allElementsContribute(omegaRange))
+			eis::Log(eis::Log::DEBUG)<<"skipping "<<candidate<<" as not all elements contribute";
+		else if(!hasSeriesDifference(omegaRange))
+			eis::Log(eis::Log::DEBUG)<<"skipping "<<candidate<<" as not all elements in series are different";
+		else
+			out.push_back(candidate);
+
+	}
+
 	eis::Log(eis::Log::INFO, false)<<'\n';
-	return indices;
+	return out;
 }
 
 size_t Model::getUuid() const
@@ -760,4 +767,85 @@ void Model::removeSeriesResitance(std::string& model)
 			i = opposingBraket(model, i, getOpposingBracketChar(model[i]));
 		}
 	}
+}
+
+bool Model::allElementsContribute(eis::Range omegaRange, fvalue threashold)
+{
+	std::vector<Componant*> componants = getFlatComponants();
+	componants.push_back(_model);
+	std::vector<ParallelSerial*> combiners;
+	for(Componant* componant : componants)
+	{
+		ParallelSerial* candidate = dynamic_cast<ParallelSerial*>(componant);
+		if(candidate)
+			combiners.push_back(candidate);
+	}
+
+	std::vector<bool> contributesGlobal;
+	for(fvalue omega : omegaRange.getRangeVector())
+	{
+		std::vector<bool> contributes;
+		for(ParallelSerial* combiner : combiners)
+		{
+			std::vector<bool> contributesLocal = combiner->contributes(omega);
+			contributes.insert(contributes.end(), contributesLocal.begin(), contributesLocal.end());
+		}
+		if(contributesGlobal.empty())
+		{
+			contributesGlobal = contributes;
+		}
+		else
+		{
+			for(size_t i = 0; i < contributesGlobal.size(); ++i)
+				contributesGlobal[i] = contributes[i] || contributesGlobal[i];
+		}
+
+		if(std::find(contributesGlobal.begin(), contributesGlobal.end(), false) == contributesGlobal.end())
+			break;
+	}
+
+	return std::find(contributesGlobal.begin(), contributesGlobal.end(), false) == contributesGlobal.end();
+}
+
+
+bool Model::hasSeriesDifference(eis::Range omegaRange, fvalue threashold)
+{
+	std::vector<Componant*> componants = getFlatComponants();
+	componants.push_back(_model);
+	std::vector<Serial*> serials;
+	for(Componant* componant : componants)
+	{
+		Serial* candidate = dynamic_cast<Serial*>(componant);
+		if(candidate)
+			serials.push_back(candidate);
+	}
+
+	std::vector<bool> isDifferentGlobal;
+	for(fvalue omega : omegaRange.getRangeVector())
+	{
+		bool allContribute = true;
+		for(Serial* serial : serials)
+		{
+			std::vector<std::complex<fvalue>> impedances;
+			for(Componant* componant : serial->componants)
+				impedances.push_back(componant->execute(omega));
+			for(size_t i = 0; i < impedances.size() && allContribute; ++i)
+			{
+				for(size_t j = i+1; j < impedances.size(); ++j)
+				{
+					if(std::abs(impedances[i] - impedances[j])/std::abs(impedances[i]) < threashold)
+					{
+						allContribute = false;
+						break;
+					}
+				}
+			}
+			if(!allContribute)
+				break;
+		}
+		if(allContribute)
+			return true;
+	}
+
+	return false;
 }

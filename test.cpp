@@ -545,6 +545,67 @@ bool testResize()
 	return true;
 }
 
+bool testContribution()
+{
+	eis::Range omega(1, 1e6, 50, true);
+	eis::Model model("r{0.001}c{1e-10~0.0001L}", 100, true);
+
+	bool contributes = model.allElementsContribute(omega);
+	if(contributes)
+	{
+		eis::Log(eis::Log::ERROR)<<__func__<<" expected 0 got "<<contributes;
+		return false;
+	}
+
+	model = eis::Model("r{1000}c{1e-10~0.0001L}", 100, true);
+	contributes = model.allElementsContribute(omega);
+	if(!contributes)
+	{
+		eis::Log(eis::Log::ERROR)<<__func__<<" expected 1 got "<<contributes;
+		return false;
+	}
+
+	model = eis::Model("r{1}-r{1000}", 100, true);
+	contributes = model.allElementsContribute(omega);
+	if(contributes)
+	{
+		eis::Log(eis::Log::ERROR)<<__func__<<" expected 0 got "<<contributes;
+		return false;
+	}
+
+	model = eis::Model("r{10}-r{10}", 100, true);
+	contributes = model.allElementsContribute(omega);
+	if(!contributes)
+	{
+		eis::Log(eis::Log::ERROR)<<__func__<<" expected 1 got "<<contributes;
+		return false;
+	}
+
+	return true;
+}
+
+bool testSeriesContribution()
+{
+	eis::Range omega(1, 1e6, 50, true);
+	eis::Model model("r{10}c{1e-5}-r{10}c{1e-5}", 100, true);
+
+	bool contributes = model.hasSeriesDifference(omega);
+	if(contributes)
+	{
+		eis::Log(eis::Log::ERROR)<<__func__<<" expected 0 got "<<contributes;
+		return false;
+	}
+
+	model = eis::Model("r{10}c{1e-5}-r{10}p{1e-5, 0.8}", 100, true);
+	contributes = model.hasSeriesDifference(omega);
+	if(!contributes)
+	{
+		eis::Log(eis::Log::ERROR)<<__func__<<" expected 1 got "<<contributes;
+		return false;
+	}
+	return true;
+}
+
 int main(int argc, char** argv)
 {
 	eis::Log::headers = true;
@@ -615,6 +676,12 @@ int main(int argc, char** argv)
 
 	if(!testResize())
 		return 22;
+
+	if(!testContribution())
+		return 23;
+
+	if(!testSeriesContribution())
+		return 24;
 
 	return 0;
 }

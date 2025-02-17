@@ -124,5 +124,5 @@ set tics font \"Sans,12\"; \
 set xlabel font \"Sans,15\"; \
 set ylabel font \"Sans,15\"; \
 set datafile separator ','; \
-plot '-' using $mode skip 3 notitle w l;
+plot '-' using $mode skip 5 notitle w l;
 "

@@ -309,6 +309,23 @@ public:
 	*/
 	std::vector<size_t> getRecommendedParamIndices(eis::Range omegaRange, double distance, bool threaded = false);
 
+	/**
+	* @brief Attempts to check if all elements contribute to the result
+
+	* @param threashold contribution ratio below which the contribution is considered irrelivant
+	* @param omegaRange range of frequencies to consider
+	* @return True if all Contribute false otherwise
+	*/
+	bool allElementsContribute(eis::Range omegaRange, fvalue threashold = 0.01);
+
+	/**
+	* @brief Checks if all elements in series with one another dont have too similar impedance
+
+	* @param threashold contribution ratio below which the contribution is considered irrelivant
+	* @param omegaRange range of frequencies to consider
+	* @return True if all series have a difference false otherwise.
+	*/
+	bool hasSeriesDifference(eis::Range omegaRange, fvalue threashold = 0.1);
 
 	/**
 	* @brief Removes the series reistance from a model string (if any)
