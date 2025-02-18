@@ -70,6 +70,12 @@ static void runSweep(const Config& config, eis::Model& model)
 	auto end = std::chrono::high_resolution_clock::now();
 	auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
 
+	if(!model.allElementsContribute(omega))
+		eis::Log(eis::Log::INFO)<<"This model has elements that do not contribute meaningfully to the result";
+
+	if(!model.hasSeriesDifference(omega))
+		eis::Log(eis::Log::INFO)<<"This model has series elements that are the same";
+
 	if(config.reduce)
 	{
 		eis::Log(eis::Log::INFO)<<"reduced normalized results:";
