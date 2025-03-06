@@ -683,6 +683,11 @@ bool Model::compile()
 	return true;
 }
 
+void Model::dropCompiled()
+{
+	_compiledModel = nullptr;
+}
+
 std::string Model::getCode()
 {
 	if(!_model || !_model->compileable())

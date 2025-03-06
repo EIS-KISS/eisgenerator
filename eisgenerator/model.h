@@ -246,6 +246,12 @@ public:
 	bool compile();
 
 	/**
+	* @brief This function drops the compiled object code, reverting to graph execution
+	*
+	*/
+	void dropCompiled();
+
+	/**
 	* @brief This member determines if the model is in a state ready to execute.
 	*
 	* @return True if the model is ready for the execute family of methods.
